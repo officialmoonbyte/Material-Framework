@@ -621,6 +621,9 @@ namespace IndieGoat.MaterialFramework.Controls
                 g.DrawString(">", moveButtonFont, new SolidBrush(_TextColor), rightMoveButton, moveStringFormat);
             }
 
+            //Draw the close button
+            DrawCloseButton(g);
+
         }
 
         #endregion
@@ -905,6 +908,34 @@ namespace IndieGoat.MaterialFramework.Controls
             , stringFormat);
 
 
+        }
+
+        #endregion
+
+        #region Close Button
+
+        private Rectangle GetCloseButtonRectangle()
+        {
+            //Initialize a private LastTabRect and CloseButtonRect
+            Rectangle closeButtonRect;
+            Rectangle LastTabRect = _basedTabControl.GetTabRect(_basedTabControl.TabPages.Count);
+
+            //Set the CloseButtonRect based on the LastTabRect
+            closeButtonRect = new Rectangle(LastTabRect.X + LastTabRect.Width + 2,
+                LastTabRect.Y, this.Height, this.Height);
+
+            //returns the CloseButtonRect
+            return closeButtonRect;
+        }
+
+        /// <summary>
+        /// Draw the close button 
+        /// </summary>
+        /// <param name="g">Graphics used to draw the close button</param>
+        private void DrawCloseButton(Graphics g)
+        {
+            //Draw the background of the rectangle
+            g.FillRectangle(new SolidBrush(Color.Black), GetCloseButtonRectangle());
         }
 
         #endregion

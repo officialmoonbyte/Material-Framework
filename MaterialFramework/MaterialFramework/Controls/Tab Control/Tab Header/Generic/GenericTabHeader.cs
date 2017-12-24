@@ -428,8 +428,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 Rectangle CloseButtonRectangle = new Rectangle(tmpRectangle.X + tmpRectangle.Width - 32, tmpRectangle.Y, 32, 32);
 
                 //Change FontRectangle position based on Icon
-                MaterialTabPage tmpTabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
-                if (tmpTabPage.icon != null) textModifier += iconSize;
+                TabPage tmpTabPage = (TabPage)_basedTabControl.TabPages[i];
 
                 //Font Rectangle
                 Rectangle fontRect = new Rectangle(tmpRectangle.X + textModifier, tmpRectangle.Y,
@@ -601,6 +600,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 g.DrawString(">", moveButtonFont, new SolidBrush(_TextColor), rightMoveButton, moveStringFormat);
             }
 
+            DrawAddTab(g);
         }
 
         #endregion
@@ -889,6 +889,34 @@ namespace IndieGoat.MaterialFramework.Controls
 
         #endregion
 
+        #region Add Button
+
+        private Rectangle GetAddTabRectangle()
+        {
+            //Initialize a private LastTabRect and CloseButtonRect
+            Rectangle closeButtonRect;
+            Rectangle LastTabRect = _TabRects[_basedTabControl.TabIndex];
+
+            //Set the CloseButtonRect based on the LastTabRect
+            closeButtonRect = new Rectangle(LastTabRect.X + LastTabRect.Width + 2,
+                LastTabRect.Y, this.Height, this.Height);
+
+            //returns the CloseButtonRect
+            return closeButtonRect;
+        }
+
+        /// <summary>
+        /// Draw the close button 
+        /// </summary>
+        /// <param name="g">Graphics used to draw the close button</param>
+        private void DrawAddTab(Graphics g)
+        {
+            //Draw the background of the rectangle
+            g.FillRectangle(new SolidBrush(Color.Black), GetAddTabRectangle());
+        }
+
+        #endregion
+
         #region GetTabRect
 
         /// <summary>
@@ -899,7 +927,7 @@ namespace IndieGoat.MaterialFramework.Controls
             Rectangle returnRect = new Rectangle(0, 0, 0, 0);
 
             //For each tab page
-            for (int i = 0; i < _basedTabControl.TabPages.Count; i++)
+            for (int i = 0; i > _basedTabControl.TabPages.Count; i++)
             {
                 if (_basedTabControl.TabPages[i] == tab)
                 {
