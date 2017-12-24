@@ -53,6 +53,10 @@ namespace IndieGoat.MaterialFramework.Controls
         Color _borderSelectedColor = Color.FromArgb(0, 135, 250);
         Color _bottomBorderColor = Color.FromArgb(204, 204, 204);
 
+        //Private vars for the BaseControl
+        Font _baseControl_Font = new Font("Segoe UI", 11);
+        string _baseControl_String = "MaterialTextBox";
+
         #endregion
 
         #region Events
@@ -83,11 +87,25 @@ namespace IndieGoat.MaterialFramework.Controls
         {
             get
             {
-                return baseControl.Text;
+                return _baseControl_String;
             }
             set
             {
-                baseControl.Text = value;
+                _baseControl_String = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
+        public override Font Font
+        {
+            get
+            {
+                return _baseControl_Font;
+            }
+            set
+            {
+                _baseControl_Font = value;
                 this.Invalidate();
             }
         }
@@ -183,7 +201,11 @@ namespace IndieGoat.MaterialFramework.Controls
             //Set the base control default settings
             baseControl.BackColor = Color.FromArgb(238, 238, 238);
             baseControl.UseSystemPasswordChar = false;
-            baseControl.Font = new Font("Segoe UI", 10.0f);
+            baseControl.Font = _baseControl_Font;
+            baseControl.Text = _baseControl_String;
+
+            //Basecontrol events
+            baseControl.TextChanged += BaseControl_TextChanged;
 
             //Setting the support transparent styles to true
             this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
@@ -206,9 +228,13 @@ namespace IndieGoat.MaterialFramework.Controls
         /// and the control.
         /// </summary>
         protected override void OnResize(EventArgs e)
-        {
-            //Set the control width and then update the background
-            baseControl.Width = this.Size.Width - 6;
+        { 
+            //Set the BaseControl Width and location and then set the height of the control.
+            baseControl.Location = new Point(4, 1);
+            baseControl.Width = this.Width - 5;
+            this.Height = baseControl.Height + 2;
+
+            //Update the background
             UpdateBackground();
 
             base.OnResize(e);
@@ -225,6 +251,35 @@ namespace IndieGoat.MaterialFramework.Controls
 
             //Invalidate the height of the TextBox
             this.Height = 24;
+        }
+
+        protected override void OnInvalidated(InvalidateEventArgs e)
+        {
+            //Set the BaseControl Width, and location and then set the height of the control.
+            baseControl.Location = new Point(4, 1);
+            baseControl.Width = this.Width - 5;
+            this.Height = baseControl.Height + 2;
+
+            //Setting the font and the string for the base control
+            baseControl.Text = _baseControl_String;
+            baseControl.Font = _baseControl_Font;
+
+            base.OnInvalidated(e);
+        }
+
+        #endregion
+
+        #region Title settings
+
+        /// <summary>
+        /// Changes the private var when the contorl text has changed.
+        /// </summary>
+        /// <param name="sender">Ojbect to trigger the event</param>
+        /// <param name="e">The event args</param>
+        private void BaseControl_TextChanged(object sender, EventArgs e)
+        {
+            //Changes the private var on the base control
+            _baseControl_String = baseControl.Text;
         }
 
         #endregion
