@@ -73,6 +73,10 @@ namespace IndieGoat.MaterialFramework.Controls
         private Color _CloseButtonColor = Color.FromArgb(0, 0, 0);
         private bool _EnableCloseButton = false;
 
+        //AddButtonColor
+        private Color _AddButtonBackColor = Color.FromArgb(55, 57, 84);
+        private Color _AddButtonHoverColor = Color.FromArgb(120, 120, 120);
+
         //All bools for customization
         private bool _ShowTabTopBarColor = true;
 
@@ -106,6 +110,7 @@ namespace IndieGoat.MaterialFramework.Controls
 
         //Custom event for triggering when the tab is dragged outside of bounds
         public event EventHandler<GenericTabDragOutArgs> TabDragOut;
+        public event EventHandler<GenericNewTabButtonClickArgs> NewTabButtonClick;
 
         #endregion
 
@@ -329,6 +334,38 @@ namespace IndieGoat.MaterialFramework.Controls
 
         #endregion
 
+        #region AddButton
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("AddButton")]
+        public Color AddButtonBackColor
+        {
+            get
+            {
+                return _AddButtonBackColor;
+            }
+            set
+            {
+                _AddButtonBackColor = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("AddButton")]
+        public Color AddButtonHoverColor
+        {
+            get
+            {
+                return _AddButtonHoverColor;
+            }
+            set
+            {
+                _AddButtonHoverColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion
+
         public int ScrollInt
         {
             get { return scrollInt; }
@@ -351,7 +388,7 @@ namespace IndieGoat.MaterialFramework.Controls
         public GenericTabHeader()
         {
             // MaterialTabHeader //
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
             this.DoubleBuffered = true;
             this.AllowDrop = true;
             this.Height = 32;
@@ -742,18 +779,22 @@ namespace IndieGoat.MaterialFramework.Controls
 
         #region Mouse Events / Drag'n'Drop Mouse Events
 
-        //Saved hover index
-        int hoverOverIndex = 0;
+        //Design timer to invalidate the control
+        Timer designTimer = new Timer();
 
         /// <summary>
-        /// Detects if we need to redraw or not.
-        /// 
-        protected override void OnMouseMove(MouseEventArgs e)
+        /// Start the desgin timer when the mouse has enter the control
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnMouseEnter(EventArgs e)
         {
-            base.OnMouseMove(e);
+            base.OnMouseEnter(e);
 
-            //Invalidate the control
-            this.Invalidate();
+            //Set the design timer tick event
+            designTimer.Tick += ((obj, args) =>
+            {
+                this.Invalidate();
+            }); designTimer.Start();
         }
 
         /// <summary>
@@ -765,6 +806,9 @@ namespace IndieGoat.MaterialFramework.Controls
 
             //Invalidate the control
             this.Invalidate();
+
+            //Stop the design timer
+            designTimer.Stop();
         }
 
         /// <summary>
@@ -836,8 +880,23 @@ namespace IndieGoat.MaterialFramework.Controls
                 }
             }
 
+            //Checks if the AddTabButton has been clicked
+            if (GetAddTabRectangle().Contains(PointToClient(MousePosition)))
+            {
+                //New tab page that is being added
+                TabPage tabPage = new TabPage();
+
+                //Add the tab page
+                _basedTabControl.TabPages.Add(tabPage);
+                _basedTabControl.SelectTab(tabPage);
+
+                //Trigger the event
+                NewTabButtonClick?.Invoke(this, new GenericNewTabButtonClickArgs { NewTabpage = tabPage });
+
+            }
+
             //Select tab if not selected
-            if (_basedTabControl.SelectedTab != tp) _basedTabControl.SelectedTab = tp;
+            if (tp != null) { if (_basedTabControl.SelectedTab != tp) _basedTabControl.SelectedTab = tp; }
 
             //Drag Drop Event
             if (tp != null)
@@ -891,28 +950,55 @@ namespace IndieGoat.MaterialFramework.Controls
 
         #region Add Button
 
+        /// <summary>
+        /// Calculates where the AddTab should be
+        /// </summary>
+        /// <returns>the rectangle for the AddTabRectangle</returns>
         private Rectangle GetAddTabRectangle()
         {
             //Initialize a private LastTabRect and CloseButtonRect
-            Rectangle closeButtonRect;
+            Rectangle AddTabRect;
             Rectangle LastTabRect = _TabRects[_basedTabControl.TabIndex];
 
             //Set the CloseButtonRect based on the LastTabRect
-            closeButtonRect = new Rectangle(LastTabRect.X + LastTabRect.Width + 2,
+            AddTabRect = new Rectangle(LastTabRect.X + LastTabRect.Width,
                 LastTabRect.Y, this.Height, this.Height);
 
             //returns the CloseButtonRect
-            return closeButtonRect;
+            return AddTabRect;
+        }
+
+        /// <summary>
+        /// Draw the string of the DrawAddButton
+        /// </summary>
+        /// <param name="g">Graphics used to draw the text for the AddButton</param>
+        private void DrawAddText(Graphics g)
+        {
+            //Initializing the StringFormat for drawing the string
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.LineAlignment = StringAlignment.Center;
+
+            //Initializing the Font of the string
+            Font buttonFont = new Font("Segoe UI", 18);
+
+            g.DrawString("+", buttonFont, new SolidBrush(_TextColor), GetAddTabRectangle(), stringFormat);
         }
 
         /// <summary>
         /// Draw the close button 
         /// </summary>
-        /// <param name="g">Graphics used to draw the close button</param>
+        /// <param name="g">Graphics used to draw the add button</param>
         private void DrawAddTab(Graphics g)
         {
             //Draw the background of the rectangle
-            g.FillRectangle(new SolidBrush(Color.Black), GetAddTabRectangle());
+            if (!GetAddTabRectangle().Contains(PointToClient(MousePosition)))
+            {
+                g.FillRectangle(new SolidBrush(_AddButtonBackColor), GetAddTabRectangle());
+            } else { g.FillRectangle(new SolidBrush(_AddButtonHoverColor), GetAddTabRectangle()); }
+
+            //Draw the text of the AddButton
+            DrawAddText(g);
         }
 
         #endregion

@@ -37,6 +37,8 @@
             // 
             // genericTabHeader1
             // 
+            this.genericTabHeader1.AddButtonBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
+            this.genericTabHeader1.AddButtonHoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.genericTabHeader1.AllowDrop = true;
             this.genericTabHeader1.BasedTabControl = this.materialTabControl1;
             this.genericTabHeader1.CloseButtonHoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
@@ -45,7 +47,7 @@
             this.genericTabHeader1.Hover_BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.genericTabHeader1.Hover_FontColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.genericTabHeader1.Hover_TopBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(171)))), ((int)(((byte)(182)))));
-            this.genericTabHeader1.Location = new System.Drawing.Point(56, 77);
+            this.genericTabHeader1.Location = new System.Drawing.Point(59, 169);
             this.genericTabHeader1.Name = "genericTabHeader1";
             this.genericTabHeader1.ScrollInt = 0;
             this.genericTabHeader1.Selected_BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
@@ -53,7 +55,7 @@
             this.genericTabHeader1.Selected_FontColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.genericTabHeader1.Selected_TopBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(132)))), ((int)(((byte)(255)))));
             this.genericTabHeader1.ShowCloseButton = false;
-            this.genericTabHeader1.Size = new System.Drawing.Size(499, 32);
+            this.genericTabHeader1.Size = new System.Drawing.Size(562, 32);
             this.genericTabHeader1.TabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
             this.genericTabHeader1.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.genericTabHeader1.TabIndex = 2;
