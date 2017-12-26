@@ -99,6 +99,9 @@ namespace IndieGoat.MaterialFramework.Controls
         //Scroll Int
         public int scrollInt = 0;
 
+        //Bool to detect if the AddButton is enabled
+        private bool _AddButtonEnabled = false;
+
         //Width of the Rect
         int rect_Width = 230;
 
@@ -378,6 +381,17 @@ namespace IndieGoat.MaterialFramework.Controls
 
         #endregion
 
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("AddButton")]
+        public bool EnableAddButton
+        {
+            get { return _AddButtonEnabled; }
+            set
+            {
+                _AddButtonEnabled = value;
+                this.Invalidate();
+            }
+        }
+
         #endregion
 
         #region Required / Startup
@@ -637,7 +651,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 g.DrawString(">", moveButtonFont, new SolidBrush(_TextColor), rightMoveButton, moveStringFormat);
             }
 
-            DrawAddTab(g);
+            if (EnableAddButton) { DrawAddTab(g); }
         }
 
         #endregion
@@ -845,15 +859,25 @@ namespace IndieGoat.MaterialFramework.Controls
 
                     return;
                 }
-            }
+            }        
 
             //Check if you click the close button
             if (_EnableCloseButton)
             {
                 //Getting the based rectangle
-                Rectangle tp_rect = GetTabRect(tp);
-
-                Console.WriteLine(tp_rect);
+                Rectangle tp_rect = new Rectangle(0, 0, 0, 0);
+                
+                //Get the tab rectangle
+                for (int i = 0; i < _TabRects.Count; i++)
+                {
+                    Console.WriteLine(1);
+                    if (_TabRects[i].Contains(PointToClient(MousePosition)))
+                    {
+                        Console.WriteLine(1);
+                        tp_rect = _TabRects[i];
+                        break;
+                    }
+                }
 
                 //Initializing the CloseButton Rectangle
                 Rectangle CloseButtonRectangle = new Rectangle(tp_rect.X + tp_rect.Width - 32, tp_rect.Y, 32, 32);
@@ -863,6 +887,8 @@ namespace IndieGoat.MaterialFramework.Controls
                 {
                     //Dispose of tab page
                     _basedTabControl.TabPages.Remove(tp);
+
+                    Console.WriteLine(tp.Text);
 
                     //Remove all of the controls from the tab page
                     foreach (Control control in tp.Controls)
@@ -880,19 +906,23 @@ namespace IndieGoat.MaterialFramework.Controls
                 }
             }
 
-            //Checks if the AddTabButton has been clicked
-            if (GetAddTabRectangle().Contains(PointToClient(MousePosition)))
+            //Add Button
+            if (EnableAddButton)
             {
-                //New tab page that is being added
-                TabPage tabPage = new TabPage();
+                //Checks if the AddTabButton has been clicked
+                if (GetAddTabRectangle().Contains(PointToClient(MousePosition)))
+                {
+                    //New tab page that is being added
+                    TabPage tabPage = new TabPage();
 
-                //Add the tab page
-                _basedTabControl.TabPages.Add(tabPage);
-                _basedTabControl.SelectTab(tabPage);
+                    //Add the tab page
+                    _basedTabControl.TabPages.Add(tabPage);
+                    _basedTabControl.SelectTab(tabPage);
 
-                //Trigger the event
-                NewTabButtonClick?.Invoke(this, new GenericNewTabButtonClickArgs { NewTabpage = tabPage });
+                    //Trigger the event
+                    NewTabButtonClick?.Invoke(this, new GenericNewTabButtonClickArgs { NewTabpage = tabPage });
 
+                }
             }
 
             //Select tab if not selected
@@ -958,7 +988,7 @@ namespace IndieGoat.MaterialFramework.Controls
         {
             //Initialize a private LastTabRect and CloseButtonRect
             Rectangle AddTabRect;
-            Rectangle LastTabRect = _TabRects[_basedTabControl.TabIndex];
+            Rectangle LastTabRect = _TabRects[_basedTabControl.TabPages.Count - 1];
 
             //Set the CloseButtonRect based on the LastTabRect
             AddTabRect = new Rectangle(LastTabRect.X + LastTabRect.Width,
