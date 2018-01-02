@@ -114,7 +114,7 @@ namespace IndieGoat.MaterialFramework.Controls
 
         //Custom event for triggering when the tab is dragged outside of bounds
         public event EventHandler<TabDragOutArgs> TabDragOut;
-        public event EventHandler<GenericNewTabButtonClickArgs> NewTabButtonClick;
+        public event EventHandler<NewTabButtonClickedArgs> NewTabButtonClick;
 
         #endregion
 
@@ -935,14 +935,14 @@ namespace IndieGoat.MaterialFramework.Controls
                 if (GetAddTabRectangle().Contains(PointToClient(MousePosition)))
                 {
                     //New tab page that is being added
-                    TabPage tabPage = new TabPage();
+                    MaterialTabPage tabPage = new MaterialTabPage();
 
                     //Add the tab page
                     _basedTabControl.TabPages.Add(tabPage);
                     _basedTabControl.SelectTab(tabPage);
 
                     //Trigger the event
-                    NewTabButtonClick?.Invoke(this, new GenericNewTabButtonClickArgs { NewTabpage = tabPage });
+                    NewTabButtonClick?.Invoke(this, new NewTabButtonClickedArgs { NewTabpage = tabPage });
 
                 }
             }
