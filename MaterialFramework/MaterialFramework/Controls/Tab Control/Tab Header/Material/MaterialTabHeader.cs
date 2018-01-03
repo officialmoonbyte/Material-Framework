@@ -948,7 +948,10 @@ namespace IndieGoat.MaterialFramework.Controls
             }
 
             //Select tab if not selected
-            if (_basedTabControl.SelectedTab != tp) _basedTabControl.SelectedTab = tp;
+            if (_basedTabControl.SelectedTab != tp)
+            {
+                if (tp != null) _basedTabControl.SelectedTab = tp;
+            }
 
             //Drag Drop Event
             if (tp != null)
@@ -1008,16 +1011,24 @@ namespace IndieGoat.MaterialFramework.Controls
         /// <returns>the rectangle for the AddTabRectangle</returns>
         private Rectangle GetAddTabRectangle()
         {
-            //Initialize a private LastTabRect and CloseButtonRect
-            Rectangle AddTabRect;
-            Rectangle LastTabRect = _TabRects[_basedTabControl.TabPages.Count - 1];
 
-            //Set the CloseButtonRect based on the LastTabRect
-            AddTabRect = new Rectangle(LastTabRect.X + LastTabRect.Width,
-                LastTabRect.Y, this.Height, this.Height);
+            try
+            {
+                //Initialize a private LastTabRect and CloseButtonRect
+                Rectangle AddTabRect;
+                Rectangle LastTabRect = _TabRects[_basedTabControl.TabPages.Count - 1];
 
-            //returns the CloseButtonRect
-            return AddTabRect;
+                //Set the CloseButtonRect based on the LastTabRect
+                AddTabRect = new Rectangle(LastTabRect.X + LastTabRect.Width,
+                    LastTabRect.Y, this.Height, this.Height);
+
+                //returns the CloseButtonRect
+                return AddTabRect;
+            }
+            catch
+            {
+                return new Rectangle(0, 0, 0, 0);
+            }
         }
 
         /// <summary>
