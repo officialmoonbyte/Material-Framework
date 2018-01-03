@@ -890,6 +890,19 @@ namespace IndieGoat.MaterialFramework.Controls
         public event EventHandler onMaxButtonClicked;
 
         #endregion
+
+        #region External Mouse Movement
+
+        /// <summary>
+        /// This will be a test, official update will be coming soon.
+        /// </summary>
+        public void MoveFormExternal()
+        {
+            ReleaseCapture();
+            SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+        }
+
+        #endregion
     }
 
     #region CloseButton
