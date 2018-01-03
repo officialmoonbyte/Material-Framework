@@ -950,13 +950,49 @@ namespace IndieGoat.MaterialFramework.Controls
             //Select tab if not selected
             if (_basedTabControl.SelectedTab != tp)
             {
-                if (tp != null) _basedTabControl.SelectedTab = tp;
+                if (tp != null) { _basedTabControl.SelectedTab = tp; } else
+                {
+                    //Move the form when the header of the MaterialTabControl is pressed
+                }
             }
 
             //Drag Drop Event
             if (tp != null)
             {
                 this.DoDragDrop(tp, DragDropEffects.All);
+            }
+        }
+
+        /// <summary>
+        /// Used to move the form when the mouse is down
+        /// </summary>
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            
+            //Detect if the mouse is down
+            if (e.Button == MouseButtons.Left)
+            {
+                //Detect if the mouse is inside a TabRect 
+
+                for (int i = 0; i < _TabRects.Count; i++)
+                {
+                    if (_TabRects[i].Contains(PointToClient(MousePosition))) return;
+                }
+
+                //Check if the mouse is over the AddTabButton
+                if (EnableAddButton)
+                { if (GetAddTabRectangle().Contains(PointToClient(MousePosition))) return; }
+
+                //Try to move the form externally
+                try
+                {
+                    ((MaterialForm)this.Parent).MoveFormExternal();
+                }
+                catch
+                {
+                    Console.WriteLine("[Material Framework] Failed to move form! Please try again.");
+                }
             }
         }
 
