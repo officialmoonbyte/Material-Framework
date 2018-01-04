@@ -53,10 +53,22 @@ namespace IndieGoat.MaterialFramework.Controls
         #region Custom Events
 
         public event EventHandler<TabIconChangeArgs> TabIconChange;
+        public event EventHandler<EventArgs> TabTextChanged;
 
         #endregion
 
         #region Custom Method's
+
+        /// <summary>
+        /// Used to trigger the text changed event.
+        /// </summary>
+        protected override void OnTextChanged(EventArgs e)
+        {
+            base.OnTextChanged(e);
+
+            //Trigger the TextChanged event
+            TabTextChanged?.Invoke(this, new EventArgs());
+        }
 
         /// <summary>
         /// Used to change the private var icon

@@ -144,18 +144,51 @@ namespace IndieGoat.MaterialFramework.Controls
                     //The tab control has been deselected.
                     this.Invalidate();
                 });
-                _basedTabControl.ControlAdded += delegate
+                _basedTabControl.ControlAdded += ((sender, args) =>
                 {
                     //Invalidate the control when a control
                     //has been added
                     this.Invalidate();
-                };
+
+                    //Set the added control as a MaterialTabPage
+                    MaterialTabPage tabPage = (MaterialTabPage)sender;
+
+                    //Set the events of the TabPage
+                    tabPage.TabIconChange += ((ss, aa) =>
+                    {
+                        this.Invalidate();
+                    });
+                    tabPage.TabTextChanged += ((ss, aa) =>
+                    {
+                        this.Invalidate();
+                    });
+
+                }); 
                 _basedTabControl.ControlRemoved += delegate
                 {
                     //Invalidate the control when a control
                     //has been removed.
                     this.Invalidate();
                 };
+
+                if (_basedTabControl.TabPages.Count != 0)
+                {
+                    for(int i = 0; i < _basedTabControl.TabPages.Count; i++)
+                    {
+                        //Getting the tab page
+                        MaterialTabPage tabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
+
+                        //Setting the events of the tab page
+                        tabPage.TabIconChange += ((sender, args) =>
+                        {
+                            this.Invalidate();
+                        });
+                        tabPage.TabTextChanged += ((sender, args) =>
+                        {
+                            this.Invalidate();
+                        });
+                    }
+                }
             }
         }
 
