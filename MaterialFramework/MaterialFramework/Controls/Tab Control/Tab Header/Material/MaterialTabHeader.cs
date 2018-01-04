@@ -153,16 +153,6 @@ namespace IndieGoat.MaterialFramework.Controls
                     //Set the added control as a MaterialTabPage
                     MaterialTabPage tabPage = (MaterialTabPage)sender;
 
-                    //Set the events of the TabPage
-                    tabPage.TabIconChange += ((ss, aa) =>
-                    {
-                        this.Invalidate();
-                    });
-                    tabPage.TabTextChanged += ((ss, aa) =>
-                    {
-                        this.Invalidate();
-                    });
-
                 }); 
                 _basedTabControl.ControlRemoved += delegate
                 {

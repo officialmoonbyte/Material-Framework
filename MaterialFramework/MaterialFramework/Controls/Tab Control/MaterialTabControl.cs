@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Drawing;
+using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Drawing.Design;
 using System.Windows.Forms;
+
 
 #region Legal Stuff
 
@@ -38,11 +43,58 @@ namespace IndieGoat.MaterialFramework.Controls
 {
     #region TabControl
 
+    public class MaterialTabCollection : CollectionEditor
+    {
+        public MaterialTabCollection(Type type)
+            : base(type)
+        {
+
+        }
+
+        protected override bool CanSelectMultipleInstances()
+        {
+            return false;
+        }
+
+
+        protected override Type CreateCollectionItemType()
+        {
+            return typeof(MaterialTabPage);
+        }
+
+        protected override object CreateInstance(Type itemType)
+        {
+            MaterialTabPage tabPage = (MaterialTabPage)itemType.Assembly.CreateInstance(itemType.FullName);
+
+            IDesignerHost host = (IDesignerHost)this.GetService(typeof(IDesignerHost));
+            host.Container.Add(tabPage);
+            //this.Context.Container.Add(tabPage);
+
+            tabPage.Text = tabPage.Name;
+            return tabPage;
+        }
+
+    }
+
     /// <summary>
     /// The tab control used with the TabHeader(s)
     /// </summary>
-    public class MaterialTabControl : System.Windows.Forms.TabControl
+    public class MaterialTabControl : TabControl
     {
+
+        /// <summary>
+        /// A CollectionEditor for new tab pages to be added as a MaterialTabPage
+        /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [EditorAttribute(typeof(MaterialTabCollection), typeof(UITypeEditor))]
+        [MergableProperty(false)]
+        public new TabPageCollection TabPages
+        {
+            get
+            {
+                return base.TabPages;
+            }
+        }
 
         /// <summary>
         /// Initialize the TabControl
@@ -52,6 +104,39 @@ namespace IndieGoat.MaterialFramework.Controls
 
         }
 
+        /// <summary>
+        /// Used to change the new tab page to a custom MaterialTabPage
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnControlAdded(ControlEventArgs e)
+        {
+            base.OnControlAdded(e);
+
+            //A try event to detect if the tab page is a material tab page
+            try
+            {
+                //If failed to convert to a MaterialTabPage, this is a refrence of TabPage
+                MaterialTabPage tabPage = (MaterialTabPage)e.Control;
+            }
+            catch
+            {
+                //Initializing both TabPage and the new MaterialTabPage
+                TabPage tabPage = (TabPage)e.Control;
+                MaterialTabPage newTabPage = new MaterialTabPage();
+
+                //Setting custom vars to the NewTabPage
+                newTabPage.Text = tabPage.Text;
+                newTabPage.BackColor = tabPage.BackColor;
+
+                //Removing the old one and adding the new tab page
+                this.TabPages.Remove(tabPage);
+                this.TabPages.Add(newTabPage);
+            }
+        }
+
+        /// <summary>
+        /// Overrides the designer and only draw's the TabPage
+        /// </summary>
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == 0x1328 && !DesignMode) m.Result = (IntPtr)1;
