@@ -131,6 +131,11 @@ namespace IndieGoat.MaterialFramework.Controls
             }
             set
             {
+                //Remove the events linked to the old TabControl
+                _basedTabControl.Deselected += null;
+                _basedTabControl.ControlAdded += null;
+                _basedTabControl.ControlRemoved += null;
+
                 //Set the BasedTabControl
                 _basedTabControl = value;
 
@@ -140,14 +145,20 @@ namespace IndieGoat.MaterialFramework.Controls
                 // Setting tab control event's //
                 _basedTabControl.Deselected += ((sender, args) =>
                 {
+                    //Invalidate the control when
+                    //The tab control has been deselected.
                     this.Invalidate();
                 });
                 _basedTabControl.ControlAdded += delegate
                 {
+                    //Invalidate the control when a control
+                    //has been added
                     this.Invalidate();
                 };
                 _basedTabControl.ControlRemoved += delegate
                 {
+                    //Invalidate the control when a control
+                    //has been removed.
                     this.Invalidate();
                 };
             }
@@ -675,6 +686,17 @@ namespace IndieGoat.MaterialFramework.Controls
             //Draw the close button
             if (EnableAddButton) { DrawAddTab(g); }
 
+        }
+
+        /// <summary>
+        /// Used to invalidate the control on resize
+        /// </summary>
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            //Invalidate the control
+            this.Invalidate();
         }
 
         #endregion
