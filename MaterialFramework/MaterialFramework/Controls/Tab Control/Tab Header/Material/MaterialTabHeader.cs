@@ -131,11 +131,6 @@ namespace IndieGoat.MaterialFramework.Controls
             }
             set
             {
-                //Remove the events linked to the old TabControl
-                _basedTabControl.Deselected += null;
-                _basedTabControl.ControlAdded += null;
-                _basedTabControl.ControlRemoved += null;
-
                 //Set the BasedTabControl
                 _basedTabControl = value;
 
