@@ -73,10 +73,7 @@
     <Compile Include="Controls\Tab Control\MaterialTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\Tab Control\Tab Header\Generic\GenericTabHeader.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Tab Control\Tab Header\Material\MaterialTabHeader.cs">
+    <Compile Include="Controls\Tab Control\TabHeader.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Events\GenericNewTabButtonClickArgs.cs" />
@@ -86,6 +83,9 @@
     <Compile Include="Events\TabIconChangeArgs.cs" />
     <Compile Include="Events\TrackBarValueChangedArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controls\Tab Control\Tab Header\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

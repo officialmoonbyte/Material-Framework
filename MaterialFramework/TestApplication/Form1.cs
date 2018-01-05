@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IndieGoat.MaterialFramework.Controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +16,11 @@ namespace TestApplication
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void flatButton1_Click(object sender, EventArgs e)
+        {
+            materialTabControl1.TabPages.Add(new MaterialTabPage());
         }
     }
 }

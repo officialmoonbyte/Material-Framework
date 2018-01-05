@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -43,9 +44,9 @@ SOFTWARE.
 namespace IndieGoat.MaterialFramework.Controls
 {
     /// <summary>
-    /// Used with the generic TabPage
+    /// Used with the Material TabPage
     /// </summary>
-    public class GenericTabHeader : UserControl
+    public class TabHeader : UserControl
     {
 
         #region Vars
@@ -71,7 +72,6 @@ namespace IndieGoat.MaterialFramework.Controls
 
         //Close Button Color
         private Color _CloseButtonColor = Color.FromArgb(0, 0, 0);
-        private bool _EnableCloseButton = false;
 
         //AddButtonColor
         private Color _AddButtonBackColor = Color.FromArgb(55, 57, 84);
@@ -79,6 +79,7 @@ namespace IndieGoat.MaterialFramework.Controls
 
         //All bools for customization
         private bool _ShowTabTopBarColor = true;
+        private bool _EnableCloseButton = false;
 
         //Header for the tab and tab indicator height 
         private const int TAB_HEADER_PADDING = 24;
@@ -94,7 +95,7 @@ namespace IndieGoat.MaterialFramework.Controls
         MaterialTabControl _basedTabControl;
 
         //DragDrop predropTab
-        TabPage preDraggedTab;
+        MaterialTabPage preDraggedTab;
 
         //Scroll Int
         public int scrollInt = 0;
@@ -112,8 +113,8 @@ namespace IndieGoat.MaterialFramework.Controls
         #region Event's
 
         //Custom event for triggering when the tab is dragged outside of bounds
-        public event EventHandler<GenericTabDragOutArgs> TabDragOut;
-        public event EventHandler<GenericNewTabButtonClickArgs> NewTabButtonClick;
+        public event EventHandler<TabDragOutArgs> TabDragOut;
+        public event EventHandler<NewTabButtonClickedArgs> NewTabButtonClick;
 
         #endregion
 
@@ -139,16 +140,58 @@ namespace IndieGoat.MaterialFramework.Controls
                 // Setting tab control event's //
                 _basedTabControl.Deselected += ((sender, args) =>
                 {
+                    //Invalidate the control when
+                    //The tab control has been deselected.
                     this.Invalidate();
                 });
-                _basedTabControl.ControlAdded += delegate
+                _basedTabControl.ControlAdded += ((sender, args) =>
                 {
+                    //Invalidate the control when a control
+                    //has been added
                     this.Invalidate();
-                };
+
+                    for (int i = 0; i < _basedTabControl.TabPages.Count; i++)
+                    {
+                        //Getting the tab page
+                        MaterialTabPage tabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
+
+                        //Setting the events of the tab page
+                        tabPage.TabIconChange += ((ss, sss) =>
+                        {
+                            this.Invalidate();
+                        });
+                        tabPage.TabTextChanged += ((ss, sss) =>
+                        {
+                            this.Invalidate();
+                        });
+                    }
+
+                }); 
                 _basedTabControl.ControlRemoved += delegate
                 {
+                    //Invalidate the control when a control
+                    //has been removed.
                     this.Invalidate();
                 };
+
+                if (_basedTabControl.TabPages.Count != 0)
+                {
+                    for(int i = 0; i < _basedTabControl.TabPages.Count; i++)
+                    {
+                        //Getting the tab page
+                        MaterialTabPage tabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
+
+                        //Setting the events of the tab page
+                        tabPage.TabIconChange += ((sender, args) =>
+                        {
+                            this.Invalidate();
+                        });
+                        tabPage.TabTextChanged += ((sender, args) =>
+                        {
+                            this.Invalidate();
+                        });
+                    }
+                }
             }
         }
 
@@ -369,16 +412,6 @@ namespace IndieGoat.MaterialFramework.Controls
 
         #endregion
 
-        public int ScrollInt
-        {
-            get { return scrollInt; }
-            set
-            {
-                scrollInt = value;
-                this.Invalidate();
-            }
-        }
-
         #endregion
 
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("AddButton")]
@@ -392,6 +425,16 @@ namespace IndieGoat.MaterialFramework.Controls
             }
         }
 
+        public int ScrollInt
+        {
+            get { return scrollInt; }
+            set
+            {
+                scrollInt = value;
+                this.Invalidate();
+            }
+        }
+
         #endregion
 
         #region Required / Startup
@@ -399,7 +442,7 @@ namespace IndieGoat.MaterialFramework.Controls
         /// <summary>
         /// Start of the GenericTabHeader initialization process
         /// </summary>
-        public GenericTabHeader()
+        public TabHeader()
         {
             // MaterialTabHeader //
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
@@ -479,7 +522,8 @@ namespace IndieGoat.MaterialFramework.Controls
                 Rectangle CloseButtonRectangle = new Rectangle(tmpRectangle.X + tmpRectangle.Width - 32, tmpRectangle.Y, 32, 32);
 
                 //Change FontRectangle position based on Icon
-                TabPage tmpTabPage = (TabPage)_basedTabControl.TabPages[i];
+                MaterialTabPage tmpTabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
+                if (tmpTabPage.icon != null) textModifier += iconSize;
 
                 //Font Rectangle
                 Rectangle fontRect = new Rectangle(tmpRectangle.X + textModifier, tmpRectangle.Y,
@@ -624,6 +668,25 @@ namespace IndieGoat.MaterialFramework.Controls
                     g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
                 }
 
+                //Draw the Icon
+                if (tmpTabPage.icon != null)
+                {
+                    //Getting the ICON rectangle
+                    Rectangle iconRectangle = new Rectangle(tmpRectangle.X + 5, tmpRectangle.Y + 7,
+                        iconSize, iconSize);
+
+                    Bitmap bitmap = new Bitmap(tmpTabPage.icon, iconSize, iconSize);
+
+                    //Setting all graphics options
+                    g.SmoothingMode = SmoothingMode.HighQuality;
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    g.CompositingQuality = CompositingQuality.HighQuality;
+
+                    //Drawing icon
+                    g.DrawImage(tmpTabPage.icon, iconRectangle);
+                }
+
                 //Add the rectangle to the TabRects array
                 _TabRects.Add(tmpRectangle);
             }
@@ -651,7 +714,20 @@ namespace IndieGoat.MaterialFramework.Controls
                 g.DrawString(">", moveButtonFont, new SolidBrush(_TextColor), rightMoveButton, moveStringFormat);
             }
 
+            //Draw the close button
             if (EnableAddButton) { DrawAddTab(g); }
+
+        }
+
+        /// <summary>
+        /// Used to invalidate the control on resize
+        /// </summary>
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            //Invalidate the control
+            this.Invalidate();
         }
 
         #endregion
@@ -670,7 +746,7 @@ namespace IndieGoat.MaterialFramework.Controls
             Point pt = new Point(drgevent.X, drgevent.Y);
 
             //Get the hover tab from TabPoint
-            TabPage hoverTab = GetTabByPoint(this.PointToClient(pt));
+            MaterialTabPage hoverTab = GetTabByPoint(this.PointToClient(pt));
 
             //Checks if the hover tab is is null
             if (hoverTab != null)
@@ -679,7 +755,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 drgevent.Effect = DragDropEffects.Move;
 
                 //Set the DragTab
-                TabPage dragTab = (TabPage)drgevent.Data.GetData(typeof(TabPage));
+                MaterialTabPage dragTab = (MaterialTabPage)drgevent.Data.GetData(typeof(MaterialTabPage));
 
                 //Setting index for Item Drag and Drop Location
                 int item_drag_index = FindIndex(dragTab);
@@ -707,7 +783,7 @@ namespace IndieGoat.MaterialFramework.Controls
                     _basedTabControl.TabPages.Clear();
 
                     //Adding tab pages to the BasedTabControl
-                    _basedTabControl.TabPages.AddRange((TabPage[])pages.ToArray(typeof(TabPage)));
+                    _basedTabControl.TabPages.AddRange((MaterialTabPage[])pages.ToArray(typeof(MaterialTabPage)));
 
                     //Selecting the DragTab
                     _basedTabControl.SelectedTab = dragTab;
@@ -733,7 +809,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 if (!this.ClientRectangle.Contains(this.PointToClient(MousePosition)) && qcdevent.KeyState != 1)
                 {
                     //Trigger the event
-                    TabDragOut?.Invoke(this, new GenericTabDragOutArgs { DraggedTab = preDraggedTab });
+                    TabDragOut?.Invoke(this, new TabDragOutArgs { DraggedTab = preDraggedTab });
                 }
             }
             catch { }
@@ -744,10 +820,10 @@ namespace IndieGoat.MaterialFramework.Controls
         /// <summary>
         /// Get the TabPage based on the Point of the mouse
         /// </summary>
-        private TabPage GetTabByPoint(Point mousePoint)
+        private MaterialTabPage GetTabByPoint(Point mousePoint)
         {
             //The return value of this method
-            TabPage returnTabPage = null;
+            MaterialTabPage returnTabPage = null;
 
             //For loop for each tab
             for (int i = 0; i < _TabRects.Count(); i++)
@@ -756,7 +832,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 if (_TabRects[i].Contains(mousePoint))
                 {
                     //Set the tab page to the rectangle tab page
-                    returnTabPage = _basedTabControl.TabPages[i];
+                    returnTabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
 
                     //Exit out of the for loop
                     break;
@@ -833,7 +909,7 @@ namespace IndieGoat.MaterialFramework.Controls
             base.OnMouseDown(e);
 
             //Private vars
-            TabPage tp = GetTabByPoint(new Point(e.X, e.Y));
+            MaterialTabPage tp = GetTabByPoint(new Point(e.X, e.Y));
 
             //Handle Left and Right buttons
             if (StartX != 0)
@@ -859,14 +935,13 @@ namespace IndieGoat.MaterialFramework.Controls
 
                     return;
                 }
-            }        
-
+            }
             //Check if you click the close button
             if (_EnableCloseButton)
             {
                 //Getting the based rectangle
                 Rectangle tp_rect = new Rectangle(0, 0, 0, 0);
-                
+
                 //Get the tab rectangle
                 for (int i = 0; i < _TabRects.Count; i++)
                 {
@@ -913,25 +988,64 @@ namespace IndieGoat.MaterialFramework.Controls
                 if (GetAddTabRectangle().Contains(PointToClient(MousePosition)))
                 {
                     //New tab page that is being added
-                    TabPage tabPage = new TabPage();
+                    MaterialTabPage tabPage = new MaterialTabPage();
 
                     //Add the tab page
                     _basedTabControl.TabPages.Add(tabPage);
                     _basedTabControl.SelectTab(tabPage);
 
                     //Trigger the event
-                    NewTabButtonClick?.Invoke(this, new GenericNewTabButtonClickArgs { NewTabpage = tabPage });
+                    NewTabButtonClick?.Invoke(this, new NewTabButtonClickedArgs { NewTabpage = tabPage });
 
                 }
             }
 
             //Select tab if not selected
-            if (tp != null) { if (_basedTabControl.SelectedTab != tp) _basedTabControl.SelectedTab = tp; }
+            if (_basedTabControl.SelectedTab != tp)
+            {
+                if (tp != null) { _basedTabControl.SelectedTab = tp; } else
+                {
+                    //Move the form when the header of the MaterialTabControl is pressed
+                }
+            }
 
             //Drag Drop Event
             if (tp != null)
             {
                 this.DoDragDrop(tp, DragDropEffects.All);
+            }
+        }
+
+        /// <summary>
+        /// Used to move the form when the mouse is down
+        /// </summary>
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            
+            //Detect if the mouse is down
+            if (e.Button == MouseButtons.Left)
+            {
+                //Detect if the mouse is inside a TabRect 
+
+                for (int i = 0; i < _TabRects.Count; i++)
+                {
+                    if (_TabRects[i].Contains(PointToClient(MousePosition))) return;
+                }
+
+                //Check if the mouse is over the AddTabButton
+                if (EnableAddButton)
+                { if (GetAddTabRectangle().Contains(PointToClient(MousePosition))) return; }
+
+                //Try to move the form externally
+                try
+                {
+                    ((MaterialForm)this.Parent).MoveFormExternal();
+                }
+                catch
+                {
+                    Console.WriteLine("[Material Framework] Failed to move form! Please try again.");
+                }
             }
         }
 
@@ -986,16 +1100,24 @@ namespace IndieGoat.MaterialFramework.Controls
         /// <returns>the rectangle for the AddTabRectangle</returns>
         private Rectangle GetAddTabRectangle()
         {
-            //Initialize a private LastTabRect and CloseButtonRect
-            Rectangle AddTabRect;
-            Rectangle LastTabRect = _TabRects[_basedTabControl.TabPages.Count - 1];
 
-            //Set the CloseButtonRect based on the LastTabRect
-            AddTabRect = new Rectangle(LastTabRect.X + LastTabRect.Width,
-                LastTabRect.Y, this.Height, this.Height);
+            try
+            {
+                //Initialize a private LastTabRect and CloseButtonRect
+                Rectangle AddTabRect;
+                Rectangle LastTabRect = _TabRects[_basedTabControl.TabPages.Count - 1];
 
-            //returns the CloseButtonRect
-            return AddTabRect;
+                //Set the CloseButtonRect based on the LastTabRect
+                AddTabRect = new Rectangle(LastTabRect.X + LastTabRect.Width,
+                    LastTabRect.Y, this.Height, this.Height);
+
+                //returns the CloseButtonRect
+                return AddTabRect;
+            }
+            catch
+            {
+                return new Rectangle(0, 0, 0, 0);
+            }
         }
 
         /// <summary>
@@ -1025,7 +1147,8 @@ namespace IndieGoat.MaterialFramework.Controls
             if (!GetAddTabRectangle().Contains(PointToClient(MousePosition)))
             {
                 g.FillRectangle(new SolidBrush(_AddButtonBackColor), GetAddTabRectangle());
-            } else { g.FillRectangle(new SolidBrush(_AddButtonHoverColor), GetAddTabRectangle()); }
+            }
+            else { g.FillRectangle(new SolidBrush(_AddButtonHoverColor), GetAddTabRectangle()); }
 
             //Draw the text of the AddButton
             DrawAddText(g);
@@ -1043,7 +1166,7 @@ namespace IndieGoat.MaterialFramework.Controls
             Rectangle returnRect = new Rectangle(0, 0, 0, 0);
 
             //For each tab page
-            for (int i = 0; i > _basedTabControl.TabPages.Count; i++)
+            for (int i = 0; i < _basedTabControl.TabPages.Count; i++)
             {
                 if (_basedTabControl.TabPages[i] == tab)
                 {
