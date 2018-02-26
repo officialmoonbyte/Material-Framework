@@ -5,6 +5,6 @@ namespace IndieGoat.MaterialFramework.Events
 {
     public class GenericNewTabButtonClickArgs : EventArgs
     {
-        public TabPage NewTabpage { get; set; }
+        public TabPage NewTabpage { get; set; } 
     }
 }
