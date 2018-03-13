@@ -272,6 +272,9 @@ namespace IndieGoat.MaterialFramework.Controls
             stringFormat.LineAlignment = StringAlignment.Center;
             stringFormat.Alignment = StringAlignment.Center;
 
+            //Set antialias on String
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
             //Draw the text over the button
             g.DrawString(_Text, this.Font, new SolidBrush(_TextColor), b, stringFormat);
 

@@ -30,10 +30,11 @@
         {
             this.tabHeader1 = new IndieGoat.MaterialFramework.Controls.TabHeader();
             this.materialTabControl1 = new IndieGoat.MaterialFramework.Controls.MaterialTabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.materialTabPage1 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.materialTabPage2 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.materialComboBox1 = new IndieGoat.MaterialFramework.Controls.MaterialComboBox();
             this.materialTabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -74,16 +75,6 @@
             this.materialTabControl1.Size = new System.Drawing.Size(431, 100);
             this.materialTabControl1.TabIndex = 1;
             // 
-            // tabPage1
-            // 
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(192, 74);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
             // materialTabPage1
             // 
             this.materialTabPage1.BackColor = System.Drawing.Color.Transparent;
@@ -93,6 +84,26 @@
             this.materialTabPage1.TabIndex = 0;
             this.materialTabPage1.Text = "tabPage1";
             this.materialTabPage1.Visible = false;
+            // 
+            // materialTabPage2
+            // 
+            this.materialTabPage2.BackColor = System.Drawing.Color.Transparent;
+            this.materialTabPage2.Location = new System.Drawing.Point(4, 22);
+            this.materialTabPage2.Name = "materialTabPage2";
+            this.materialTabPage2.Size = new System.Drawing.Size(423, 74);
+            this.materialTabPage2.TabIndex = 1;
+            this.materialTabPage2.Text = "tabPage2";
+            this.materialTabPage2.Visible = false;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(192, 74);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // tabPage2
             // 
@@ -104,15 +115,21 @@
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // materialTabPage2
+            // materialComboBox1
             // 
-            this.materialTabPage2.BackColor = System.Drawing.Color.Transparent;
-            this.materialTabPage2.Location = new System.Drawing.Point(4, 22);
-            this.materialTabPage2.Name = "materialTabPage2";
-            this.materialTabPage2.Size = new System.Drawing.Size(192, 74);
-            this.materialTabPage2.TabIndex = 1;
-            this.materialTabPage2.Text = "tabPage2";
-            this.materialTabPage2.Visible = false;
+            this.materialComboBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
+            this.materialComboBox1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.materialComboBox1.ButtonBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(214)))), ((int)(((byte)(214)))));
+            this.materialComboBox1.ButtonColorClicked = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.materialComboBox1.ButtonMouseOverColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
+            this.materialComboBox1.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.materialComboBox1.FontColor = System.Drawing.Color.Black;
+            this.materialComboBox1.ForeColor = System.Drawing.Color.Black;
+            this.materialComboBox1.FormattingEnabled = true;
+            this.materialComboBox1.Location = new System.Drawing.Point(418, 62);
+            this.materialComboBox1.Name = "materialComboBox1";
+            this.materialComboBox1.Size = new System.Drawing.Size(121, 23);
+            this.materialComboBox1.TabIndex = 2;
             // 
             // Form1
             // 
@@ -120,6 +137,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.materialComboBox1);
             this.Controls.Add(this.materialTabControl1);
             this.Controls.Add(this.tabHeader1);
             this.Name = "Form1";
@@ -137,6 +155,7 @@
         private IndieGoat.MaterialFramework.Controls.MaterialTabPage materialTabPage2;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
+        private IndieGoat.MaterialFramework.Controls.MaterialComboBox materialComboBox1;
     }
 }
 
