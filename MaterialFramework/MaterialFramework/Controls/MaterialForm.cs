@@ -75,6 +75,7 @@ namespace IndieGoat.MaterialFramework.Controls
         private bool showCloseButton = true;
         private bool showMaxButton = true;
         private bool showMinButton = true;
+        private bool showTitleLabel = true;
 
         //Title for the form
         private MaterialLabel Lbl_Title = new MaterialLabel();
@@ -404,6 +405,21 @@ namespace IndieGoat.MaterialFramework.Controls
             }
         }
 
+        #region Title
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
+        public bool ShowTitleLabel
+        {
+            get { return showTitleLabel; }
+            set
+            {
+                showTitleLabel = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Resize / Mouse events
@@ -702,15 +718,17 @@ namespace IndieGoat.MaterialFramework.Controls
                 }
 
             }
+            
+            if (showTitleLabel)
+            {
+                /* Lbl_Title */
+                this.Lbl_Title.Anchor = (AnchorStyles.Left | AnchorStyles.Top);
+                this.Lbl_Title.Text = this.Text;
+                this.Lbl_Title.Location = title_Location;
+                this.Lbl_Title.MouseMove += Lbl_Title_MouseMove;
 
-
-            /* Lbl_Title */
-            this.Lbl_Title.Anchor = (AnchorStyles.Left | AnchorStyles.Top);
-            this.Lbl_Title.Text = this.Text;
-            this.Lbl_Title.Location = title_Location;
-            this.Lbl_Title.MouseMove += Lbl_Title_MouseMove;
-
-            this.Controls.Add(Lbl_Title);
+                this.Controls.Add(Lbl_Title);
+            }
 
             /* Icon */
             if (this.ShowIcon == true)
@@ -903,6 +921,7 @@ namespace IndieGoat.MaterialFramework.Controls
         }
 
         #endregion
+
     }
 
     #region CloseButton
