@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabHeader1 = new IndieGoat.MaterialFramework.Controls.TabHeader();
             this.materialTabControl1 = new IndieGoat.MaterialFramework.Controls.MaterialTabControl();
             this.materialTabPage1 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
@@ -140,10 +141,13 @@
             this.Controls.Add(this.materialComboBox1);
             this.Controls.Add(this.materialTabControl1);
             this.Controls.Add(this.tabHeader1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.materialTabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
