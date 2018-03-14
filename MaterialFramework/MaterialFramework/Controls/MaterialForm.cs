@@ -115,9 +115,22 @@ namespace IndieGoat.MaterialFramework.Controls
 
         PictureBoxSizeMode icon_PictureBoxSizeMode = PictureBoxSizeMode.StretchImage;
 
+        bool showicon = true;
+
         #endregion
 
         #region Properties
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
+        public bool Showicon
+        {
+            get { return showicon; }
+            set
+            {
+                showicon = value;
+                this.Invalidate();
+            }
+        }
 
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
         public int HeaderHeight
@@ -731,7 +744,7 @@ namespace IndieGoat.MaterialFramework.Controls
             }
 
             /* Icon */
-            if (this.ShowIcon == true)
+            if (this.showicon == true)
             {
                 this.iCon.Size = icon_Size;
                 this.iCon.Location = icon_Location;

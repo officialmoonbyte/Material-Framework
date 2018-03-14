@@ -143,6 +143,8 @@
             this.Controls.Add(this.tabHeader1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
+            this.Showicon = false;
+            this.ShowTitleLabel = false;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.materialTabControl1.ResumeLayout(false);

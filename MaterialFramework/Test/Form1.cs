@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IndieGoat.MaterialFramework.Controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,7 +11,7 @@ using System.Windows.Forms;
 
 namespace Test
 {
-    public partial class Form1 : IndieGoat.MaterialFramework.Controls.MaterialForm
+    public partial class Form1 : MaterialForm
     {
         public Form1()
         {
