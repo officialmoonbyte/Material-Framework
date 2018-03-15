@@ -1040,7 +1040,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 //Try to move the form externally
                 try
                 {
-                    ((MaterialForm)this.Parent).MoveFormExternal();
+                    ((MaterialForm)this.Parent).MoveFormExternal(true);
                 }
                 catch
                 {

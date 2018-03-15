@@ -514,75 +514,11 @@ namespace IndieGoat.MaterialFramework.Controls
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            //Get the Label and Icon rectangle
-            Rectangle Lbl_Title_Rect = new Rectangle();
-            Rectangle iCon_Rect = iCon.ClientRectangle;
 
-            Lbl_Title_Rect.Location = Lbl_Title_Rect.Location;
-
-            //Check if the button is the LeftMouseButton
+            //Moves the form based on if the mouse button left is holded.
             if (e.Button == MouseButtons.Left)
-            {
-
-                //Get the screen size
-                Screen screen = Screen.FromControl(this);
-                Size screenWorkingSize = screen.WorkingArea.Size;
-
-                //Set the location and size based on the screen
-                if (this.Size == screenWorkingSize)
-                {
-                    if (oldSize != null) this.Size = oldSize;
-                    this.Location = new Point(MousePosition.X, MousePosition.Y);
-                }
-
-                //Set the location and size based on mouse position and old size
-                if (isSnapped) { if (snapOldSize != null) this.Size = snapOldSize; isSnapped = false; }
-
-                ReleaseCapture();
-                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
-
-                //Get cusor position
-                Point cursorPosition = this.PointToClient(Cursor.Position);
-
-                if (_BORDER.Contains(cursorPosition))
-                {
-
-                    Point cursorLocation = Cursor.Position;
-
-                    Point formLocation = this.Location;
-
-                    //Setting the Old Snap size and Location
-                    if (cursorLocation.X == 0)
-                    {
-                        snapOldSize = this.Size;
-
-                        this.Location = new Point(0, 0);
-                        this.Size = new Size(screenWorkingSize.Width / 2, screenWorkingSize.Height);
-
-                        isSnapped = true;
-                    }
-
-                    if (cursorLocation.Y == 0)
-                    {
-                        snapOldSize = this.Size;
-
-                        this.Location = new Point(0, 0);
-                        this.Size = new Size(screenWorkingSize.Width, screenWorkingSize.Height);
-
-                        isSnapped = true;
-                    }
-
-                    if (cursorLocation.X + 1 == screenWorkingSize.Width)
-                    {
-                        snapOldSize = this.Size;
-
-                        this.Location = new Point(screenWorkingSize.Width / 2, 0);
-                        this.Size = new Size(screenWorkingSize.Width / 2, screenWorkingSize.Height);
-
-                        isSnapped = true;
-                    }
-                }
-            }
+            { this.MoveFormExternal(true); }
+            else { this.MoveFormExternal(false); }
 
             base.OnMouseMove(e);
         }
@@ -927,10 +863,77 @@ namespace IndieGoat.MaterialFramework.Controls
         /// <summary>
         /// This will be a test, official update will be coming soon.
         /// </summary>
-        public void MoveFormExternal()
+        public void MoveFormExternal(bool MouseButtonLeft)
         {
-            ReleaseCapture();
-            SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            //Get the Label and Icon rectangle
+            Rectangle Lbl_Title_Rect = new Rectangle();
+            Rectangle iCon_Rect = iCon.ClientRectangle;
+
+            Lbl_Title_Rect.Location = Lbl_Title_Rect.Location;
+
+            //Check if the button is the LeftMouseButton
+            if (MouseButtonLeft)
+            {
+
+                //Get the screen size
+                Screen screen = Screen.FromControl(this);
+                Size screenWorkingSize = screen.WorkingArea.Size;
+
+                //Set the location and size based on the screen
+                if (this.Size == screenWorkingSize)
+                {
+                    if (oldSize != null) this.Size = oldSize;
+                    this.Location = new Point(MousePosition.X, MousePosition.Y);
+                }
+
+                //Set the location and size based on mouse position and old size
+                if (isSnapped) { if (snapOldSize != null) this.Size = snapOldSize; isSnapped = false; }
+
+                ReleaseCapture();
+                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+
+                //Get cusor position
+                Point cursorPosition = this.PointToClient(Cursor.Position);
+
+                if (_BORDER.Contains(cursorPosition))
+                {
+
+                    Point cursorLocation = Cursor.Position;
+
+                    Point formLocation = this.Location;
+
+                    //Setting the Old Snap size and Location
+                    if (cursorLocation.X == 0)
+                    {
+                        snapOldSize = this.Size;
+
+                        this.Location = new Point(0, 0);
+                        this.Size = new Size(screenWorkingSize.Width / 2, screenWorkingSize.Height);
+
+                        isSnapped = true;
+                    }
+
+                    if (cursorLocation.Y == 0)
+                    {
+                        snapOldSize = this.Size;
+
+                        this.Location = new Point(0, 0);
+                        this.Size = new Size(screenWorkingSize.Width, screenWorkingSize.Height);
+
+                        isSnapped = true;
+                    }
+
+                    if (cursorLocation.X + 1 == screenWorkingSize.Width)
+                    {
+                        snapOldSize = this.Size;
+
+                        this.Location = new Point(screenWorkingSize.Width / 2, 0);
+                        this.Size = new Size(screenWorkingSize.Width / 2, screenWorkingSize.Height);
+
+                        isSnapped = true;
+                    }
+                }
+            }
         }
 
         #endregion
