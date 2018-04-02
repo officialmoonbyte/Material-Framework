@@ -259,6 +259,7 @@ namespace IndieGoat.MaterialFramework.Controls
             Graphics g = e.Graphics;
 
             //Drawing back color
+            _BackgroundColor = this.BackColor;
             g.Clear(_BackgroundColor);
 
             //Initializing new Client Rectangle
