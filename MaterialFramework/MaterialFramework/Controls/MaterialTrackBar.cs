@@ -52,6 +52,7 @@ namespace IndieGoat.MaterialFramework.Controls
         private int _MinValue = 0;
         private int _MaxValue = 100;
         private int _Value = 0;
+        private int _opacity = 100;
 
         //Panel vars
         private int _line_pntX = 0;
@@ -112,6 +113,20 @@ namespace IndieGoat.MaterialFramework.Controls
             set
             {
                 _MaxValue = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
+        public int Opacity
+        {
+            get { return _opacity; }
+            set
+            {
+                if (value > 100) _opacity = 100;
+                else if (value < 1) _opacity = 1;
+                else { _opacity = value; }
+
                 this.Invalidate();
             }
         }
@@ -269,12 +284,15 @@ namespace IndieGoat.MaterialFramework.Controls
             //Get the mouse position
             Point mousePosition = Cursor.Position;
 
+            //Get alpha int
+            int alpha = (_opacity * 255) / 100;
+
             //Invalidating the LineRectangle
             lineRectangle = new Rectangle(_line_pntX + _line_gap, _line_pntY, this.Width - (_line_gap * 2), _line_Height);
 
             //Drawing the LineRectangle
-            g.FillRectangle(new SolidBrush(_LineColor), lineRectangle);
-            g.DrawRectangle(new Pen(new SolidBrush(_LineBorderColor)), lineRectangle);
+            g.FillRectangle(new SolidBrush(Color.FromArgb(alpha, _LineColor)), lineRectangle);
+            g.DrawRectangle(new Pen(new SolidBrush(Color.FromArgb(alpha, _LineBorderColor))), lineRectangle);
 
             //Drawing the track.
             DrawTrack(g);
@@ -420,13 +438,16 @@ namespace IndieGoat.MaterialFramework.Controls
             //Set the smoothing mode
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
+            //Get alpha int
+            int alpha = (_opacity * 255) / 100;
+            
             //Fill the rectangle for the completed line
-            g.FillRectangle(new SolidBrush(_CLineColor), completeRectangle);
-            g.DrawRectangle(new Pen(new SolidBrush(_CLineBorderColor)), completeRectangle);
+            g.FillRectangle(new SolidBrush(Color.FromArgb(alpha, _CLineColor)), completeRectangle);
+            g.DrawRectangle(new Pen(new SolidBrush(Color.FromArgb(alpha, _CLineBorderColor))), completeRectangle);
 
             //Fill the eclpise for the completed line
-            g.FillEllipse(new SolidBrush(tmpTickColor), trackRectangle);
-            g.DrawEllipse(new Pen(new SolidBrush(tmpTickBorderColor)), trackRectangle);
+            g.FillEllipse(new SolidBrush(Color.FromArgb(alpha, tmpTickColor)), trackRectangle);
+            g.DrawEllipse(new Pen(new SolidBrush(Color.FromArgb(alpha, tmpTickBorderColor))), trackRectangle);
 
             //Set the smoothing mode back to default
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
