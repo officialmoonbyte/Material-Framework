@@ -57,6 +57,9 @@ namespace IndieGoat.MaterialFramework.Controls
         //Text of the button
         string _Text = "FlatButton";
 
+        //Opacity of the control
+        int _opacity = 100;
+
         #region Color's
 
         Color _BorderColor = Color.FromArgb(238, 238, 238);
@@ -113,6 +116,20 @@ namespace IndieGoat.MaterialFramework.Controls
             set
             {
                 _borderWidth = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
+        public int Opacity
+        {
+            get { return _opacity; }
+            set
+            {
+                if (value > 100) _opacity = 100;
+                else if (value < 1) _opacity = 1;
+                else { _opacity = value; }
+
                 this.Invalidate();
             }
         }
@@ -258,15 +275,19 @@ namespace IndieGoat.MaterialFramework.Controls
             //Invalidating the Graphics from the event args
             Graphics g = e.Graphics;
 
+            //Get alpha int
+            int alpha = (_opacity * 255) / 100;
+
             //Drawing back color
-            _BackgroundColor = this.BackColor;
-            g.Clear(_BackgroundColor);
+            _BackgroundColor = Color.FromArgb(alpha, this.BackColor);
+            if (Parent != null) { g.FillRectangle(new SolidBrush(Parent.BackColor), this.ClientRectangle); }
+            g.FillRectangle(new SolidBrush(_BackgroundColor), this.ClientRectangle);
 
             //Initializing new Client Rectangle
             Rectangle b = new Rectangle(); b = this.ClientRectangle;
 
             //Drawing border
-            ControlPaint.DrawBorder(g, this.ClientRectangle, _BorderColor, ButtonBorderStyle.Solid);
+            ControlPaint.DrawBorder(g, this.ClientRectangle, Color.FromArgb(alpha, _BorderColor), ButtonBorderStyle.Solid);
 
             //Setting font options
             StringFormat stringFormat = new StringFormat();
@@ -277,7 +298,7 @@ namespace IndieGoat.MaterialFramework.Controls
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
             //Draw the text over the button
-            g.DrawString(_Text, this.Font, new SolidBrush(_TextColor), b, stringFormat);
+            g.DrawString(_Text, this.Font, new SolidBrush(Color.FromArgb(alpha, _TextColor)), b, stringFormat);
 
             base.OnPaint(e);
         }

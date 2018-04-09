@@ -22,5 +22,15 @@ namespace Test
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            timer1.Start();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            flatButton1.Opacity++;
+        }
     }
 }
