@@ -57,6 +57,8 @@ namespace IndieGoat.MaterialFramework.Controls
         Font _baseControl_Font = new Font("Segoe UI", 11);
         string _baseControl_String = "MaterialTextBox";
 
+        int _opacity = 100;
+
         #endregion
 
         #region Events
@@ -106,6 +108,20 @@ namespace IndieGoat.MaterialFramework.Controls
             set
             {
                 _baseControl_Font = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
+        public int Opacity
+        {
+            get { return _opacity; }
+            set
+            {
+                if (value > 100) _opacity = 100;
+                else if (value < 1) _opacity = 1;
+                else { _opacity = value; }
+
                 this.Invalidate();
             }
         }
@@ -292,8 +308,14 @@ namespace IndieGoat.MaterialFramework.Controls
         /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
+            //Get alpha int
+            int alpha = (_opacity * 255) / 100;
+
             //Draw the broder of the control
-            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, _borderColor, 1, ButtonBorderStyle.Solid, _borderColor, 1, ButtonBorderStyle.Solid, _borderColor, 1, ButtonBorderStyle.Solid, _bottomBorderColor, 1, ButtonBorderStyle.Solid);
+            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.FromArgb(alpha, _borderColor), 1, 
+                ButtonBorderStyle.Solid, Color.FromArgb(alpha,_borderColor), 1, 
+                ButtonBorderStyle.Solid, Color.FromArgb(alpha, _borderColor), 1, 
+                ButtonBorderStyle.Solid, Color.FromArgb(alpha, _bottomBorderColor), 1, ButtonBorderStyle.Solid);
         }
 
         /// <summary>
@@ -302,8 +324,11 @@ namespace IndieGoat.MaterialFramework.Controls
         /// </summary>
         private void UpdateBackground()
         {
+            //Get alpha int
+            int alpha = (_opacity * 255) / 100;
+
             //Set the back color of the Background
-            this.BackColor = BackColor;
+            this.BackColor = Color.FromArgb(alpha, BackColor);
         }
 
         #endregion

@@ -30,8 +30,8 @@ namespace Test
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            materialTrackBar1.Opacity++;
-            label1.Text = materialTrackBar1.Opacity.ToString();
+            materialTextBox1.Opacity++;
+            label1.Text = materialTextBox1.Opacity.ToString();
         }
     }
 }
