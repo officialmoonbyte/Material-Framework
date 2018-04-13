@@ -115,6 +115,7 @@ namespace IndieGoat.MaterialFramework.Controls
         //Custom event for triggering when the tab is dragged outside of bounds
         public event EventHandler<TabDragOutArgs> TabDragOut;
         public event EventHandler<NewTabButtonClickedArgs> NewTabButtonClick;
+        public event EventHandler<EventArgs> TabDragComplete;
 
         #endregion
 
@@ -733,7 +734,7 @@ namespace IndieGoat.MaterialFramework.Controls
         #endregion
 
         #region Drag'n'Drop
-
+        
         /// <summary>
         /// Occures when there is a Drag'n'Drop event over the control
         /// </summary>
@@ -786,6 +787,9 @@ namespace IndieGoat.MaterialFramework.Controls
 
                     //Selecting the DragTab
                     _basedTabControl.SelectedTab = (MaterialTabPage)dragTab;
+
+                    //Triggers event
+                    TabDragComplete?.Invoke(this, new EventArgs());
                 }
             }
             else
