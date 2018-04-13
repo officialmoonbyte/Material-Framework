@@ -739,6 +739,7 @@ namespace IndieGoat.MaterialFramework.Controls
         /// </summary>
         protected override void OnDragOver(DragEventArgs drgevent)
         {
+
             //Triggers base event
             base.OnDragOver(drgevent);
 
@@ -753,16 +754,14 @@ namespace IndieGoat.MaterialFramework.Controls
             {
                 //Set drag events
                 drgevent.Effect = DragDropEffects.Move;
-
-                //Set the DragTab
-                MaterialTabPage dragTab = (MaterialTabPage)drgevent.Data.GetData(typeof(MaterialTabPage));
+                var dragTab = drgevent.Data.GetData(typeof(MaterialTabPage));
 
                 //Setting index for Item Drag and Drop Location
-                int item_drag_index = FindIndex(dragTab);
+                int item_drag_index = FindIndex((MaterialTabPage)dragTab);
                 int drop_Location_Index = FindIndex(hoverTab);
 
                 //Setting the PreDraggedTab
-                preDraggedTab = dragTab;
+                preDraggedTab = (MaterialTabPage)dragTab;
 
                 //Making sure the index is not equal to the origional index
                 if (item_drag_index != drop_Location_Index)
@@ -777,7 +776,7 @@ namespace IndieGoat.MaterialFramework.Controls
                     }
 
                     //Insert page into the Drop iNDEX
-                    pages.Insert(drop_Location_Index, dragTab);
+                    pages.Insert(drop_Location_Index, (MaterialTabPage)dragTab);
 
                     //Clearing TabPages from the tab control
                     _basedTabControl.TabPages.Clear();
@@ -786,7 +785,7 @@ namespace IndieGoat.MaterialFramework.Controls
                     _basedTabControl.TabPages.AddRange((MaterialTabPage[])pages.ToArray(typeof(MaterialTabPage)));
 
                     //Selecting the DragTab
-                    _basedTabControl.SelectedTab = dragTab;
+                    _basedTabControl.SelectedTab = (MaterialTabPage)dragTab;
                 }
             }
             else
@@ -808,8 +807,12 @@ namespace IndieGoat.MaterialFramework.Controls
                 //If this control does not contain the mouse position, trigger the event
                 if (!this.ClientRectangle.Contains(this.PointToClient(MousePosition)) && qcdevent.KeyState != 1)
                 {
-                    //Trigger the event
-                    TabDragOut?.Invoke(this, new TabDragOutArgs { DraggedTab = preDraggedTab });
+                    //Checks if the tab is in the parent or in a diffrent tab control
+                    if (preDraggedTab.Parent == this.BasedTabControl)
+                    {
+                        //Trigger the event
+                        TabDragOut?.Invoke(this, new TabDragOutArgs { DraggedTab = preDraggedTab });
+                    }
                 }
             }
             catch { }

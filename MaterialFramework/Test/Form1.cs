@@ -20,7 +20,14 @@ namespace Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            tabHeader1.TabDragOut += (obj, args) =>
+            {
+                Console.WriteLine("OUT");
+            };
+            tabHeader2.TabDragOut += (obj, args) =>
+            {
+                Console.WriteLine("OUT");
+            };
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -30,8 +37,12 @@ namespace Test
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            materialTextBox1.Opacity++;
-            label1.Text = materialTextBox1.Opacity.ToString();
+
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            new Form1().Show();
         }
     }
 }
