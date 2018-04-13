@@ -794,6 +794,7 @@ namespace IndieGoat.MaterialFramework.Controls
             }
         }
 
+        [STAThread]
         protected override void WndProc(ref Message m)
         {
             if (sizeAble)
@@ -844,7 +845,11 @@ namespace IndieGoat.MaterialFramework.Controls
                 }
             }
 
-            base.WndProc(ref m);
+            try
+            {
+                base.WndProc(ref m);
+            }
+            catch { }
 
         }
 

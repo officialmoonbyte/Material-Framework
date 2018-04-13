@@ -86,7 +86,7 @@ namespace IndieGoat.MaterialFramework.Controls
         private const int TAB_INDICATOR_HEIGHT = 2;
 
         //Rectangle for all of the tabs
-        private List<Rectangle> _TabRects = new List<Rectangle>();
+        public List<Rectangle> TabRectangles = new List<Rectangle>();
 
         //Set the Previous Selected Index int
         private int _previousSelectedTabIndex;
@@ -473,7 +473,7 @@ namespace IndieGoat.MaterialFramework.Controls
             if (_basedTabControl == null) return;
 
             //Reinvalidating the TabRectangles
-            _TabRects = new List<Rectangle>();
+            TabRectangles = new List<Rectangle>();
 
             //Initializing the StringFormat for drawing the string
             StringFormat stringFormat = new StringFormat();
@@ -688,7 +688,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 }
 
                 //Add the rectangle to the TabRects array
-                _TabRects.Add(tmpRectangle);
+                TabRectangles.Add(tmpRectangle);
             }
 
             //Draw the MoveButtons
@@ -829,10 +829,10 @@ namespace IndieGoat.MaterialFramework.Controls
             MaterialTabPage returnTabPage = null;
 
             //For loop for each tab
-            for (int i = 0; i < _TabRects.Count(); i++)
+            for (int i = 0; i < TabRectangles.Count(); i++)
             {
                 //Checks if the point is located in the rectangle
-                if (_TabRects[i].Contains(mousePoint))
+                if (TabRectangles[i].Contains(mousePoint))
                 {
                     //Set the tab page to the rectangle tab page
                     returnTabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
@@ -946,13 +946,13 @@ namespace IndieGoat.MaterialFramework.Controls
                 Rectangle tp_rect = new Rectangle(0, 0, 0, 0);
 
                 //Get the tab rectangle
-                for (int i = 0; i < _TabRects.Count; i++)
+                for (int i = 0; i < TabRectangles.Count; i++)
                 {
                     Console.WriteLine(1);
-                    if (_TabRects[i].Contains(PointToClient(MousePosition)))
+                    if (TabRectangles[i].Contains(PointToClient(MousePosition)))
                     {
                         Console.WriteLine(1);
-                        tp_rect = _TabRects[i];
+                        tp_rect = TabRectangles[i];
                         break;
                     }
                 }
@@ -1031,9 +1031,9 @@ namespace IndieGoat.MaterialFramework.Controls
             {
                 //Detect if the mouse is inside a TabRect 
 
-                for (int i = 0; i < _TabRects.Count; i++)
+                for (int i = 0; i < TabRectangles.Count; i++)
                 {
-                    if (_TabRects[i].Contains(PointToClient(MousePosition))) return;
+                    if (TabRectangles[i].Contains(PointToClient(MousePosition))) return;
                 }
 
                 //Check if the mouse is over the AddTabButton
@@ -1108,7 +1108,7 @@ namespace IndieGoat.MaterialFramework.Controls
             {
                 //Initialize a private LastTabRect and CloseButtonRect
                 Rectangle AddTabRect;
-                Rectangle LastTabRect = _TabRects[_basedTabControl.TabPages.Count - 1];
+                Rectangle LastTabRect = TabRectangles[_basedTabControl.TabPages.Count - 1];
 
                 //Set the CloseButtonRect based on the LastTabRect
                 AddTabRect = new Rectangle(LastTabRect.X + LastTabRect.Width,
@@ -1173,7 +1173,7 @@ namespace IndieGoat.MaterialFramework.Controls
             {
                 if (_basedTabControl.TabPages[i] == tab)
                 {
-                    returnRect = _TabRects[i];
+                    returnRect = TabRectangles[i];
                 }
             }
 

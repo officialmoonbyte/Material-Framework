@@ -28,6 +28,20 @@ namespace Test
             {
                 Console.WriteLine("OUT");
             };
+            materialTabControl1.ControlRemoved += (obj, args) =>
+            {
+                if (materialTabControl1.TabPages.Count == 0)
+                {
+                    Console.WriteLine("Closing");
+                }
+            };
+            materialTabControl2.ControlRemoved += (obj, args) =>
+            {
+                if (materialTabControl2.TabPages.Count == 0)
+                {
+                    Console.WriteLine("Closing");
+                }
+            };
         }
 
         private void button1_Click(object sender, EventArgs e)
