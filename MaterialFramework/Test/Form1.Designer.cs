@@ -39,19 +39,19 @@
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
             this.tabHeader1 = new IndieGoat.MaterialFramework.Controls.TabHeader();
+            this.materialTabControl2 = new IndieGoat.MaterialFramework.Controls.MaterialTabControl();
+            this.materialTabPage3 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
+            this.materialTabPage4 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
             this.tabHeader2 = new IndieGoat.MaterialFramework.Controls.TabHeader();
             this.materialTabControl1 = new IndieGoat.MaterialFramework.Controls.MaterialTabControl();
-            this.tabPage7 = new System.Windows.Forms.TabPage();
             this.materialTabPage1 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
-            this.tabPage8 = new System.Windows.Forms.TabPage();
             this.materialTabPage2 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
-            this.materialTabControl2 = new IndieGoat.MaterialFramework.Controls.MaterialTabControl();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.tabPage8 = new System.Windows.Forms.TabPage();
             this.tabPage9 = new System.Windows.Forms.TabPage();
-            this.materialTabPage3 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
             this.tabPage10 = new System.Windows.Forms.TabPage();
-            this.materialTabPage4 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
-            this.materialTabControl1.SuspendLayout();
             this.materialTabControl2.SuspendLayout();
+            this.materialTabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabPage1
@@ -155,6 +155,36 @@
             this.tabHeader1.TabIndex = 5;
             this.tabHeader1.TopBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
             // 
+            // materialTabControl2
+            // 
+            this.materialTabControl2.Controls.Add(this.materialTabPage3);
+            this.materialTabControl2.Controls.Add(this.materialTabPage4);
+            this.materialTabControl2.Location = new System.Drawing.Point(442, 351);
+            this.materialTabControl2.Name = "materialTabControl2";
+            this.materialTabControl2.SelectedIndex = 0;
+            this.materialTabControl2.Size = new System.Drawing.Size(200, 100);
+            this.materialTabControl2.TabIndex = 8;
+            // 
+            // materialTabPage3
+            // 
+            this.materialTabPage3.BackColor = System.Drawing.Color.Transparent;
+            this.materialTabPage3.Location = new System.Drawing.Point(4, 22);
+            this.materialTabPage3.Name = "materialTabPage3";
+            this.materialTabPage3.Size = new System.Drawing.Size(192, 74);
+            this.materialTabPage3.TabIndex = 0;
+            this.materialTabPage3.Text = "tabPage9";
+            this.materialTabPage3.Visible = false;
+            // 
+            // materialTabPage4
+            // 
+            this.materialTabPage4.BackColor = System.Drawing.Color.Transparent;
+            this.materialTabPage4.Location = new System.Drawing.Point(4, 22);
+            this.materialTabPage4.Name = "materialTabPage4";
+            this.materialTabPage4.Size = new System.Drawing.Size(192, 74);
+            this.materialTabPage4.TabIndex = 1;
+            this.materialTabPage4.Text = "tabPage10";
+            this.materialTabPage4.Visible = false;
+            // 
             // tabHeader2
             // 
             this.tabHeader2.AddButtonBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(57)))), ((int)(((byte)(84)))));
@@ -168,7 +198,7 @@
             this.tabHeader2.Hover_BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.tabHeader2.Hover_FontColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.tabHeader2.Hover_TopBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(171)))), ((int)(((byte)(182)))));
-            this.tabHeader2.Location = new System.Drawing.Point(50, 215);
+            this.tabHeader2.Location = new System.Drawing.Point(12, 3);
             this.tabHeader2.Name = "tabHeader2";
             this.tabHeader2.ScrollInt = 0;
             this.tabHeader2.Selected_BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
@@ -192,16 +222,6 @@
             this.materialTabControl1.Size = new System.Drawing.Size(200, 100);
             this.materialTabControl1.TabIndex = 7;
             // 
-            // tabPage7
-            // 
-            this.tabPage7.Location = new System.Drawing.Point(4, 22);
-            this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(192, 74);
-            this.tabPage7.TabIndex = 0;
-            this.tabPage7.Text = "tabPage7";
-            this.tabPage7.UseVisualStyleBackColor = true;
-            // 
             // materialTabPage1
             // 
             this.materialTabPage1.BackColor = System.Drawing.Color.Transparent;
@@ -211,16 +231,6 @@
             this.materialTabPage1.TabIndex = 0;
             this.materialTabPage1.Text = "tabPage7";
             this.materialTabPage1.Visible = false;
-            // 
-            // tabPage8
-            // 
-            this.tabPage8.Location = new System.Drawing.Point(4, 22);
-            this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage8.Size = new System.Drawing.Size(192, 74);
-            this.tabPage8.TabIndex = 1;
-            this.tabPage8.Text = "tabPage8";
-            this.tabPage8.UseVisualStyleBackColor = true;
             // 
             // materialTabPage2
             // 
@@ -232,15 +242,25 @@
             this.materialTabPage2.Text = "tabPage8";
             this.materialTabPage2.Visible = false;
             // 
-            // materialTabControl2
+            // tabPage7
             // 
-            this.materialTabControl2.Controls.Add(this.materialTabPage3);
-            this.materialTabControl2.Controls.Add(this.materialTabPage4);
-            this.materialTabControl2.Location = new System.Drawing.Point(442, 351);
-            this.materialTabControl2.Name = "materialTabControl2";
-            this.materialTabControl2.SelectedIndex = 0;
-            this.materialTabControl2.Size = new System.Drawing.Size(200, 100);
-            this.materialTabControl2.TabIndex = 8;
+            this.tabPage7.Location = new System.Drawing.Point(4, 22);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage7.Size = new System.Drawing.Size(192, 74);
+            this.tabPage7.TabIndex = 0;
+            this.tabPage7.Text = "tabPage7";
+            this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // tabPage8
+            // 
+            this.tabPage8.Location = new System.Drawing.Point(4, 22);
+            this.tabPage8.Name = "tabPage8";
+            this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage8.Size = new System.Drawing.Size(192, 74);
+            this.tabPage8.TabIndex = 1;
+            this.tabPage8.Text = "tabPage8";
+            this.tabPage8.UseVisualStyleBackColor = true;
             // 
             // tabPage9
             // 
@@ -252,16 +272,6 @@
             this.tabPage9.Text = "tabPage9";
             this.tabPage9.UseVisualStyleBackColor = true;
             // 
-            // materialTabPage3
-            // 
-            this.materialTabPage3.BackColor = System.Drawing.Color.Transparent;
-            this.materialTabPage3.Location = new System.Drawing.Point(4, 22);
-            this.materialTabPage3.Name = "materialTabPage3";
-            this.materialTabPage3.Size = new System.Drawing.Size(192, 74);
-            this.materialTabPage3.TabIndex = 0;
-            this.materialTabPage3.Text = "tabPage9";
-            this.materialTabPage3.Visible = false;
-            // 
             // tabPage10
             // 
             this.tabPage10.Location = new System.Drawing.Point(4, 22);
@@ -271,16 +281,6 @@
             this.tabPage10.TabIndex = 1;
             this.tabPage10.Text = "tabPage10";
             this.tabPage10.UseVisualStyleBackColor = true;
-            // 
-            // materialTabPage4
-            // 
-            this.materialTabPage4.BackColor = System.Drawing.Color.Transparent;
-            this.materialTabPage4.Location = new System.Drawing.Point(4, 22);
-            this.materialTabPage4.Name = "materialTabPage4";
-            this.materialTabPage4.Size = new System.Drawing.Size(192, 74);
-            this.materialTabPage4.TabIndex = 1;
-            this.materialTabPage4.Text = "tabPage10";
-            this.materialTabPage4.Visible = false;
             // 
             // Form1
             // 
@@ -299,8 +299,8 @@
             this.ShowTitleLabel = false;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.materialTabControl1.ResumeLayout(false);
             this.materialTabControl2.ResumeLayout(false);
+            this.materialTabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

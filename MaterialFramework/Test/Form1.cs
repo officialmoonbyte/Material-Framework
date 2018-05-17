@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -28,20 +29,17 @@ namespace Test
             {
                 Console.WriteLine("OUT");
             };
-            materialTabControl1.ControlRemoved += (obj, args) =>
+          System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Tick += (obj, args) =>
             {
-                if (materialTabControl1.TabPages.Count == 0)
+                Thread thread = new Thread(new ThreadStart(() =>
                 {
-                    Console.WriteLine("Closing");
-                }
+                    Console.WriteLine("Tabcontrol1 : " + materialTabControl1.TabPages.Count);
+                    Console.WriteLine("Tabcontrol2 : " + materialTabControl2.TabPages.Count);
+                    Thread.Sleep(1000);
+                })); thread.Start();
             };
-            materialTabControl2.ControlRemoved += (obj, args) =>
-            {
-                if (materialTabControl2.TabPages.Count == 0)
-                {
-                    Console.WriteLine("Closing");
-                }
-            };
+            timer.Start();
         }
 
         private void button1_Click(object sender, EventArgs e)
