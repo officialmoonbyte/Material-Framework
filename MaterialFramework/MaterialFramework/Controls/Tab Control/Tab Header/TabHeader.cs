@@ -1033,6 +1033,25 @@ namespace IndieGoat.MaterialFramework.Controls
             //Detect if the mouse is down
             if (e.Button == MouseButtons.Left)
             {
+
+                //Getting the based rectangle
+                Rectangle tp_rect = new Rectangle(0, 0, 0, 0);
+
+                //Get the tab rectangle
+                for (int i = 0; i < TabRectangles.Count; i++)
+                {
+                    Console.WriteLine(1);
+                    if (TabRectangles[i].Contains(PointToClient(MousePosition)))
+                    {
+                        Console.WriteLine(1);
+                        tp_rect = TabRectangles[i];
+                        break;
+                    }
+                }
+
+                //Initializing the CloseButton Rectangle
+                Rectangle CloseButtonRectangle = new Rectangle(tp_rect.X + tp_rect.Width - 32, tp_rect.Y, 32, 32);
+
                 //Detect if the mouse is inside a TabRect 
 
                 for (int i = 0; i < TabRectangles.Count; i++)
@@ -1047,7 +1066,10 @@ namespace IndieGoat.MaterialFramework.Controls
                 //Try to move the form externally
                 try
                 {
-                    ((MaterialForm)this.Parent).MoveFormExternal(true);
+                    if (!GetAddTabRectangle().Contains(PointToClient(MousePosition)) || !CloseButtonRectangle.Contains(PointToClient(MousePosition)))
+                    {
+                        ((MaterialForm)this.Parent).MoveFormExternal(true);
+                    }
                 }
                 catch
                 {
