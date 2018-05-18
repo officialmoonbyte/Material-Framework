@@ -81,7 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MaterialFramework\MaterialFramework.csproj">
-      <Project>{9E3042AF-EC22-498E-A57C-4AF516633380}</Project>
+      <Project>{9e3042af-ec22-498e-a57c-4af516633380}</Project>
       <Name>MaterialFramework</Name>
     </ProjectReference>
   </ItemGroup>
