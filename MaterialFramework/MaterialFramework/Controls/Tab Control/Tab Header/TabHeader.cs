@@ -918,6 +918,8 @@ namespace IndieGoat.MaterialFramework.Controls
             //Private vars
             MaterialTabPage tp = GetTabByPoint(new Point(e.X, e.Y));
 
+            isSpaceAvailable = true;
+
             //Handle Left and Right buttons
             if (StartX != 0)
             {
@@ -930,6 +932,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 {
                     //Activate the LeftScrollingMethod
                     ScrollLeft();
+                    isSpaceAvailable = false;
 
                     return;
                 }
@@ -939,6 +942,7 @@ namespace IndieGoat.MaterialFramework.Controls
                 {
                     //Activate the RightScrollingMethod
                     ScrollRight();
+                    isSpaceAvailable = false;
 
                     return;
                 }
@@ -952,10 +956,9 @@ namespace IndieGoat.MaterialFramework.Controls
                 //Get the tab rectangle
                 for (int i = 0; i < TabRectangles.Count; i++)
                 {
-                    Console.WriteLine(1);
                     if (TabRectangles[i].Contains(PointToClient(MousePosition)))
                     {
-                        Console.WriteLine(1);
+                        isSpaceAvailable = false;
                         tp_rect = TabRectangles[i];
                         break;
                     }
@@ -970,11 +973,11 @@ namespace IndieGoat.MaterialFramework.Controls
                     //Dispose of tab page
                     _basedTabControl.TabPages.Remove(tp);
 
-                    Console.WriteLine(tp.Text);
-
                     //Remove all of the controls from the tab page
                     foreach (Control control in tp.Controls)
                     {
+                        isSpaceAvailable = false;
+
                         //Remove and dispose of control
                         tp.Controls.Remove(control);
                         control.Dispose();
@@ -997,6 +1000,8 @@ namespace IndieGoat.MaterialFramework.Controls
                     //New tab page that is being added
                     MaterialTabPage tabPage = new MaterialTabPage();
 
+                    isSpaceAvailable = false;
+
                     //Add the tab page
                     _basedTabControl.TabPages.Add(tabPage);
                     _basedTabControl.SelectTab(tabPage);
@@ -1004,15 +1009,6 @@ namespace IndieGoat.MaterialFramework.Controls
                     //Trigger the event
                     NewTabButtonClick?.Invoke(this, new NewTabButtonClickedArgs { NewTabpage = tabPage });
 
-                }
-            }
-
-            //Select tab if not selected
-            if (_basedTabControl.SelectedTab != tp)
-            {
-                if (tp != null) { _basedTabControl.SelectedTab = tp; } else
-                {
-                    //Move the form when the header of the MaterialTabControl is pressed
                 }
             }
 
@@ -1032,36 +1028,10 @@ namespace IndieGoat.MaterialFramework.Controls
             
             //Detect if the mouse is down
             if (e.Button == MouseButtons.Left)
-            { 
-                //Detect if the mouse is inside a TabRect 
-
-                for (int i = 0; i < TabRectangles.Count; i++)
-                {
-                    if (TabRectangles[i].Contains(PointToClient(MousePosition))) return;
-                }
-
-                //Check if the mouse is over the AddTabButton
-                if (EnableAddButton)
-                { if (GetAddTabRectangle().Contains(PointToClient(MousePosition))) return; }
-
+            {
                 //Try to move the form externally
-                try
-                {
-                    MaterialTabPage tabPoint = GetTabByPoint(PointToClient(MousePosition));
-                    Rectangle tp_rect = TabRectangles[BasedTabControl.TabPages.IndexOf(tabPoint)];
-
-                    //Initializing the CloseButton Rectangle
-                    Rectangle CloseButtonRectangle = new Rectangle(tp_rect.X + tp_rect.Width - 32, tp_rect.Y, 32, 32);
-
-                    if (tabPoint == null && !CloseButtonRectangle.Contains(this.PointToClient(MousePosition)))
-                    {
-                        ((MaterialForm)this.Parent).MoveFormExternal(true);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ((MaterialForm)this.Parent).MoveFormExternal(true);
-                }
+                Console.WriteLine(isSpaceAvailable);
+                if (isSpaceAvailable) { ((MaterialForm)this.Parent).MoveFormExternal(true); }
             }
         }
 
@@ -1171,6 +1141,12 @@ namespace IndieGoat.MaterialFramework.Controls
         }
 
         #endregion
+        bool spa = false;
+        private bool isSpaceAvailable
+        {
+             get { return spa; }
+            set { spa = value; this.Invalidate(); }
+        }
 
         #region GetTabRect
 
