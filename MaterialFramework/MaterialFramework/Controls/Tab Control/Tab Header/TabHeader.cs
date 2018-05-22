@@ -1058,9 +1058,9 @@ namespace IndieGoat.MaterialFramework.Controls
                         ((MaterialForm)this.Parent).MoveFormExternal(true);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    Console.WriteLine("[Material Framework] Failed to move form! Please try again.");
+                    ((MaterialForm)this.Parent).MoveFormExternal(true);
                 }
             }
         }

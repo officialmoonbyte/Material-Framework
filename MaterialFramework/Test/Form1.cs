@@ -21,25 +21,6 @@ namespace Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            tabHeader1.TabDragOut += (obj, args) =>
-            {
-                Console.WriteLine("OUT");
-            };
-            tabHeader2.TabDragOut += (obj, args) =>
-            {
-                Console.WriteLine("OUT");
-            };
-          System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-            timer.Tick += (obj, args) =>
-            {
-                Thread thread = new Thread(new ThreadStart(() =>
-                {
-                    Console.WriteLine("Tabcontrol1 : " + materialTabControl1.TabPages.Count);
-                    Console.WriteLine("Tabcontrol2 : " + materialTabControl2.TabPages.Count);
-                    Thread.Sleep(1000);
-                })); thread.Start();
-            };
-            timer.Start();
         }
 
         private void button1_Click(object sender, EventArgs e)

@@ -159,7 +159,7 @@
             // 
             this.materialTabControl2.Controls.Add(this.materialTabPage3);
             this.materialTabControl2.Controls.Add(this.materialTabPage4);
-            this.materialTabControl2.Location = new System.Drawing.Point(442, 351);
+            this.materialTabControl2.Location = new System.Drawing.Point(444, 338);
             this.materialTabControl2.Name = "materialTabControl2";
             this.materialTabControl2.SelectedIndex = 0;
             this.materialTabControl2.Size = new System.Drawing.Size(200, 100);
@@ -216,7 +216,7 @@
             // 
             this.materialTabControl1.Controls.Add(this.materialTabPage1);
             this.materialTabControl1.Controls.Add(this.materialTabPage2);
-            this.materialTabControl1.Location = new System.Drawing.Point(84, 351);
+            this.materialTabControl1.Location = new System.Drawing.Point(82, 334);
             this.materialTabControl1.Name = "materialTabControl1";
             this.materialTabControl1.SelectedIndex = 0;
             this.materialTabControl1.Size = new System.Drawing.Size(200, 100);
@@ -287,6 +287,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
+            this.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(255)))));
+            this.BorderSize = 2;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.materialTabControl2);
             this.Controls.Add(this.materialTabControl1);

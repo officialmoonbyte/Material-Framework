@@ -59,6 +59,9 @@ namespace IndieGoat.MaterialFramework.Controls
         [DllImportAttribute("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
+        //Resize object
+        ReSize resize = new ReSize();  
+
         [DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
 
@@ -622,7 +625,6 @@ namespace IndieGoat.MaterialFramework.Controls
                 }
                 else
                 {
-                    Console.WriteLine(1);
                     this.Btn_Max.Anchor = (AnchorStyles.Right | AnchorStyles.Top);
                     if (showCloseButton == false)
                     {
@@ -794,63 +796,35 @@ namespace IndieGoat.MaterialFramework.Controls
             }
         }
 
-        [STAThread]
+        private const int cGrip = 16;      // Grip size
+        private const int cCaption = 32;   // Caption bar height;
         protected override void WndProc(ref Message m)
         {
+
             if (sizeAble)
             {
-                const int wmNcHitTest = 0x84;
-                const int htLeft = 10;
-                const int htRight = 11;
-                const int htBottom = 15;
-                const int htBottomLeft = 16;
-                const int htBottomRight = 17;
+                int x = (int)(m.LParam.ToInt64() & 0xFFFF);               //get x mouse position
+                int y = (int)((m.LParam.ToInt64() & 0xFFFF0000) >> 16);   //get y mouse position  you can gave (x,y) it from "MouseEventArgs" too
+                Point pt = PointToClient(new Point(x, y));
 
-                if (m.Msg == wmNcHitTest)
+                if (m.Msg == 0x84)
                 {
-                    int x = (int)(m.LParam.ToInt64() & 0xFFFF);
-                    int y = (int)((m.LParam.ToInt64() & 0xFFFF0000) >> 16);
-                    Point pt = PointToClient(new Point(x, y));
-                    Size clientSize = ClientSize;
-                    ///allow resize on the lower right corner
-                    if (pt.X >= clientSize.Width - 6 && pt.Y >= clientSize.Height - 6 && clientSize.Height >= 6)
+                    switch (resize.getMosuePosition(pt, this))
                     {
-                        m.Result = (IntPtr)(IsMirrored ? htBottomLeft : htBottomRight);
-                        return;
-                    }
-                    ///allow resize on the lower left corner
-                    if (pt.X <= 16 && pt.Y >= clientSize.Height - 6 && clientSize.Height >= 6)
-                    {
-                        m.Result = (IntPtr)(IsMirrored ? htBottomRight : htBottomLeft);
-                        return;
-                    }
-                    ///allow resize on the bottom border
-                    if (pt.Y >= clientSize.Height - 6 && clientSize.Height >= 6)
-                    {
-                        m.Result = (IntPtr)(htBottom);
-                        return;
-                    }
-                    ///allow resize on the left border
-                    if (pt.X <= 6 && clientSize.Height >= 6)
-                    {
-                        m.Result = (IntPtr)(htLeft);
-                        return;
-                    }
-                    ///allow resize on the right border
-                    if (pt.X >= clientSize.Width - 6 && clientSize.Height >= 6)
-                    {
-                        m.Result = (IntPtr)(htRight);
-                        return;
+                        case "l": m.Result = (IntPtr)10; return;  // the Mouse on Left Form
+                        case "r": m.Result = (IntPtr)11; return;  // the Mouse on Right Form
+                        case "a": m.Result = (IntPtr)12; return;
+                        case "la": m.Result = (IntPtr)13; return;
+                        case "ra": m.Result = (IntPtr)14; return;
+                        case "u": m.Result = (IntPtr)15; return;
+                        case "lu": m.Result = (IntPtr)16; return;
+                        case "ru": m.Result = (IntPtr)17; return; // the Mouse on Right_Under Form
+                        case "": m.Result = pt.Y < 32 /*mouse on title Bar*/ ? (IntPtr)2 : (IntPtr)1; return;
+
                     }
                 }
-            }
-
-            try
-            {
                 base.WndProc(ref m);
             }
-            catch { }
-
         }
 
         #endregion
@@ -1298,5 +1272,61 @@ namespace IndieGoat.MaterialFramework.Controls
 
     }
 
-    #endregion 
+    #endregion
+
+    class ReSize
+    {
+
+        private bool Above, Right, Under, Left, Right_above, Right_under, Left_under, Left_above;
+
+
+        int Thickness = 6;  //Thickness of border  u can cheang it
+        int Area = 8;     //Thickness of Angle border 
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="thickness">set thickness of form border</param>
+        public ReSize(int thickness)
+        {
+            Thickness = thickness;
+        }
+
+        /// <summary>
+        /// Constructor set thickness of form border=1
+        /// </summary>
+        public ReSize()
+        {
+            Thickness = 10;
+        }
+
+        //Get Mouse Position
+        public string getMosuePosition(Point mouse, Form form)
+        {
+            bool above_underArea = mouse.X > Area && mouse.X < form.ClientRectangle.Width - Area; /* |\AngleArea(Left_Above)\(=======above_underArea========)/AngleArea(Right_Above)/| */ //Area===>(==)
+            bool right_left_Area = mouse.Y > Area && mouse.Y < form.ClientRectangle.Height - Area;
+
+            bool _Above = mouse.Y <= Thickness;  //Mouse in Above All Area
+            bool _Right = mouse.X >= form.ClientRectangle.Width - Thickness;
+            bool _Under = mouse.Y >= form.ClientRectangle.Height - Thickness;
+            bool _Left = mouse.X <= Thickness;
+
+            Above = _Above && (above_underArea); if (Above) return "a";   /*Mouse in Above All Area WithOut Angle Area */
+            Right = _Right && (right_left_Area); if (Right) return "r";
+            Under = _Under && (above_underArea); if (Under) return "u";
+            Left = _Left && (right_left_Area); if (Left) return "l";
+
+
+            Right_above =/*Right*/ (_Right && (!right_left_Area)) && /*Above*/ (_Above && (!above_underArea)); if (Right_above) return "ra";     /*if Mouse  Right_above */
+            Right_under =/* Right*/((_Right) && (!right_left_Area)) && /*Under*/(_Under && (!above_underArea)); if (Right_under) return "ru";     //if Mouse  Right_under 
+            Left_under = /*Left*/((_Left) && (!right_left_Area)) && /*Under*/ (_Under && (!above_underArea)); if (Left_under) return "lu";      //if Mouse  Left_under
+            Left_above = /*Left*/((_Left) && (!right_left_Area)) && /*Above*/(_Above && (!above_underArea)); if (Left_above) return "la";      //if Mouse  Left_above
+
+            return "";
+
+        }
+
+
+    }
 }
