@@ -947,6 +947,7 @@ namespace IndieGoat.MaterialFramework.Controls
                     return;
                 }
             }
+
             //Check if you click the close button
             if (_EnableCloseButton)
             {
@@ -1012,8 +1013,10 @@ namespace IndieGoat.MaterialFramework.Controls
                 }
             }
 
-            //Drag Drop Event
-            if (tp != null)
+            if (tp != null && TabRectangles[BasedTabControl.TabPages.IndexOf(tp)].Contains(PointToClient(MousePosition)))
+            {
+                BasedTabControl.SelectedTab = tp;
+            } else if (tp != null)
             {
                 this.DoDragDrop(tp, DragDropEffects.All);
             }
