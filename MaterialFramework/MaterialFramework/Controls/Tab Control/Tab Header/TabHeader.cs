@@ -1013,13 +1013,16 @@ namespace IndieGoat.MaterialFramework.Controls
                 }
             }
 
-            if (tp != null && TabRectangles[BasedTabControl.TabPages.IndexOf(tp)].Contains(PointToClient(MousePosition)))
-            {
-                BasedTabControl.SelectedTab = tp;
-            } else if (tp != null)
+            if (tp != null && BasedTabControl.SelectedTab == tp)
             {
                 this.DoDragDrop(tp, DragDropEffects.All);
             }
+
+            if (tp != null && TabRectangles[BasedTabControl.TabPages.IndexOf(tp)].Contains(PointToClient(MousePosition)))
+            {
+                BasedTabControl.SelectedTab = tp;
+            }
+
         }
 
         /// <summary>
