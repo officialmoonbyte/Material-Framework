@@ -59,9 +59,6 @@ namespace IndieGoat.MaterialFramework.Controls
         [DllImportAttribute("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
-        //Resize object
-        ReSize resize = new ReSize();  
-
         [DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
 
@@ -512,18 +509,15 @@ namespace IndieGoat.MaterialFramework.Controls
         //Snapping vars
         bool isSnapped = false;
         Size snapOldSize = new Size(0, 0);
-        decimal percentMouse = 0;
-        int mousePointY = 0;
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-
-            //Moves the form based on if the mouse button left is holded.
-            if (e.Button == MouseButtons.Left)
-            { this.MoveFormExternal(true); }
-            else { this.MoveFormExternal(false); }
-
             base.OnMouseMove(e);
+            if (e.Button == MouseButtons.Left)
+            {
+                MouseEvent(true);
+            }
+            else { MouseEvent(false); }
         }
 
         #endregion
@@ -538,7 +532,6 @@ namespace IndieGoat.MaterialFramework.Controls
             this.DoubleBuffered = true;
 
             this.BackColor = Color.AliceBlue;
-
         }
 
         //Update's the back color to remove the old broder on resize.
@@ -781,9 +774,9 @@ namespace IndieGoat.MaterialFramework.Controls
         {
             if (e.Button == MouseButtons.Left)
             {
-                ReleaseCapture();
-                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+                MouseEvent(true);
             }
+            else { MouseEvent(false); }
         }
 
         //To move the mouse when the mouse is over the title
@@ -791,40 +784,15 @@ namespace IndieGoat.MaterialFramework.Controls
         {
             if (e.Button == MouseButtons.Left)
             {
-                ReleaseCapture();
-                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
-            }
+                MouseEvent(true);
+            } else { MouseEvent(false); }
         }
 
-        private const int cGrip = 16;      // Grip size
-        private const int cCaption = 32;   // Caption bar height;
-        protected override void WndProc(ref Message m)
+        private void MouseEvent(bool LeftDown)
         {
-
-            if (sizeAble)
-            {
-                int x = (int)(m.LParam.ToInt64() & 0xFFFF);               //get x mouse position
-                int y = (int)((m.LParam.ToInt64() & 0xFFFF0000) >> 16);   //get y mouse position  you can gave (x,y) it from "MouseEventArgs" too
-                Point pt = PointToClient(new Point(x, y));
-
-                if (m.Msg == 0x84)
-                {
-                    switch (resize.getMosuePosition(pt, this))
-                    {
-                        case "l": m.Result = (IntPtr)10; return;  // the Mouse on Left Form
-                        case "r": m.Result = (IntPtr)11; return;  // the Mouse on Right Form
-                        case "a": m.Result = (IntPtr)12; return;
-                        case "la": m.Result = (IntPtr)13; return;
-                        case "ra": m.Result = (IntPtr)14; return;
-                        case "u": m.Result = (IntPtr)15; return;
-                        case "lu": m.Result = (IntPtr)16; return;
-                        case "ru": m.Result = (IntPtr)17; return; // the Mouse on Right_Under Form
-                        case "": m.Result = pt.Y < 32 /*mouse on title Bar*/ ? (IntPtr)2 : (IntPtr)1; return;
-
-                    }
-                }
-                base.WndProc(ref m);
-            }
+            if (LeftDown)
+            { this.MoveFormExternal(true);  }
+            else { this.MoveFormExternal(false); }
         }
 
         #endregion
@@ -838,6 +806,34 @@ namespace IndieGoat.MaterialFramework.Controls
         #endregion
 
         #region External Mouse Movement
+
+        private Screen FindCurrentMonitor()
+        {
+            Screen screen = Screen.FromPoint(new Point(Cursor.Position.X, Cursor.Position.Y));
+            Console.WriteLine("Found screen : " + screen.DeviceName);
+            return screen;
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            Console.WriteLine("YE");
+        }
+
+        #region MousePercent
+
+        Decimal percentMouse = 0;
+        private void CalculateMousePercent()
+        {
+            percentMouse = decimal.Multiply(100, decimal.Divide(this.PointToClient(MousePosition).X, this.Width));
+        }
+        private decimal GetUsableMousePercent()
+        {
+            return decimal.Divide(100, percentMouse);
+            
+        }
+
+        #endregion
 
         /// <summary>
         /// This will be a test, official update will be coming soon.
@@ -853,16 +849,17 @@ namespace IndieGoat.MaterialFramework.Controls
             //Check if the button is the LeftMouseButton
             if (MouseButtonLeft)
             {
-
                 //Get the screen size
-                Screen screen = Screen.FromControl(this);
-                Size screenWorkingSize = screen.WorkingArea.Size;
+                Screen screen = FindCurrentMonitor();
+                Size screenWorkingSize = Screen.FromControl(this).Bounds.Size;
+                CalculateMousePercent();
 
                 //Set the location and size based on the screen
                 if (this.Size == screenWorkingSize)
                 {
                     if (oldSize != null) this.Size = oldSize;
-                    this.Location = new Point(MousePosition.X, MousePosition.Y);
+                    Application.DoEvents();
+                    this.Location = new Point(MousePosition.X - 6, MousePosition.Y - 6);
                 }
 
                 //Set the location and size based on mouse position and old size
@@ -870,6 +867,10 @@ namespace IndieGoat.MaterialFramework.Controls
 
                 ReleaseCapture();
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+
+                //Get the screen size
+                screen = FindCurrentMonitor();
+                screenWorkingSize = Screen.FromControl(this).Bounds.Size;
 
                 //Get cusor position
                 Point cursorPosition = this.PointToClient(Cursor.Position);
@@ -886,7 +887,7 @@ namespace IndieGoat.MaterialFramework.Controls
                     {
                         snapOldSize = this.Size;
 
-                        this.Location = new Point(0, 0);
+                        this.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
                         this.Size = new Size(screenWorkingSize.Width / 2, screenWorkingSize.Height);
 
                         isSnapped = true;
@@ -896,7 +897,7 @@ namespace IndieGoat.MaterialFramework.Controls
                     {
                         snapOldSize = this.Size;
 
-                        this.Location = new Point(0, 0);
+                        this.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
                         this.Size = new Size(screenWorkingSize.Width, screenWorkingSize.Height);
 
                         isSnapped = true;
@@ -914,6 +915,77 @@ namespace IndieGoat.MaterialFramework.Controls
                 }
             }
         }
+
+        #endregion
+
+        #region Resize
+
+        //***********************************************************
+        //This gives us the ability to resize the borderless from any borders instead of just the lower right corner
+        protected override void WndProc(ref Message m)
+        {
+            const int wmNcHitTest = 0x84;
+            const int htLeft = 10;
+            const int htRight = 11;
+            const int htBottom = 15;
+            const int htBottomLeft = 16;
+            const int htBottomRight = 17;
+
+            if (m.Msg == wmNcHitTest)
+            {
+                int x = (int)(m.LParam.ToInt64() & 0xFFFF);
+                int y = (int)((m.LParam.ToInt64() & 0xFFFF0000) >> 16);
+                Point pt = PointToClient(new Point(x, y));
+                Size clientSize = ClientSize;
+                ///allow resize on the lower right corner
+                if (pt.X >= clientSize.Width - 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)
+                {
+                    m.Result = (IntPtr)(IsMirrored ? htBottomLeft : htBottomRight);
+                    return;
+                }
+                ///allow resize on the lower left corner
+                if (pt.X <= 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)
+                {
+                    m.Result = (IntPtr)(IsMirrored ? htBottomRight : htBottomLeft);
+                    return;
+                }
+
+                ///allow resize on the bottom border
+                if (pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)
+                {
+                    m.Result = (IntPtr)(htBottom);
+                    return;
+                }
+                ///allow resize on the left border
+                if (pt.X <= 16 && clientSize.Height >= 16)
+                {
+                    m.Result = (IntPtr)(htLeft);
+                    return;
+                }
+                ///allow resize on the right border
+                if (pt.X >= clientSize.Width - 16 && clientSize.Height >= 16)
+                {
+                    m.Result = (IntPtr)(htRight);
+                    return;
+                }
+            }
+            base.WndProc(ref m);
+        }
+
+        //***********************************************************
+        //***********************************************************
+        //This gives us the drop shadow behind the borderless form
+        private const int CS_DROPSHADOW = 0x20000;
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ClassStyle |= CS_DROPSHADOW;
+                return cp;
+            }
+        }
+        //***********************************************************
 
         #endregion
 
@@ -1273,60 +1345,4 @@ namespace IndieGoat.MaterialFramework.Controls
     }
 
     #endregion
-
-    class ReSize
-    {
-
-        private bool Above, Right, Under, Left, Right_above, Right_under, Left_under, Left_above;
-
-
-        int Thickness = 6;  //Thickness of border  u can cheang it
-        int Area = 8;     //Thickness of Angle border 
-
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="thickness">set thickness of form border</param>
-        public ReSize(int thickness)
-        {
-            Thickness = thickness;
-        }
-
-        /// <summary>
-        /// Constructor set thickness of form border=1
-        /// </summary>
-        public ReSize()
-        {
-            Thickness = 10;
-        }
-
-        //Get Mouse Position
-        public string getMosuePosition(Point mouse, Form form)
-        {
-            bool above_underArea = mouse.X > Area && mouse.X < form.ClientRectangle.Width - Area; /* |\AngleArea(Left_Above)\(=======above_underArea========)/AngleArea(Right_Above)/| */ //Area===>(==)
-            bool right_left_Area = mouse.Y > Area && mouse.Y < form.ClientRectangle.Height - Area;
-
-            bool _Above = mouse.Y <= Thickness;  //Mouse in Above All Area
-            bool _Right = mouse.X >= form.ClientRectangle.Width - Thickness;
-            bool _Under = mouse.Y >= form.ClientRectangle.Height - Thickness;
-            bool _Left = mouse.X <= Thickness;
-
-            Above = _Above && (above_underArea); if (Above) return "a";   /*Mouse in Above All Area WithOut Angle Area */
-            Right = _Right && (right_left_Area); if (Right) return "r";
-            Under = _Under && (above_underArea); if (Under) return "u";
-            Left = _Left && (right_left_Area); if (Left) return "l";
-
-
-            Right_above =/*Right*/ (_Right && (!right_left_Area)) && /*Above*/ (_Above && (!above_underArea)); if (Right_above) return "ra";     /*if Mouse  Right_above */
-            Right_under =/* Right*/((_Right) && (!right_left_Area)) && /*Under*/(_Under && (!above_underArea)); if (Right_under) return "ru";     //if Mouse  Right_under 
-            Left_under = /*Left*/((_Left) && (!right_left_Area)) && /*Under*/ (_Under && (!above_underArea)); if (Left_under) return "lu";      //if Mouse  Left_under
-            Left_above = /*Left*/((_Left) && (!right_left_Area)) && /*Above*/(_Above && (!above_underArea)); if (Left_above) return "la";      //if Mouse  Left_above
-
-            return "";
-
-        }
-
-
-    }
 }
