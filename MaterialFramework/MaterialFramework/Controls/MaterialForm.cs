@@ -810,14 +810,12 @@ namespace IndieGoat.MaterialFramework.Controls
         private Screen FindCurrentMonitor()
         {
             Screen screen = Screen.FromPoint(new Point(Cursor.Position.X, Cursor.Position.Y));
-            Console.WriteLine("Found screen : " + screen.DeviceName);
             return screen;
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
-            Console.WriteLine("YE");
         }
 
         #region MousePercent
@@ -933,10 +931,13 @@ namespace IndieGoat.MaterialFramework.Controls
 
             if (m.Msg == wmNcHitTest)
             {
-                int x = (int)(m.LParam.ToInt64() & 0xFFFF);
-                int y = (int)((m.LParam.ToInt64() & 0xFFFF0000) >> 16);
-                Point pt = PointToClient(new Point(x, y));
+                Point pt = PointToClient(new Point(MousePosition.X, MousePosition.Y));
                 Size clientSize = ClientSize;
+
+                Console.WriteLine(clientSize.Height);
+                Console.WriteLine(clientSize.Width);
+                Console.WriteLine(pt);
+
                 ///allow resize on the lower right corner
                 if (pt.X >= clientSize.Width - 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)
                 {
