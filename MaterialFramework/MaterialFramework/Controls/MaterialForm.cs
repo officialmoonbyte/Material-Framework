@@ -132,6 +132,16 @@ namespace IndieGoat.MaterialFramework.Controls
             }
         }
 
+        new bool ShowIcon
+        {
+            get { return showicon; }
+            set
+            {
+                showicon = value;
+                this.Invalidate();
+            }
+        }
+
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
         public int HeaderHeight
         {
