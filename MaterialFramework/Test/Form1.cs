@@ -1,5 +1,4 @@
-﻿using IndieGoat.MaterialFramework.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Test
 {
-    public partial class Form1 : MaterialForm
+    public partial class Form1 : MaterialFramework.Controls.MaterialForm
     {
         public Form1()
         {
@@ -21,6 +20,11 @@ namespace Test
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void flatButton1_Click(object sender, EventArgs e)
+        {
+           
         }
     }
 }

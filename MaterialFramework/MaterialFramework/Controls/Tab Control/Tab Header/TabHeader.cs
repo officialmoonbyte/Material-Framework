@@ -1,4 +1,5 @@
 ﻿using IndieGoat.MaterialFramework.Events;
+using MaterialFramework.Controls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1037,7 +1038,7 @@ namespace IndieGoat.MaterialFramework.Controls
             {
                 //Try to move the form externally
                 Console.WriteLine(isSpaceAvailable);
-                if (isSpaceAvailable) { ((MaterialForm)this.Parent).MoveFormExternal(true); }
+                //if (isSpaceAvailable) { ((MaterialForm)this.Parent).MoveFormExternal(true); }
             }
         }
 

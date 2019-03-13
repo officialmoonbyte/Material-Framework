@@ -1,991 +1,410 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Reflection;
+using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-#region Legal Stuff
-
-/*
- 
-MIT License
-
-Copyright (c) 2015 - 2016 Vortex Studio (Inactive), 2015 - 2017 Indie Goat (Current Holder)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-    Support us! https://www.patreon.com/vortexstudio
-    our website : https://vortexstudio.us
-
-*/
-
-#endregion
-
-namespace IndieGoat.MaterialFramework.Controls
+namespace MaterialFramework.Controls
 {
-    [DefaultEvent("Load")]
     public class MaterialForm : Form
     {
 
-        #region Events
+        #region Internal Vars
 
-        // Button Events //
-        public event EventHandler MinStateChange;
-        public event EventHandler MaxStateChange;
-        public event EventHandler CloseStateChange;
+        Color headerColor = Color.FromArgb(250, 250, 250);
+        Rectangle HeaderRectangle = new Rectangle(0, 0, 0, 0);
+
+        Color borderColor = Color.FromArgb(0, 120, 220);
+        Color titleColor = Color.FromArgb(12, 12, 12);
+
+        bool _enableCloseButton = true;
+        bool _enableMaxButton = true;
+        bool _enableMinButton = true;
+        bool _formSizable = true;
+
+        int _borderWidth = 2;
+
+        //
+        // FormControl Buttons
+        //
+        CloseButton closebutton;
+        MaxButton maxbutton;
+        MinButton minbutton;
+
+        #endregion Internal Vars
+
+        #region Initialization / OnLoad
+
+        #region Initialization
+
+        public MaterialForm()
+        {
+            //
+            // MaterialFrom
+            //
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.SetStyle(ControlStyles.ResizeRedraw, true);
+            this.Font = new Font("Segoe UI", 12f);
+            this.DoubleBuffered = true;
+        }
+
+        #endregion Initialization
+
+        #region OnLoad
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            int constYValue = 1;
+            int mar = 1;
+
+            //
+            // Close Button
+            //
+            if (_enableCloseButton)
+            {
+                this.closebutton = new CloseButton();
+                this.closebutton.Location = new Point(this.Width - this.closebutton.Width - mar, constYValue);
+                this.closebutton.Anchor = (AnchorStyles.Right | AnchorStyles.Top);
+                this.closebutton.MouseUp += (obj, args) =>
+                {
+                    if (closebutton.ClientRectangle.Contains(closebutton.PointToClient(MousePosition)))
+                    { this.Close(); closebutton.Status = status.MouseOver; }
+                    else { closebutton.Status = status.Default; }
+                };
+                this.Controls.Add(closebutton);
+            }
+            //
+            // Max Button
+            //
+            if (_enableMaxButton)
+            {
+                this.maxbutton = new MaxButton();
+                Point controlLocation = new Point(this.Width - (this.maxbutton.Width * 2) - mar, constYValue);
+                if (!_enableCloseButton) { controlLocation = new Point(this.Width - this.maxbutton.Width - mar, constYValue); }
+                this.maxbutton.Location = controlLocation;
+                this.maxbutton.Anchor = (AnchorStyles.Right | AnchorStyles.Top);
+                this.maxbutton.MouseUp += (obj, args) =>
+                {
+                    if (maxbutton.ClientRectangle.Contains(maxbutton.PointToClient(MousePosition)))
+                    { MaxForm(); maxbutton.Status = status.MouseOver; }
+                    else { maxbutton.Status = status.Default; }
+                };
+                this.Controls.Add(maxbutton);
+            }
+            //
+            // Min Button
+            //
+            if (_enableMinButton)
+            {
+                this.minbutton = new MinButton();
+                Point controlLocation = new Point(this.Width - (this.minbutton.Width * 3) - mar, constYValue);
+                if (!_enableMaxButton && !_enableMinButton)
+                { controlLocation = new Point(this.Width - this.minbutton.Width - mar, constYValue); }
+                if (!_enableCloseButton || !_enableMaxButton)
+                { controlLocation = new Point(this.Width - (this.minbutton.Width * 2) - mar, constYValue); }
+                this.minbutton.Location = controlLocation;
+                this.minbutton.Anchor = (AnchorStyles.Right | AnchorStyles.Top);
+                this.minbutton.MouseUp += (obj, args) =>
+                {
+                    if (minbutton.ClientRectangle.Contains(minbutton.PointToClient(MousePosition)))
+                    { MinForm(); minbutton.Status = status.MouseOver; }
+                    else { minbutton.Status = status.Default; }
+                };
+                this.Controls.Add(minbutton);
+            }
+        }
+
+        #endregion OnLoad
+
+        #endregion Initialization / OnLoad
+
+        #region Button Controls
+
+        public void MaxForm() { Screen screen = GetCurrentScreen();
+            previousSize = this.Size; isSnapped = true;
+            this.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
+            this.Size = new Size(screen.Bounds.Width, screen.Bounds.Height); }
+
+        public void MinForm()
+        {
+
+        }
 
         #endregion
 
-        #region Variables
+        #region Startup Animation
 
-        // Designing Vars //
-        [DllImportAttribute("user32.dll")]
+        [Flags]
+        enum AnimateWindowFlags
+        { AW_HOR_POSITIVE = 0x0000000,
+            AW_HOR_NEGATIVE = 0x00000002,
+            AW_VER_POSITIVE = 0x00000004,
+            AW_VER_NEGATIVE = 0x00000008,
+            AW_CENTER = 0x00000010,
+            AW_HIDE = 0x00010000,
+            AW_ACTIVATE = 0x00020000,
+            AW_SLIDE = 0x00040000,
+            AW_BLEND = 0x00080000 }
+
+        [DllImport("user32.dll")]
+        static extern bool AnimateWindow(IntPtr hWnd, int time, AnimateWindowFlags flags);
+
+        protected override void SetVisibleCore(bool value)
+        {
+            if (!this.IsHandleCreated) { AnimateWindow(this.Handle, 100, AnimateWindowFlags.AW_BLEND); }
+            base.SetVisibleCore(value);
+        }
+
+        protected override void OnShown(EventArgs e)
+        { this.BringToFront(); base.OnShown(e); }
+
+        #endregion
+
+        #region OnPaint
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            HeaderRectangle = new Rectangle(new Point(0, 0), new Size(this.Width, 32));
+
+            this.SuspendLayout();
+
+            Graphics g = e.Graphics;
+
+            //
+            // Form Backcolor
+            //
+            g.FillRectangle(new SolidBrush(this.BackColor), this.ClientRectangle);
+
+            //
+            // Form Header
+            //
+            g.FillRectangle(new SolidBrush(this.headerColor), HeaderRectangle);
+
+            //
+            // Form Border
+            //
+            g.DrawRectangle(new Pen(new SolidBrush(this.borderColor), _borderWidth), this.ClientRectangle);
+
+            //
+            // Form Icon
+            //
+            Icon image = this.Icon;
+            Rectangle iconRectangle = new Rectangle(new Point(6, 6), new Size(20, 20));
+            g.DrawIcon(image, iconRectangle);
+
+            //
+            // Form Title
+            //
+            g.DrawString(this.Text, this.Font, new SolidBrush(titleColor), new Point(28, 6));
+
+            this.ResumeLayout();
+        }
+
+        #endregion OnPaint
+
+        #region Resize
+
+        protected override void WndProc(ref Message m)
+        {
+            const UInt32 WM_NCHITTEST = 0x0084;
+            const UInt32 WM_MOUSEMOVE = 0x0200;
+
+            const UInt32 HTLEFT = 10;
+            const UInt32 HTRIGHT = 11;
+            const UInt32 HTBOTTOMRIGHT = 17;
+            const UInt32 HTBOTTOM = 15;
+            const UInt32 HTBOTTOMLEFT = 16;
+
+            const int RESIZE_HANDLE_SIZE = 10;
+            bool handled = false;
+            if (m.Msg == WM_NCHITTEST || m.Msg == WM_MOUSEMOVE)
+            {
+                Size formSize = this.Size;
+                Point screenPoint = new Point(m.LParam.ToInt32());
+                Point clientPoint = this.PointToClient(screenPoint);
+
+                Dictionary<UInt32, Rectangle> boxes = new Dictionary<UInt32, Rectangle>() {
+            {HTBOTTOMLEFT, new Rectangle(0, formSize.Height - RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE)},
+            {HTBOTTOM, new Rectangle(RESIZE_HANDLE_SIZE, formSize.Height - RESIZE_HANDLE_SIZE, formSize.Width - 2*RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE)},
+            {HTBOTTOMRIGHT, new Rectangle(formSize.Width - RESIZE_HANDLE_SIZE, formSize.Height - RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE)},
+            {HTRIGHT, new Rectangle(formSize.Width - RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, formSize.Height - 2*RESIZE_HANDLE_SIZE)},
+            {HTLEFT, new Rectangle(0, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, formSize.Height - 2*RESIZE_HANDLE_SIZE) }
+        };
+
+                foreach (KeyValuePair<UInt32, Rectangle> hitBox in boxes)
+                {
+                    if (hitBox.Value.Contains(clientPoint))
+                    {
+                        m.Result = (IntPtr)hitBox.Key;
+                        handled = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!handled)
+                base.WndProc(ref m);
+        }
+
+        #endregion Resize
+
+        #region Mouse Controls
+
+        #region Form Movement vars
+
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HT_CAPTION = 0x2;
+        [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
-
-        [DllImportAttribute("user32.dll")]
+        [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
 
-        // Button Objects //
-        public UIClose Btn_Close = new UIClose();
-        public UIMax Btn_Max = new UIMax();
-        public UIMin Btn_Min = new UIMin();
+        #endregion Form Movement / Mouse Down
 
-        //Getting the assembly loader
-        private Assembly assembly = Assembly.GetExecutingAssembly();
+        #region Snapping Vars
 
-        //Private bools
-        private bool sizeAble = true;
-        private bool showCloseButton = true;
-        private bool showMaxButton = true;
-        private bool showMinButton = true;
-        private bool showTitleLabel = true;
-
-        //Title for the form
-        private MaterialLabel Lbl_Title = new MaterialLabel();
-
-        //Icon
-        private PictureBox iCon = new PictureBox();
-
-        //All color options
-        private Color headerColor = Color.White;
-        private Color titleForeColor = Color.Black;
-        private Color OutLineColor = Color.AliceBlue;
-        Color icon_BackColor = Color.Transparent;
-
-        //Rectangle for the border
-        private Rectangle _BORDER = new Rectangle();
-
-        //All ints for advanced settings
-        int close_MinusWidthValue = 49;
-        int close_Position_Y = 1;
-        int max_MinusWidthFalse = 49;
-        int max_MinusWidthElse = 97;
-        int max_Position_Y = 1;
-        int min_state1MinusWidth = 49;
-        int min_state2MinusWidth = 97;
-        int min_state3MinusWidth = 146;
-        int Header_Rect_Height = 29;
-        int min_Position_Y = 1;
-        int header_Rect_X = 0;
-        int header_Rect_Y = 0;
-
-        int OutLineInt = 0;
-
-        Point title_Location = new Point(35, 2);
-        Point icon_Location = new Point(10, 2);
-
-        Size icon_Size = new Size(18, 18);
-
-        PictureBoxSizeMode icon_PictureBoxSizeMode = PictureBoxSizeMode.StretchImage;
-
-        bool showicon = true;
-
-        #endregion
-
-        #region Properties
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public bool Showicon
-        {
-            get { return showicon; }
-            set
-            {
-                showicon = value;
-                this.Invalidate();
-            }
-        }
-
-        new bool ShowIcon
-        {
-            get { return showicon; }
-            set
-            {
-                showicon = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int HeaderHeight
-        {
-            get { return Header_Rect_Height; }
-            set
-            {
-                Header_Rect_Height = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int Header_Rect_Y
-        {
-            get { return header_Rect_Y; }
-            set
-            {
-                header_Rect_Y = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int Header_Rect_X
-        {
-            get { return header_Rect_X; }
-            set
-            {
-                header_Rect_X = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public Color Icon_BackColor
-        {
-            get { return icon_BackColor; }
-            set
-            {
-                icon_BackColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public PictureBoxSizeMode Icon_PictureBoxSizeMode
-        {
-            get { return icon_PictureBoxSizeMode; }
-            set
-            {
-                icon_PictureBoxSizeMode = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public Point IconLocation
-        {
-            get { return icon_Location; }
-            set
-            {
-                icon_Location = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public Size IconSize
-        {
-            get { return icon_Size; }
-            set
-            {
-                icon_Size = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public Point Title_Location
-        {
-            get { return title_Location; }
-            set
-            {
-                title_Location = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int btn_Min_Position_Y
-        {
-            get { return min_Position_Y; }
-            set
-            {
-                min_Position_Y = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int btn_Min_State3MinusWidth
-        {
-            get { return min_state3MinusWidth; }
-            set
-            {
-                min_state3MinusWidth = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int btn_Min_State2MinusWidth
-        {
-            get { return min_state2MinusWidth; }
-            set
-            {
-                min_state2MinusWidth = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int btn_Min_State1_MinusWidth
-        {
-            get { return min_state1MinusWidth; }
-            set
-            {
-                min_state1MinusWidth = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int btn_Max_Position_Y
-        {
-            get { return max_Position_Y; }
-            set
-            {
-                max_Position_Y = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int btn_Max_MinusWidthElse
-        {
-            get { return max_MinusWidthElse; }
-            set
-            {
-                max_MinusWidthElse = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int btn_Max_MinusWidthFalse
-        {
-            get { return max_MinusWidthFalse; }
-            set
-            {
-                max_MinusWidthFalse = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int btn_Close_Position_Y
-        {
-            get { return close_Position_Y; }
-            set
-            {
-                close_Position_Y = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Advanced Settings")]
-        public int btn_Close_MinusWidthValue
-        {
-            get { return close_MinusWidthValue; }
-            set
-            {
-                close_MinusWidthValue = value;
-                this.Close();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public int BorderSize
-        {
-            get { return OutLineInt; }
-            set
-            {
-                OutLineInt = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public bool Sizeable
-        {
-            get { return sizeAble; }
-            set
-            {
-                sizeAble = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public Color HeaderColor
-        {
-            get { return headerColor; }
-            set
-            {
-                headerColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public override Color BackColor
-        {
-            get { return base.BackColor; }
-            set
-            {
-                base.BackColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public Color BorderColor
-        {
-            get { return OutLineColor; }
-            set
-            {
-                this.OutLineColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public Color TitleForeColor
-        {
-            get { return this.Lbl_Title.ForeColor; }
-            set
-            {
-                this.Lbl_Title.ForeColor = value;
-                Lbl_Title.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public bool ShowCloseButton
-        {
-            get { return this.showCloseButton; }
-            set
-            {
-                this.showCloseButton = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public bool ShowMaxButton
-        {
-            get { return this.showMaxButton; }
-            set
-            {
-                this.showMaxButton = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public bool ShowMinButton
-        {
-            get { return showMinButton; }
-            set
-            {
-                showMinButton = value;
-                this.Invalidate();
-            }
-        }
-
-        #region Title
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public bool ShowTitleLabel
-        {
-            get { return showTitleLabel; }
-            set
-            {
-                showTitleLabel = value;
-                this.Invalidate();
-            }
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Resize / Mouse events
-
-        /// <summary>
-        /// Used to set the window back when max is clicked
-        /// </summary>
-        private Size oldSize;
-        private Point oldLocation;
-        private void Btn_Max_Click(object sender, EventArgs e)
-        {
-
-            //Invokingevents
-            onMaxButtonClicked?.Invoke(this, new EventArgs());
-            MaxStateChange?.Invoke(this, new EventArgs());
-
-            //Get the screen of the control
-            Screen screen = Screen.FromControl(this);
-            Size screenWorkingSize = screen.WorkingArea.Size;
-
-            //Get the size of the screen
-            if (this.Size == screenWorkingSize)
-            {
-                //Set the size of the form based on the screen
-                if (oldSize != null) this.Size = oldSize;
-                if (oldLocation != null) this.Location = oldLocation;
-            }
-            else
-            {
-                //Set the size of the form based on the screen
-                oldSize = this.Size;
-                oldLocation = this.Location;
-
-                //Set the location of the screen
-                this.Location = new Point(0, 0);
-                this.Size = screen.WorkingArea.Size;
-            }
-
-            //Invalidate the back color
-            ReinvalidateBackColor();
-        }
-
-        private void Btn_Min_Click(object sender, EventArgs e)
-        {
-            //Invoke button events
-            onMinButtonClicked?.Invoke(this, new EventArgs());
-            MinStateChange?.Invoke(this, new EventArgs());
-
-            //Minimize the form if needed.
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                this.WindowState = FormWindowState.Normal;
-            }
-            else
-            {
-                this.WindowState = FormWindowState.Minimized;
-            }
-        }
-
-        private void Btn_Close_Click(object sender, EventArgs e)
-        {
-
-            //Inovke the button events
-            onCloseButtonClicked?.Invoke(this, new EventArgs());
-            CloseStateChange?.Invoke(this, new EventArgs());
-
-            this.Close();
-        }
-
-        #endregion
-
-        #region Snapping
-
-        //Snapping vars
+        Size previousSize;
         bool isSnapped = false;
-        Size snapOldSize = new Size(0, 0);
+
+        #endregion
+
+        #region OnMouseMove
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
-            if (e.Button == MouseButtons.Left)
-            {
-                MouseEvent(true);
-            }
-            else { MouseEvent(false); }
+            Console.WriteLine("MouseMove");
+            if (e.Button == MouseButtons.Left && HeaderRectangle.Contains(PointToClient(MousePosition)))
+            { CalculateMouseMovement(); }
         }
 
-        #endregion
+        #endregion OnMouseMove
 
-        #region Control Methods
-
-        public MaterialForm()
-        {
-            /* Material Form */
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.DoubleBuffered = true;
-
-            this.BackColor = Color.AliceBlue;
-        }
-
-        //Update's the back color to remove the old broder on resize.
-        protected override void OnResizeEnd(EventArgs e) { base.OnResizeEnd(e); ReinvalidateBackColor(); }
-        private void ReinvalidateBackColor() { this.BackColor = BackColor; }
+        #region CalculateMouseMovement / Snapping form
 
         /// <summary>
-        /// Used to dispose of all of the buttons and icons, and the to a GC
+        /// Calculate the mouse movement on external processes (like TabHeader)
+        /// Also used to organized code
         /// </summary>
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        public void CalculateMouseMovement()
         {
-            iCon.MouseMove += null;
-            this.iCon.Image = null;
+            Screen currentScreen = GetCurrentScreen();
+            Size screenWorkingArea = Screen.FromControl(this).Bounds.Size;
+            Point mouseLocation = this.PointToClient(Cursor.Position);
 
-            Btn_Close.Dispose();
-            this.Btn_Close.Click += null;
-
-            Btn_Min.Dispose();
-            this.Btn_Min.Click += null;
-
-            Btn_Max.Dispose();
-            this.Btn_Max.Click += null;
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            base.OnFormClosing(e);
-        }
-
-        /// <summary>
-        /// Used to dispose of all of the controls on this form
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected override void Dispose(bool disposing)
-        {
-            //Null on the button events
-            onCloseButtonClicked = null;
-            onMinButtonClicked = null;
-            onMaxButtonClicked = null;
-
-            //Getting all of the controls
-            Control.ControlCollection coll = this.Controls;
-
-            //Disposing of all of the controls
-            foreach (Control c in coll)
+            //Detects if the form is snapped
+            if (isSnapped)
             {
-                c.Dispose();
+                if (previousSize != null)
+                {
+                    this.SuspendLayout();
+
+                    decimal mousePercent = CalculateMousePercent();
+                    int mouseX = decimal.ToInt32(decimal.Multiply(this.previousSize.Width, mousePercent));
+
+                    this.Size = previousSize;
+
+                    //Sets the location of the form
+                    this.Location = new Point(MousePosition.X - mouseX, MousePosition.Y - mouseLocation.Y);
+                    isSnapped = false;
+
+                    this.ResumeLayout();
+                }
             }
 
-            base.Dispose(disposing);
+            ReleaseCapture();
+            SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-        }
+            mouseLocation = Cursor.Position;
 
-        /// <summary>
-        /// Designing the form
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnLoad(EventArgs e)
-        {
+            this.SuspendLayout();
 
-            if (!DesignMode)
+            //
+            // Snap to the left
+            //
+            if (mouseLocation.X == currentScreen.Bounds.Y)
             {
-                /* Btn_Close */
-                if (showCloseButton == false)
-                {
-                    this.Btn_Close.Visible = showCloseButton;
-                }
-                else
-                {
-                    this.Btn_Close.Anchor = (AnchorStyles.Right | AnchorStyles.Top);
-                    this.Btn_Close.Location = new Point(this.Width - close_MinusWidthValue, close_Position_Y);
-                    this.Btn_Close.Visible = showCloseButton;
-                    this.Btn_Close.Click += Btn_Close_Click;
-                    this.Btn_Close.X.Click += Btn_Close_Click;
-                    this.Controls.Add(Btn_Close);
-                }
+                if (!isSnapped) previousSize = this.Size;
+                this.Location = new Point(currentScreen.Bounds.X, currentScreen.Bounds.Y);
+                this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height);
 
-                /* Btn Max */
-                if (showMaxButton == false)
-                {
-                    this.Btn_Max.Visible = showMaxButton;
-                }
-                else
-                {
-                    this.Btn_Max.Anchor = (AnchorStyles.Right | AnchorStyles.Top);
-                    if (showCloseButton == false)
-                    {
-                        this.Btn_Max.Location = new Point(this.Width - max_MinusWidthFalse, max_Position_Y);
-                    }
-                    else
-                    {
-                        this.Btn_Max.Location = new Point(this.Width - max_MinusWidthElse, max_Position_Y);
-                    }
-
-                    this.Btn_Max.Visible = showMaxButton;
-                    this.Btn_Max.Click += Btn_Max_Click;
-
-                    this.Controls.Add(Btn_Max);
-                }
-
-                /* Btn Min */
-                if (showMinButton == false)
-                {
-                    this.Btn_Min.Visible = showMinButton;
-                }
-                else
-                {
-                    this.Btn_Min.Anchor = (AnchorStyles.Right | AnchorStyles.Top);
-                    if (showMaxButton == false & showCloseButton == false)
-                    {
-                        this.Btn_Min.Location = new Point(this.Width - min_state1MinusWidth, min_Position_Y);
-                    }
-                    else if (showMaxButton == false || showCloseButton == false)
-                    {
-                        this.Btn_Min.Location = new Point(this.Width - min_state2MinusWidth, min_Position_Y);
-                    }
-                    else
-                    {
-                        this.Btn_Min.Location = new Point(this.Width - min_state3MinusWidth, min_Position_Y);
-                    }
-                    this.Btn_Min.Visible = showMinButton;
-                    this.Btn_Min.Click += Btn_Min_Click;
-                    this.Btn_Min.panel.Click += Btn_Min_Click;
-
-                    this.Controls.Add(Btn_Min);
-                }
-
-            }
-            
-            if (showTitleLabel)
-            {
-                /* Lbl_Title */
-                this.Lbl_Title.Anchor = (AnchorStyles.Left | AnchorStyles.Top);
-                this.Lbl_Title.Text = this.Text;
-                this.Lbl_Title.Location = title_Location;
-                this.Lbl_Title.MouseMove += Lbl_Title_MouseMove;
-
-                this.Controls.Add(Lbl_Title);
+                isSnapped = true;
             }
 
-            /* Icon */
-            if (this.showicon == true)
+            //
+            // Snap to the top
+            //
+            if (mouseLocation.Y == currentScreen.Bounds.Y)
             {
-                this.iCon.Size = icon_Size;
-                this.iCon.Location = icon_Location;
-                this.iCon.SizeMode = icon_PictureBoxSizeMode;
-                iCon.MouseMove += iCon_MouseMove;
-                this.iCon.BackColor = icon_BackColor;
-                this.iCon.Image = this.Icon.ToBitmap();
+                if (!isSnapped) previousSize = this.Size;
+                this.Location = new Point(currentScreen.Bounds.X, currentScreen.Bounds.Y);
+                this.Size = new Size(screenWorkingArea.Width, screenWorkingArea.Height);
 
-                this.Controls.Add(iCon);
+                isSnapped = true;
+            }
+            Console.WriteLine(MousePosition.X);
+            Console.WriteLine(currentScreen.Bounds.Width);
+            //
+            // Snap to the right
+            //
+            if (mouseLocation.X == (currentScreen.Bounds.Width - 1))
+            {
+                if (!isSnapped) previousSize = this.Size;
+                this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height);
+                this.Location = new Point(currentScreen.Bounds.Width / 2, 0);
+
+                isSnapped = true;
             }
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            base.OnLoad(e);
-        }
-
-        #region Design Vars
-        //Design vars used in WndProc to redraw the form
-
-        private const int HTLEFT = 10, HTRIGHT = 11, HTTOP = 12, HTTOPLEFT = 13, HTTOPRIGHT = 14, HTBOTTOM = 15, HTBOTTOMLEFT = 16, HTBOTTOMRIGHT = 17;
-        const int _ = 10;
-
-        public const int WM_NCLBUTTONDOWN = 0xA1;
-        public const int HT_CAPTION = 0x2;
-
-        Rectangle Left
-        {
-            get { return new Rectangle(0, 0, _, this.ClientSize.Height); }
-        }
-        Rectangle Bottom
-        {
-            get { return new Rectangle(0, this.ClientSize.Height - _, this.ClientSize.Width, _); }
-        }
-        Rectangle Right
-        {
-            get { return new Rectangle(this.ClientSize.Width - _, 0, _, this.ClientSize.Height); }
-        }
-
-        Rectangle TopLeft
-        {
-            get { return new Rectangle(0, 0, _, _); }
-        }
-        Rectangle TopRight
-        {
-            get { return new Rectangle(this.ClientSize.Width - _, 0, _, _); }
-        }
-        Rectangle BottomLeft
-        {
-            get { return new Rectangle(0, this.ClientSize.Height - _, _, _); }
-        }
-        Rectangle BottomRight
-        {
-            get { return new Rectangle(this.ClientSize.Width - _, this.ClientSize.Height - _, _, _); }
-        }
-
-        #endregion
-
-        protected override void OnTextChanged(EventArgs e)
-        {
-            try
+            //
+            // Snap to top left cornor
+            //
+            if (mouseLocation.X == currentScreen.Bounds.Y && mouseLocation.Y == currentScreen.Bounds.Y)
             {
-                //Set the title based on the text changed
-                base.OnTextChanged(e);
-                Lbl_Title.Text = this.Text;
-            }
-            catch (Exception ex)
-            {
+                if (!isSnapped) previousSize = this.Size;
+                this.Location = new Point(0, 0);
+                this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height / 2);
 
-            }
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            //Fill the header rectangle with the headerColor
-            e.Graphics.FillRectangle(new SolidBrush(headerColor), header_Rect_X, header_Rect_Y, this.Width, Header_Rect_Height);
-            _BORDER.Width = this.Width;
-
-            if (Header_Rect_Height >= 22)
-            {
-                _BORDER.Height = Header_Rect_Height;
-            }
-            else
-            {
-                _BORDER.Height = 22;
+                isSnapped = true;
             }
 
-            base.OnPaint(e);
-
-            //Draw the border.
-            e.Graphics.DrawRectangle(new Pen(OutLineColor, OutLineInt), this.ClientRectangle);
-        }
-
-        //To move the mouse when the mouse is over the icon
-        private void iCon_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
+            // 
+            // Snap to top right cornor
+            //
+            if (mouseLocation.X == (currentScreen.Bounds.Width - 1) && mouseLocation.Y == currentScreen.Bounds.Y)
             {
-                MouseEvent(true);
+                if (!isSnapped) previousSize = this.Size;
+                this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height / 2);
+                this.Location = new Point(currentScreen.Bounds.Width / 2, 0);
+
+                isSnapped = true;
             }
-            else { MouseEvent(false); }
+
+            // 
+            // Snap to bottom left cornor
+            //
+
+
+            //
+            // Snap to bottom right cornor
+            //
+
+            this.ResumeLayout();
+
         }
 
-        //To move the mouse when the mouse is over the title
-        private void Lbl_Title_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                MouseEvent(true);
-            } else { MouseEvent(false); }
-        }
+        #endregion CalculateMouseMovement
 
-        private void MouseEvent(bool LeftDown)
-        {
-            if (LeftDown)
-            { this.MoveFormExternal(true);  }
-            else { this.MoveFormExternal(false); }
-        }
+        #endregion MouseDown
 
-        #endregion
+        #region Drop Shadow
 
-        #region Events
-
-        public event EventHandler onCloseButtonClicked;
-        public event EventHandler onMinButtonClicked;
-        public event EventHandler onMaxButtonClicked;
-
-        #endregion
-
-        #region External Mouse Movement
-
-        private Screen FindCurrentMonitor()
-        {
-            Screen screen = Screen.FromPoint(new Point(Cursor.Position.X, Cursor.Position.Y));
-            return screen;
-        }
-
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            base.OnMouseUp(e);
-        }
-
-        #region MousePercent
-
-        Decimal percentMouse = 0;
-        private void CalculateMousePercent()
-        {
-            percentMouse = decimal.Multiply(100, decimal.Divide(this.PointToClient(MousePosition).X, this.Width));
-        }
-        private decimal GetUsableMousePercent()
-        {
-            return decimal.Divide(100, percentMouse);
-            
-        }
-
-        #endregion
-
-        /// <summary>
-        /// This will be a test, official update will be coming soon.
-        /// </summary>
-        public void MoveFormExternal(bool MouseButtonLeft)
-        {
-            //Get the Label and Icon rectangle
-            Rectangle Lbl_Title_Rect = new Rectangle();
-            Rectangle iCon_Rect = iCon.ClientRectangle;
-
-            Lbl_Title_Rect.Location = Lbl_Title_Rect.Location;
-
-            //Check if the button is the LeftMouseButton
-            if (MouseButtonLeft)
-            {
-                //Get the screen size
-                Screen screen = FindCurrentMonitor();
-                Size screenWorkingSize = Screen.FromControl(this).Bounds.Size;
-                CalculateMousePercent();
-
-                //Set the location and size based on the screen
-                if (this.Size == screenWorkingSize)
-                {
-                    if (oldSize != null) this.Size = oldSize;
-                    Application.DoEvents();
-                    this.Location = new Point(MousePosition.X - 6, MousePosition.Y - 6);
-                }
-
-                //Set the location and size based on mouse position and old size
-                if (isSnapped) { if (snapOldSize != null) this.Size = snapOldSize; isSnapped = false; }
-
-                ReleaseCapture();
-                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
-
-                //Get the screen size
-                screen = FindCurrentMonitor();
-                screenWorkingSize = Screen.FromControl(this).Bounds.Size;
-
-                //Get cusor position
-                Point cursorPosition = this.PointToClient(Cursor.Position);
-
-                if (_BORDER.Contains(cursorPosition))
-                {
-
-                    Point cursorLocation = Cursor.Position;
-
-                    Point formLocation = this.Location;
-
-                    //Setting the Old Snap size and Location
-                    if (cursorLocation.X == 0)
-                    {
-                        snapOldSize = this.Size;
-
-                        this.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
-                        this.Size = new Size(screenWorkingSize.Width / 2, screenWorkingSize.Height);
-
-                        isSnapped = true;
-                    }
-
-                    if (cursorLocation.Y == 0)
-                    {
-                        snapOldSize = this.Size;
-
-                        this.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
-                        this.Size = new Size(screenWorkingSize.Width, screenWorkingSize.Height);
-
-                        isSnapped = true;
-                    }
-
-                    if (cursorLocation.X + 1 == screenWorkingSize.Width)
-                    {
-                        snapOldSize = this.Size;
-
-                        this.Location = new Point(screenWorkingSize.Width / 2, 0);
-                        this.Size = new Size(screenWorkingSize.Width / 2, screenWorkingSize.Height);
-
-                        isSnapped = true;
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region Resize
-
-        //***********************************************************
-        //This gives us the ability to resize the borderless from any borders instead of just the lower right corner
-        protected override void WndProc(ref Message m)
-        {
-            const int wmNcHitTest = 0x84;
-            const int htLeft = 10;
-            const int htRight = 11;
-            const int htBottom = 15;
-            const int htBottomLeft = 16;
-            const int htBottomRight = 17;
-
-            if (m.Msg == wmNcHitTest)
-            {
-                Point pt = PointToClient(new Point(MousePosition.X, MousePosition.Y));
-                Size clientSize = ClientSize;
-
-                Console.WriteLine(clientSize.Height);
-                Console.WriteLine(clientSize.Width);
-                Console.WriteLine(pt);
-
-                ///allow resize on the lower right corner
-                if (pt.X >= clientSize.Width - 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)
-                {
-                    m.Result = (IntPtr)(IsMirrored ? htBottomLeft : htBottomRight);
-                    return;
-                }
-                ///allow resize on the lower left corner
-                if (pt.X <= 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)
-                {
-                    m.Result = (IntPtr)(IsMirrored ? htBottomRight : htBottomLeft);
-                    return;
-                }
-
-                ///allow resize on the bottom border
-                if (pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)
-                {
-                    m.Result = (IntPtr)(htBottom);
-                    return;
-                }
-                ///allow resize on the left border
-                if (pt.X <= 16 && clientSize.Height >= 16)
-                {
-                    m.Result = (IntPtr)(htLeft);
-                    return;
-                }
-                ///allow resize on the right border
-                if (pt.X >= clientSize.Width - 16 && clientSize.Height >= 16)
-                {
-                    m.Result = (IntPtr)(htRight);
-                    return;
-                }
-            }
-            base.WndProc(ref m);
-        }
-
-        //***********************************************************
-        //***********************************************************
-        //This gives us the drop shadow behind the borderless form
         private const int CS_DROPSHADOW = 0x20000;
         protected override CreateParams CreateParams
         {
@@ -996,259 +415,258 @@ namespace IndieGoat.MaterialFramework.Controls
                 return cp;
             }
         }
-        //***********************************************************
 
-        #endregion
+        #endregion Drop Shadow
 
-    }
+        #region GetCurrentScreen
 
-    #region CloseButton
+        private Screen GetCurrentScreen()
+        { return Screen.FromPoint(new Point(Cursor.Position.X, Cursor.Position.Y)); }
 
-    [System.ComponentModel.ToolboxItem(false)]
-    [DefaultEvent("Click")]
-    public class UIClose : UserControl
-    {
-        #region Varables & Objects
+        #endregion GetCurrentScreen
 
-        //Setting colors
-        private Color defaultForeColor = Color.FromArgb(191, 191, 191);
-        private Color defaultMousePointerEnterColor = Color.FromArgb(255, 255, 255);
-        private Color defaultMousClickColor = Color.FromArgb(23, 23, 23);
+        #region Calculate Mouse Percent
 
-        private Color defaultBackColor = Color.Transparent;
-        private Color defaultMousePointerEnterBackColor = Color.FromArgb(255, 90, 90);
-        private Color defaultMouseClickBackColor = Color.FromArgb(83, 29, 29);
-
-        private Size size = new Size(48, 28);
-
-        //Setting button text
-        public Label X = new Label();
-
-        #endregion
-
-        public UIClose()
+        private decimal CalculateMousePercent()
+        { return decimal.Divide(this.PointToClient(MousePosition).X, this.Width); }
+        private Point CalculateMousePositon()
         {
-            /* X */
-            this.X.Text = "X";
-            this.X.Location = new Point(16, 5);
-            this.X.ForeColor = defaultForeColor;
-            this.X.MouseEnter += mousePointerEnter;
-            this.X.MouseLeave += mousePointerLeft;
-            this.X.MouseDown += mouseDown;
-            this.X.MouseUp += mouseUp;
-            this.Controls.Add(X);
-
-
-            /*Default Control */
-            this.Size = size;
-            this.BackColor = Color.Transparent;
-            this.Font = new Font(this.Font.Name, 11f);
-            this.MouseEnter += mousePointerEnter;
-            this.MouseLeave += mousePointerLeft;
-            this.MouseDown += mouseDown;
-            this.MouseUp += mouseUp;
-            this.DoubleBuffered = true;
+            decimal mousePercent = CalculateMousePercent();
+            Point currentMousePosition = this.PointToClient(Cursor.Position);
+            int xPos = decimal.ToInt32(decimal.Multiply(currentMousePosition.X, mousePercent));
+            return new Point(xPos, currentMousePosition.Y);
         }
 
-        private void mousePointerEnter(object sender, EventArgs e)
-        {
-            this.BackColor = defaultMousePointerEnterBackColor;
-            X.ForeColor = defaultMousePointerEnterColor;
-        }
+        #endregion Calculate Mouse Percent
 
-        private void mousePointerLeft(object sender, EventArgs e)
-        {
-            this.BackColor = defaultBackColor;
-            X.ForeColor = defaultForeColor;
-        }
+        #region Dispose
 
-        private void mouseDown(object sender, EventArgs e)
-        {
-            this.BackColor = defaultMouseClickBackColor;
-            X.ForeColor = defaultMouseClickBackColor;
-        }
-
-        private void mouseUp(object sender, EventArgs e)
-        {
-            try
-            {
-                if (ClientRectangle.Contains(PointToClient(Control.MousePosition)))
-                {
-                    this.BackColor = defaultMousePointerEnterBackColor;
-                    X.ForeColor = defaultMousePointerEnterColor;
-                }
-                else
-                {
-                    this.BackColor = DefaultBackColor;
-                    X.ForeColor = defaultForeColor;
-                }
-            }
-            catch
-            {
-
-            }
-        }
-
-        protected override void OnSizeChanged(EventArgs e)
-        {
-            base.OnSizeChanged(e);
-
-            this.Size = size;
-        }
-
+        protected override void OnClosed(EventArgs e)
+        { base.OnClosed(e); this.Dispose(); }
         protected override void Dispose(bool disposing)
         {
-            this.MouseEnter += null;
-            this.MouseLeave += null;
-            this.MouseUp += null;
-            this.MouseLeave += null;
-
-            X.MouseEnter += null;
-            X.MouseLeave += null;
-            X.MouseUp += null;
-            X.MouseLeave += null;
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            //
+            // Disposing all of the contorls on the form
+            //
+            Control.ControlCollection coll = this.Controls;
+            foreach(Control c in coll) { c.Dispose(); }
 
             base.Dispose(disposing);
+
+            //GC Collection
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
-    }
-
-    #endregion
-
-    #region MaxButton
-
-    [System.ComponentModel.ToolboxItem(false)]
-    [DefaultEvent("Click")]
-    public class UIMax : UserControl
-    {
-        #region Varables
-
-        string Status = null;
-
-        Rectangle rect = new Rectangle();
-
-        Color DefaultbackColor = Color.Transparent;
-        Color DefaultOnClickbackColor = Color.FromArgb(80, 80, 80);
-        Color DefaultOnMouseOverbackColor = Color.FromArgb(229, 229, 229);
-
-        Color DefaultColor = Color.FromArgb(191, 191, 191);
-        Color DefaultOnClickColor = Color.FromArgb(23, 23, 23);
-        Color DefaultOnMouseOverColor = Color.FromArgb(91, 91, 91);
-
-        private Size size = new Size(48, 28);
 
         #endregion
 
-        #region Control Methods
+    }
 
-        public UIMax()
+    public enum status { Default, MouseOver, MouseDown }
+
+    #region Close Button
+
+    //[ToolboxItem(false)]
+    [DefaultEvent("Click")]
+    public class CloseButton : UserControl
+    {
+
+        #region Vars
+
+        Color _backColor = Color.Transparent;
+        Color _borderColor = Color.Transparent;
+        Color _mouseOverBackColor = Color.FromArgb(255, 90, 90);
+        Color _mouseOverBorderColor = Color.FromArgb(255, 90, 90);
+        Color _mouseDownBackColor = Color.FromArgb(255, 130, 130);
+        Color _mouseDownBorderColor = Color.FromArgb(255, 130, 130);
+        Color _fontColor = Color.FromArgb(48, 48, 48);
+
+        status _status = status.Default;
+
+        int _borderSize = 2;
+
+        #endregion Vars
+
+        #region Properties
+
+        #region Default
+
+        public override Color BackColor
         {
-            rect.Size = new Size(12, 12);
-            rect.Location = new Point(18, 8);
+            get { return this._backColor; }
+            set
+            {
+                this._backColor = value;
+                this.Invalidate();
+            }
+        }
 
-            this.Size = size;
-            this.BackColor = Color.Transparent;
+        public Color BorderColor
+        {
+            get { return this._borderColor; }
+            set
+            {
+                this._borderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Default
+
+        #region MouseOver
+
+        public Color MouseOverBackColor
+        {
+            get { return this._mouseOverBackColor; }
+            set
+            {
+                this._mouseOverBackColor = value;
+                this.Invalidate();
+            }
+        }
+
+        public Color MouseOverBorderColor
+        {
+            get { return this._mouseOverBorderColor; }
+            set
+            {
+                this._mouseOverBorderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion MouseOver
+
+        #region MouseDown
+
+        public Color MouseDownBackColor
+        {
+            get { return this._mouseDownBackColor; }
+            set
+            {
+                this._mouseDownBackColor = value;
+                this.Invalidate();
+            }
+        }
+
+        public Color MouseDownBorderColor
+        {
+            get { return this._mouseDownBorderColor; }
+            set
+            {
+                this._mouseDownBorderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion MouseDown
+
+        #region Other
+
+        #region Colours
+
+        public Color FontColor
+        {
+            get { return this._fontColor; }
+            set
+            {
+                this._fontColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion 
+
+        public int borderSize
+        {
+            get { return this._borderSize; }
+            set
+            {
+                this._borderSize = value;
+                this.Invalidate();
+            }
+        }
+
+        public status Status
+        {
+            get { return this._status; }
+            set
+            {
+                this._status = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Initialization
+
+        public CloseButton()
+        {
+            this.Size = new Size(48, 28);
             this.DoubleBuffered = true;
         }
+
+        #endregion Initialization
+
+        #region OnPaint
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (Status == null)
-            {
-                Status = "Default";
-            }
-
-            if (Status == "Default")
-            {
-                Pen pen = new Pen(DefaultColor, 2);
-                pen.Alignment = System.Drawing.Drawing2D.PenAlignment.Inset;
-
-                e.Graphics.DrawRectangle(pen, rect);
-                this.BackColor = DefaultbackColor;
-            }
-
-            if (Status == "MouseEnter")
-            {
-                Pen pen = new Pen(DefaultOnMouseOverColor, 2);
-                pen.Alignment = System.Drawing.Drawing2D.PenAlignment.Inset;
-
-                e.Graphics.DrawRectangle(pen, rect);
-                this.BackColor = DefaultOnMouseOverbackColor;
-            }
-
-            if (Status == "MouseDown")
-            {
-                Pen pen = new Pen(DefaultOnClickColor, 2);
-                pen.Alignment = System.Drawing.Drawing2D.PenAlignment.Inset;
-
-                e.Graphics.DrawRectangle(pen, rect);
-                this.BackColor = DefaultOnClickbackColor;
-            }
-
-            if (Status == "MouseUp")
-            {
-                try
-                {
-                    if (ClientRectangle.Contains(PointToClient(Control.MousePosition)))
-                    {
-                        Status = "MouseEnter";
-                        this.Invalidate();
-                    }
-                    else
-                    {
-                        Status = "Default";
-                        this.Invalidate();
-                    }
-                }
-                catch
-                {
-
-                }
-            }
-
             base.OnPaint(e);
+
+            Graphics g = e.Graphics;
+
+            if (this._status == status.Default)
+            { DrawControl(g, _backColor, _borderColor, _fontColor); }
+            if (this._status == status.MouseOver)
+            { DrawControl(g, _mouseOverBackColor, _mouseOverBorderColor, _fontColor); }
+            if (this._status == status.MouseDown)
+            { DrawControl(g, _mouseDownBackColor, _mouseDownBorderColor, _fontColor); }
         }
 
-        protected override void OnSizeChanged(EventArgs e)
+        #endregion
+
+        #region DrawControl
+
+        private void DrawControl(Graphics g, Color P_BackColor, Color P_BorderColor, Color P_FontColor)
         {
-            base.OnSizeChanged(e);
+            //
+            // Background
+            //
+            g.FillRectangle(new SolidBrush(P_BackColor), this.ClientRectangle);
 
-            this.Size = size;
+            //
+            //Border Color
+            //
+            g.DrawRectangle(new Pen(new SolidBrush(P_BorderColor), _borderSize), this.ClientRectangle);
+
+            //
+            // Draws the X
+            //
+            int x = 18; int y = 9; int modif = 10;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.DrawLine(new Pen(P_FontColor, 1), y + modif, y, x + modif, x);
+            g.DrawLine(new Pen(P_FontColor, 1), y + modif, x, x + modif, y);
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
         }
+
+        #endregion 
+
+        #region MouseMovements
 
         protected override void OnMouseEnter(EventArgs e)
-        {
-            Status = "MouseEnter";
-            this.Invalidate();
-
-            base.OnMouseEnter(e);
-        }
-
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            Status = "MouseDown";
-            this.Invalidate();
-
-            base.OnMouseDown(e);
-        }
-
+        { base.OnMouseEnter(e); this.Status = status.MouseOver; }
         protected override void OnMouseLeave(EventArgs e)
-        {
-            Status = "Default";
-            this.Invalidate();
+        { base.OnMouseLeave(e); this.Status = status.Default; }
+        protected override void OnMouseDown(MouseEventArgs e)
+        { base.OnMouseClick(e); this.Status = status.MouseDown; }
 
-            base.OnMouseLeave(e);
-        }
+        #endregion
 
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            Status = "MouseUp";
-            this.Invalidate();
-
-            base.OnMouseUp(e);
-        }
+        #region Dispose
 
         protected override void Dispose(bool disposing)
         {
@@ -1262,98 +680,390 @@ namespace IndieGoat.MaterialFramework.Controls
             base.Dispose(disposing);
         }
 
-        #endregion
+        #endregion Dispose
 
     }
 
-    #endregion
+    #endregion Close Button
 
-    #region MinButton
+    #region Max Button
 
-    [System.ComponentModel.ToolboxItem(false)]
+    [ToolboxItem(false)]
     [DefaultEvent("Click")]
-    public class UIMin : UserControl
+    public class MaxButton : UserControl
     {
-        #region Varables
 
-        public Panel panel = new Panel();
-        Size size = new Size(48, 28);
+        #region Vars
 
-        #endregion
+        Color _backColor = Color.Transparent;
+        Color _borderColor = Color.Transparent;
+        Color _mouseOverBackColor = Color.FromArgb(229, 229, 229);
+        Color _mouseOverBorderColor = Color.FromArgb(229, 229, 229);
+        Color _mouseDownBackColor = Color.FromArgb(80, 80, 80);
+        Color _mouseDownBorderColor = Color.FromArgb(80, 80, 80);
 
-        #region Control Methods
+        status _status = status.Default;
 
-        public UIMin()
+        #endregion Vars
+
+        #region Properties
+
+        #region Default
+
+        public override Color BackColor
         {
-            /* Panel */
-            panel.Size = new Size(14, 2);
-            panel.Location = new Point(16, 14);
-            panel.BackColor = Color.FromArgb(191, 191, 191);
-            this.Controls.Add(panel);
+            get { return this._backColor; }
+            set
+            {
+                this._backColor = value;
+                this.Invalidate();
+            }
+        }
 
-            /* Default Control */
+        public Color BorderColor
+        {
+            get { return this._borderColor; }
+            set
+            {
+                this._borderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Default
+
+        #region MouseOver
+
+        public Color MouseOverBackColor
+        {
+            get { return this._mouseOverBackColor; }
+            set
+            {
+                this._mouseOverBackColor = value;
+                this.Invalidate();
+            }
+        }
+
+        public Color MouseOverBorderColor
+        {
+            get { return this._mouseOverBorderColor; }
+            set
+            {
+                this._mouseOverBorderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion MouseOver
+
+        #region MouseDown
+
+        public Color MouseDownBackColor
+        {
+            get { return this._mouseDownBackColor; }
+            set
+            {
+                this._mouseDownBackColor = value;
+                this.Invalidate();
+            }
+        }
+
+        public Color MouseDownBorderColor
+        {
+            get { return this._mouseDownBorderColor; }
+            set
+            {
+                this._mouseDownBorderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion MouseDown
+
+        #region Other
+
+        public status Status
+        {
+            get { return this._status; }
+            set
+            {
+                this._status = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Other
+
+        #endregion Properties
+
+        #region Initialization
+
+        public MaxButton()
+        {
+            this.Size = new Size(48, 28);
             this.DoubleBuffered = true;
-            this.Size = size;
-            this.BackColor = Color.Transparent;
-            this.Font = new Font(this.Font.Name, 14f);
         }
 
-        protected override void OnSizeChanged(EventArgs e)
+        #endregion Initialization
+
+        #region Paint
+
+        protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnSizeChanged(e);
-
-            this.Size = size;
+            base.OnPaint(e);
+            if (this._status == status.Default)
+            { DrawControl(e.Graphics, _backColor, _borderColor); }
+            else if (this.Status == status.MouseOver)
+            { DrawControl(e.Graphics, _mouseOverBackColor, _mouseOverBorderColor); }
+            else if (this.Status == status.MouseDown)
+            { DrawControl(e.Graphics, _mouseDownBackColor, _mouseDownBorderColor); }
         }
+
+        #endregion Paint
+
+        #region DrawControl
+
+        private void DrawControl(Graphics g, Color P_BackColor, Color P_BorderColor)
+        {
+            int rectSize = 9; int penSize = 1;
+            Color rectColor = Color.FromArgb(120, 120, 120);
+
+            g.SmoothingMode = SmoothingMode.HighQuality;
+
+            //
+            // Draws back color and border
+            //
+            g.FillRectangle(new SolidBrush(P_BackColor), this.ClientRectangle);
+            g.DrawRectangle(new Pen(P_BorderColor, 1), this.ClientRectangle);
+
+            //
+            // Draws max button
+            //
+            g.DrawRectangle(new Pen(new SolidBrush(rectColor), penSize), new Rectangle(new Point(rectSize + 10, rectSize), new Size(this.Height - (rectSize * 2), this.Height - (rectSize * 2))));
+
+            g.SmoothingMode = SmoothingMode.None;
+        }
+
+        #endregion DrawControl
+
+        #region MouseMovements
 
         protected override void OnMouseEnter(EventArgs e)
-        {
-            this.BackColor = Color.FromArgb(229, 229, 229);
-            this.panel.BackColor = Color.FromArgb(91, 91, 91);
-
-            base.OnMouseEnter(e);
-        }
-
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            this.BackColor = Color.FromArgb(80, 80, 80);
-            this.panel.BackColor = Color.FromArgb(23, 23, 23);
-
-            base.OnMouseDown(e);
-        }
-
+        { base.OnMouseEnter(e); this.Status = status.MouseOver; }
         protected override void OnMouseLeave(EventArgs e)
-        {
-            this.BackColor = Color.Transparent;
-            this.panel.BackColor = Color.FromArgb(191, 191, 191);
+        { base.OnMouseLeave(e); this.Status = status.Default; }
+        protected override void OnMouseDown(MouseEventArgs e)
+        { base.OnMouseClick(e); this.Status = status.MouseDown; }
 
-            base.OnMouseLeave(e);
-        }
-
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            try
-            {
-                if (ClientRectangle.Contains(PointToClient(Control.MousePosition)))
-                {
-                    this.BackColor = Color.FromArgb(229, 229, 229);
-                    this.panel.BackColor = Color.FromArgb(91, 91, 91);
-                }
-                else
-                {
-                    this.BackColor = Color.Transparent;
-                    this.panel.BackColor = Color.FromArgb(191, 191, 191);
-                }
-            }
-            catch
-            {
-
-            }
-
-            base.OnMouseUp(e);
-        }
         #endregion
+
+        #region Dispose
+
+        protected override void Dispose(bool disposing)
+        {
+            this.MouseEnter += null;
+            this.MouseLeave += null;
+            this.MouseUp += null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion Dispose
+    }
+
+    #endregion Max Button
+
+    #region Min Button
+
+    [ToolboxItem(false)]
+    [DefaultEvent("Click")]
+    public class MinButton : UserControl
+    {
+
+        #region Vars
+
+        Color _backColor = Color.Transparent;
+        Color _borderColor = Color.FromArgb(244, 244, 244);
+        Color _mouseOverBackColor = Color.FromArgb(229, 229, 229);
+        Color _mouseOverBorderColor = Color.FromArgb(229, 229, 229);
+        Color _mouseDownBackColor = Color.FromArgb(80, 80, 80);
+        Color _mouseDownBorderColor = Color.FromArgb(80, 80, 80);
+
+        status _status = status.Default;
+
+        #endregion Vars
+
+        #region Properties
+
+        #region Default
+
+        public override Color BackColor
+        {
+            get { return this._backColor; }
+            set
+            {
+                this._backColor = value;
+                this.Invalidate();
+            }
+        }
+
+        public Color BorderColor
+        {
+            get { return this._borderColor; }
+            set
+            {
+                this._borderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Default
+
+        #region MouseOver
+
+        public Color MouseOverBackColor
+        {
+            get { return this._mouseOverBackColor; }
+            set
+            {
+                this._mouseOverBackColor = value;
+                this.Invalidate();
+            }
+        }
+
+        public Color MouseOverBorderColor
+        {
+            get { return this._mouseOverBorderColor; }
+            set
+            {
+                this._mouseOverBorderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion MouseOver
+
+        #region MouseDown
+
+        public Color MouseDownBackColor
+        {
+            get { return this._mouseDownBackColor; }
+            set
+            {
+                this._mouseDownBackColor = value;
+                this.Invalidate();
+            }
+        }
+
+        public Color MouseDownBorderColor
+        {
+            get { return this._mouseDownBorderColor; }
+            set
+            {
+                this._mouseDownBorderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion MouseDown
+
+        #region Other
+
+        public status Status
+        {
+            get { return _status; }
+            set
+            {
+                _status = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Other
+
+        #endregion
+
+        #region Initialization
+
+        public MinButton()
+        {
+            this.Size = new Size(48, 28);
+            this.DoubleBuffered = true;
+            this.BackColor = Color.Transparent;
+        }
+
+        #endregion Initialization
+
+        #region Override Paint
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            if (this._status == status.Default)
+            { DrawControl(e.Graphics, this._backColor, this._borderColor); }
+            else if (this._status == status.MouseOver)
+            { DrawControl(e.Graphics, this._mouseOverBackColor, this._mouseOverBorderColor); }
+            else if (this._status == status.MouseDown)
+            { DrawControl(e.Graphics, this._mouseDownBackColor, this._mouseDownBorderColor); }
+        }
+
+        #endregion Override Paint
+
+        #region DrawControl
+
+        private void DrawControl(Graphics g, Color P_BackColor, Color P_BorderColor)
+        {
+            //
+            // Draw Vars
+            //
+
+            //
+            // Draw control border and back color
+            //
+            g.FillRectangle(new SolidBrush(P_BackColor), this.ClientRectangle);
+            g.DrawRectangle(new Pen(P_BorderColor, 1), this.ClientRectangle);
+
+            //
+            // Draw minus symbol
+            //
+
+        }
+
+        #endregion DrawControl
+
+        #region MouseMovements
+
+        protected override void OnMouseEnter(EventArgs e)
+        { base.OnMouseEnter(e); this.Status = status.MouseOver; }
+        protected override void OnMouseLeave(EventArgs e)
+        { base.OnMouseLeave(e); this.Status = status.Default; }
+        protected override void OnMouseDown(MouseEventArgs e)
+        { base.OnMouseClick(e); this.Status = status.MouseDown; }
+
+        #endregion
+
+        #region Dispose
+
+        protected override void Dispose(bool disposing)
+        {
+            this.MouseEnter += null;
+            this.MouseLeave += null;
+            this.MouseUp += null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion Dispose
 
     }
 
-    #endregion
+    #endregion Min Button
+
 }
