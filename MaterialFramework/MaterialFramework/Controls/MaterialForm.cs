@@ -129,10 +129,7 @@ namespace MaterialFramework.Controls
             this.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
             this.Size = new Size(screen.Bounds.Width, screen.Bounds.Height); }
 
-        public void MinForm()
-        {
-
-        }
+        public void MinForm() { this.WindowState = FormWindowState.Minimized; }
 
         #endregion
 
@@ -210,47 +207,48 @@ namespace MaterialFramework.Controls
 
         #region Resize
 
-        protected override void WndProc(ref Message m)
+        #region Vars
+
+        Rectangle leftRectangle;
+        Rectangle rightRectangle;
+        Rectangle bottomRectangle;
+
+        int mouseSize = 10;
+
+        private enum ResizeStatus { Bottom, Right, Left}
+        ResizeStatus resizeStatus = ResizeStatus.Bottom;
+
+        #endregion
+
+        #region Update Rectangle Values
+
+        private void UpdateBorderRectangles()
         {
-            const UInt32 WM_NCHITTEST = 0x0084;
-            const UInt32 WM_MOUSEMOVE = 0x0200;
-
-            const UInt32 HTLEFT = 10;
-            const UInt32 HTRIGHT = 11;
-            const UInt32 HTBOTTOMRIGHT = 17;
-            const UInt32 HTBOTTOM = 15;
-            const UInt32 HTBOTTOMLEFT = 16;
-
-            const int RESIZE_HANDLE_SIZE = 10;
-            bool handled = false;
-            if (m.Msg == WM_NCHITTEST || m.Msg == WM_MOUSEMOVE)
-            {
-                Size formSize = this.Size;
-                Point screenPoint = new Point(m.LParam.ToInt32());
-                Point clientPoint = this.PointToClient(screenPoint);
-
-                Dictionary<UInt32, Rectangle> boxes = new Dictionary<UInt32, Rectangle>() {
-            {HTBOTTOMLEFT, new Rectangle(0, formSize.Height - RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE)},
-            {HTBOTTOM, new Rectangle(RESIZE_HANDLE_SIZE, formSize.Height - RESIZE_HANDLE_SIZE, formSize.Width - 2*RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE)},
-            {HTBOTTOMRIGHT, new Rectangle(formSize.Width - RESIZE_HANDLE_SIZE, formSize.Height - RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE)},
-            {HTRIGHT, new Rectangle(formSize.Width - RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, formSize.Height - 2*RESIZE_HANDLE_SIZE)},
-            {HTLEFT, new Rectangle(0, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE, formSize.Height - 2*RESIZE_HANDLE_SIZE) }
-        };
-
-                foreach (KeyValuePair<UInt32, Rectangle> hitBox in boxes)
-                {
-                    if (hitBox.Value.Contains(clientPoint))
-                    {
-                        m.Result = (IntPtr)hitBox.Key;
-                        handled = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!handled)
-                base.WndProc(ref m);
+            leftRectangle = new Rectangle(new Point(0, 32), new Size(mouseSize, this.Height - 32));
+            rightRectangle = new Rectangle(new Point(this.Width - mouseSize, 32), new Size(mouseSize, this.Height - 32));
+            bottomRectangle = new Rectangle(new Point(0, this.Height - mouseSize), new Size(this.Width, this.Height - mouseSize));
         }
+
+        #endregion
+
+        #region IsResizing
+
+        private bool isResizing()
+        {
+            //Update the border rectangles
+            UpdateBorderRectangles();
+
+            //Calculate if mouse is in the rectangles
+            Point mousePoint = this.PointToClient(MousePosition);
+
+            if (leftRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.Left; return true; }
+            if (rightRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.Right; return true; }
+            if (bottomRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.Bottom; return true; }
+            return false;
+
+        }
+
+        #endregion
 
         #endregion Resize
 
@@ -274,17 +272,61 @@ namespace MaterialFramework.Controls
 
         #endregion
 
+        #region OnMouseDown
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            bool result; if (e.Button == MouseButtons.Left) { result = true; } else { result = false; }
+            MouseDownExternal(result);
+        }
+
+        #endregion OnMouseDown
+
         #region OnMouseMove
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
-            Console.WriteLine("MouseMove");
-            if (e.Button == MouseButtons.Left && HeaderRectangle.Contains(PointToClient(MousePosition)))
-            { CalculateMouseMovement(); }
+            bool result; if (e.Button == MouseButtons.Left) { result = true; } else { result = false; }
+            MouseMoveExternal(result);
         }
 
         #endregion OnMouseMove
+
+        #region MouseMoveExternal
+
+        public void MouseMoveExternal(bool button)
+        {
+            bool resizing = isResizing();
+
+            if (resizing) { Cursor.Current = Cursors.SizeWE; }
+            Console.WriteLine(resizing);
+            if (button && HeaderRectangle.Contains(PointToClient(MousePosition)))
+            {
+                //Detects if it is resizing
+                if (resizing) { }
+                else { CalculateMouseMovement(); }
+            }
+        }
+
+        #endregion MouseMoveExternal
+
+        #region MouseDownExternal
+
+        public void MouseDownExternal(bool button)
+        {
+            if (button)
+            {
+                this.SuspendLayout();
+
+                while(Cursor.Current.)
+
+                this.ResumeLayout();
+            }
+        }
+
+        #endregion MouseDownExternal
 
         #region CalculateMouseMovement / Snapping form
 
@@ -480,6 +522,7 @@ namespace MaterialFramework.Controls
         Color _mouseDownBackColor = Color.FromArgb(255, 130, 130);
         Color _mouseDownBorderColor = Color.FromArgb(255, 130, 130);
         Color _fontColor = Color.FromArgb(48, 48, 48);
+        Color _mouseOverFontColor = Color.White;
 
         status _status = status.Default;
 
@@ -622,9 +665,9 @@ namespace MaterialFramework.Controls
             if (this._status == status.Default)
             { DrawControl(g, _backColor, _borderColor, _fontColor); }
             if (this._status == status.MouseOver)
-            { DrawControl(g, _mouseOverBackColor, _mouseOverBorderColor, _fontColor); }
+            { DrawControl(g, _mouseOverBackColor, _mouseOverBorderColor, _mouseOverFontColor); }
             if (this._status == status.MouseDown)
-            { DrawControl(g, _mouseDownBackColor, _mouseDownBorderColor, _fontColor); }
+            { DrawControl(g, _mouseDownBackColor, _mouseDownBorderColor, _mouseOverFontColor); }
         }
 
         #endregion
@@ -886,7 +929,7 @@ namespace MaterialFramework.Controls
         #region Vars
 
         Color _backColor = Color.Transparent;
-        Color _borderColor = Color.FromArgb(244, 244, 244);
+        Color _borderColor = Color.Transparent;
         Color _mouseOverBackColor = Color.FromArgb(229, 229, 229);
         Color _mouseOverBorderColor = Color.FromArgb(229, 229, 229);
         Color _mouseDownBackColor = Color.FromArgb(80, 80, 80);
@@ -1020,6 +1063,12 @@ namespace MaterialFramework.Controls
             //
             // Draw Vars
             //
+            Color minusColor = Color.FromArgb(120, 120, 120);
+
+            int xMod = 18;
+            int rectHeight = 1;
+
+            Rectangle minus_Rect = new Rectangle(new Point(this.Width - ((this.Width - (xMod * 2) / 2)), this.Height - ((this.Height - rectHeight) / 2) - 1), new Size(this.Width - (xMod*2), rectHeight));
 
             //
             // Draw control border and back color
@@ -1030,6 +1079,7 @@ namespace MaterialFramework.Controls
             //
             // Draw minus symbol
             //
+            g.FillRectangle(new SolidBrush(minusColor), minus_Rect);
 
         }
 
