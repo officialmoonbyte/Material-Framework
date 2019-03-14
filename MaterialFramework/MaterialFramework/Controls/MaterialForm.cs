@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace MaterialFramework.Controls
@@ -48,6 +49,12 @@ namespace MaterialFramework.Controls
             this.SetStyle(ControlStyles.ResizeRedraw, true);
             this.Font = new Font("Segoe UI", 12f);
             this.DoubleBuffered = true;
+
+            //
+            // GlobalMouseHandler
+            //
+            Application.AddMessageFilter(new MouseMessageFilter());
+            MouseMessageFilter.MouseMove += new MouseEventHandler(GlobalMouseMove);
         }
 
         #endregion Initialization
@@ -213,10 +220,13 @@ namespace MaterialFramework.Controls
         Rectangle rightRectangle;
         Rectangle bottomRectangle;
 
+        Rectangle BottomRightRectangle;
+        Rectangle BottomLeftRectangle;
+
         int mouseSize = 10;
 
-        private enum ResizeStatus { Bottom, Right, Left}
-        ResizeStatus resizeStatus = ResizeStatus.Bottom;
+        private enum ResizeStatus { Bottom, Right, Left, BottomRight, BottomLeft, None}
+        ResizeStatus resizeStatus = ResizeStatus.None;
 
         #endregion
 
@@ -227,6 +237,8 @@ namespace MaterialFramework.Controls
             leftRectangle = new Rectangle(new Point(0, 32), new Size(mouseSize, this.Height - 32));
             rightRectangle = new Rectangle(new Point(this.Width - mouseSize, 32), new Size(mouseSize, this.Height - 32));
             bottomRectangle = new Rectangle(new Point(0, this.Height - mouseSize), new Size(this.Width, this.Height - mouseSize));
+            BottomRightRectangle = new Rectangle(new Point(this.Width - mouseSize, this.Height - mouseSize), new Size(mouseSize, mouseSize));
+            BottomLeftRectangle = new Rectangle(new Point(0, this.Height - mouseSize), new Size(mouseSize, mouseSize));
         }
 
         #endregion
@@ -241,11 +253,30 @@ namespace MaterialFramework.Controls
             //Calculate if mouse is in the rectangles
             Point mousePoint = this.PointToClient(MousePosition);
 
-            if (leftRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.Left; return true; }
-            if (rightRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.Right; return true; }
-            if (bottomRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.Bottom; return true; }
+            if (!isFormResizing)
+            {
+                if (BottomRightRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.BottomRight; return true; }
+                if (BottomLeftRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.BottomLeft; return true; }
+                if (leftRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.Left; return true; }
+                if (rightRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.Right; return true; }
+                if (bottomRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.Bottom; return true; }
+            }
             return false;
+        }
 
+        private bool isInRectangle()
+        {
+            //Update the border rectangles
+            UpdateBorderRectangles();
+
+            //Calculate if mouse is in the rectangles
+            Point mousePoint = this.PointToClient(MousePosition);
+
+            if (BottomRightRectangle.Contains(mousePoint)) { return true; }
+            if (leftRectangle.Contains(mousePoint)) { return true; }
+            if (rightRectangle.Contains(mousePoint)) { return true; }
+            if (bottomRectangle.Contains(mousePoint)) { return true; }
+            return false;
         }
 
         #endregion
@@ -262,6 +293,9 @@ namespace MaterialFramework.Controls
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
         [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
+
+        bool isFormResizing = false;
+        Point oldMouseLocation;
 
         #endregion Form Movement / Mouse Down
 
@@ -294,19 +328,31 @@ namespace MaterialFramework.Controls
 
         #endregion OnMouseMove
 
+        #region OnMouseUp
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            this.resizeStatus = ResizeStatus.None;
+            MouseUpExternal();
+        }
+
+        #endregion OnMouseUp
+
         #region MouseMoveExternal
 
         public void MouseMoveExternal(bool button)
         {
-            bool resizing = isResizing();
-
-            if (resizing) { Cursor.Current = Cursors.SizeWE; }
-            Console.WriteLine(resizing);
-            if (button && HeaderRectangle.Contains(PointToClient(MousePosition)))
+            if (isResizing())
+            {
+                if (resizeStatus == ResizeStatus.Left || resizeStatus == ResizeStatus.Right) { Cursor.Current = Cursors.SizeWE; }
+                else if (resizeStatus == ResizeStatus.Bottom) { Cursor.Current = Cursors.SizeNS; }
+                else if (resizeStatus == ResizeStatus.BottomRight) { Cursor.Current = Cursors.SizeNWSE; }
+                else if (resizeStatus == ResizeStatus.BottomLeft) { Cursor.Current = Cursors.SizeNESW; }
+            } else if (button && HeaderRectangle.Contains(PointToClient(MousePosition)) && !isFormResizing)
             {
                 //Detects if it is resizing
-                if (resizing) { }
-                else { CalculateMouseMovement(); }
+                CalculateMouseMovement();
             }
         }
 
@@ -316,17 +362,112 @@ namespace MaterialFramework.Controls
 
         public void MouseDownExternal(bool button)
         {
+            bool resize = isInRectangle();
             if (button)
             {
-                this.SuspendLayout();
+                if (!isFormResizing && resize)
+                { isFormResizing = true;  }
 
-                while(Cursor.Current.)
-
-                this.ResumeLayout();
+                if (isFormResizing)
+                {
+                    if (resizeStatus == ResizeStatus.Left || resizeStatus == ResizeStatus.Right) { Cursor.Current = Cursors.SizeWE; }
+                    else if (resizeStatus == ResizeStatus.Bottom) { Cursor.Current = Cursors.SizeNS; }
+                    else if (resizeStatus == ResizeStatus.BottomRight) { Cursor.Current = Cursors.SizeNWSE; }
+                    else if (resizeStatus == ResizeStatus.BottomLeft) { Cursor.Current = Cursors.SizeNESW; }
+                    oldMouseLocation = Cursor.Position;
+                }
             }
         }
 
         #endregion MouseDownExternal
+
+        #region MouseUpExternal
+
+        public void MouseUpExternal() { if (isFormResizing) { isFormResizing = false; } this.resizeStatus = ResizeStatus.None; }
+
+        #endregion MouseUpExternal
+
+        #region GlobalMouseMove
+
+        private void GlobalMouseMove(object sender, MouseEventArgs e)
+        {
+            //
+            // Resize for right
+            //
+            if (isFormResizing)
+            {
+                if (resizeStatus == ResizeStatus.Right)
+                {
+                    this.SuspendLayout();
+                    Point currentMousePos = e.Location;
+                    Point formLocation = this.Location;
+                    int modifier = this.Width + formLocation.X;
+                    this.Width = (currentMousePos.X - modifier) + this.Width;
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    this.ResumeLayout();
+                    this.Invalidate();
+                }
+                if (resizeStatus == ResizeStatus.Bottom)
+                {
+                    this.SuspendLayout();
+                    Point currentMousePos = e.Location;
+                    Point formLocation = this.Location;
+                    int modifier = this.Height + formLocation.Y;
+                    this.Height = (currentMousePos.Y - modifier) + this.Height;
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    this.ResumeLayout();
+                    this.Invalidate();
+                }
+                if (resizeStatus == ResizeStatus.Left)
+                {
+                    this.SuspendLayout();
+                    Point currentMousePos = e.Location;
+                    Point formLocation = this.Location;
+                    int change = formLocation.X - currentMousePos.X;
+                    this.Location = new Point(currentMousePos.X, formLocation.Y); this.Width = this.Width + change;
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    this.ResumeLayout();
+                    this.Invalidate();
+                }
+                if (resizeStatus == ResizeStatus.BottomRight)
+                {
+                    this.SuspendLayout();
+                    Point currentMousePos = e.Location;
+                    Point formLocation = this.Location;
+                    int xModifier = this.Width + formLocation.X;
+                    int yModifier = this.Height + formLocation.Y;
+                    this.Width = (currentMousePos.X - xModifier) + this.Width;
+                    this.Height = (currentMousePos.Y - yModifier) + this.Height;
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    this.ResumeLayout();
+                    this.Invalidate();
+                }
+                if (resizeStatus == ResizeStatus.BottomLeft)
+                {
+                    this.SuspendLayout();
+
+                    Point currentMousePos = e.Location;
+                    Point formLocation = this.Location;
+                    int xModifier = formLocation.X - currentMousePos.X;
+
+                    this.Location = new Point(currentMousePos.X, formLocation.Y); this.Width = this.Width + xModifier;
+
+                    int yModifier = this.Height + formLocation.Y;
+                    this.Height = (currentMousePos.Y - yModifier) + this.Height;
+
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    this.ResumeLayout();
+                    this.Invalidate();
+                }
+            }
+        }
+
+        #endregion GlobalMouseMove
 
         #region CalculateMouseMovement / Snapping form
 
@@ -443,7 +584,7 @@ namespace MaterialFramework.Controls
 
         #endregion CalculateMouseMovement
 
-        #endregion MouseDown
+        #endregion MouseControls
 
         #region Drop Shadow
 
@@ -480,6 +621,26 @@ namespace MaterialFramework.Controls
         }
 
         #endregion Calculate Mouse Percent
+
+        #region SetButtonPositions
+
+        private void SetButtonPositions(Size formSize)
+        {
+            int constYValue = 1;
+            int mar = 1;
+            this.closebutton.Location = new Point(formSize.Width - this.closebutton.Width - mar, constYValue);
+            Point controlLocation = new Point(formSize.Width - (this.maxbutton.Width * 2) - mar, constYValue);
+            if (!_enableCloseButton) { controlLocation = new Point(formSize.Width - this.maxbutton.Width - mar, constYValue); }
+            Point _controlLocation = new Point(formSize.Width - (this.minbutton.Width * 3) - mar, constYValue);
+            if (!_enableMaxButton && !_enableMinButton)
+            { _controlLocation = new Point(formSize.Width - this.minbutton.Width - mar, constYValue); }
+            if (!_enableCloseButton || !_enableMaxButton)
+            { _controlLocation = new Point(formSize.Width - (this.minbutton.Width * 2) - mar, constYValue); }
+            this.maxbutton.Location = controlLocation;
+            this.minbutton.Location = _controlLocation;
+        }
+
+        #endregion
 
         #region Dispose
 
@@ -1035,7 +1196,6 @@ namespace MaterialFramework.Controls
         {
             this.Size = new Size(48, 28);
             this.DoubleBuffered = true;
-            this.BackColor = Color.Transparent;
         }
 
         #endregion Initialization
@@ -1116,4 +1276,27 @@ namespace MaterialFramework.Controls
 
     #endregion Min Button
 
+    #region Global Mouse Hander
+
+    class MouseMessageFilter : IMessageFilter
+    {
+        public static event MouseEventHandler MouseMove = delegate { };
+        const int WM_MOUSEMOVE = 0x0200;
+
+        public bool PreFilterMessage(ref Message m)
+        {
+
+            if (m.Msg == WM_MOUSEMOVE)
+            {
+
+                Point mousePosition = Control.MousePosition;
+
+                MouseMove(null, new MouseEventArgs(
+                    MouseButtons.None, 0, mousePosition.X, mousePosition.Y, 0));
+            }
+            return false;
+        }
+    }
+
+    #endregion
 }

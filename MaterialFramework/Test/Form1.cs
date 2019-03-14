@@ -33,7 +33,11 @@ namespace Test
                 bool result; if (args.Button == MouseButtons.Left) { result = true; } else { result = false; }
                 this.MouseDownExternal(result);
             };
-            this.Controls.Add(panel);
+            panel.MouseUp += (obj, args) =>
+            {
+                this.MouseUpExternal();
+            };
+            //this.Controls.Add(panel);
         }
 
         private void flatButton1_Click(object sender, EventArgs e)
