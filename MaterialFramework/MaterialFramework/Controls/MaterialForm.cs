@@ -14,18 +14,19 @@ namespace MaterialFramework.Controls
 
         #region Internal Vars
 
-        Color headerColor = Color.FromArgb(250, 250, 250);
         Rectangle HeaderRectangle = new Rectangle(0, 0, 0, 0);
 
         Color borderColor = Color.FromArgb(0, 120, 220);
+        Color headerColor = Color.FromArgb(250, 250, 250);
         Color titleColor = Color.FromArgb(12, 12, 12);
 
         bool _enableCloseButton = true;
         bool _enableMaxButton = true;
         bool _enableMinButton = true;
-        bool _formSizable = true;
+        bool _showTitle = true;
 
         int _borderWidth = 2;
+        int _headerHeight = 32;
 
         //
         // FormControl Buttons
@@ -35,6 +36,122 @@ namespace MaterialFramework.Controls
         MinButton minbutton;
 
         #endregion Internal Vars
+
+        #region Form Properties
+
+        #region Colours
+
+        [Browsable(true)]
+        [Description("Form Header Color"), Category("Moonbyte Config")]
+        public Color HeaderColor
+        {
+            get { return this.headerColor; }
+            set
+            {
+                this.headerColor = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true)]
+        [Description("Form default border color"), Category("Moonbyte Config")]
+        public Color BorderColor
+        {
+            get { return this.borderColor; }
+            set
+            {
+                this.borderColor = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true)]
+        [Description("Form default title color"), Category("Moonbyte Config")]
+        public Color TitleColor
+        {
+            get { return this.titleColor; }
+            set
+            {
+                this.titleColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Colours
+
+        #region Int's
+
+        [Browsable(true)]
+        [Description("Form default pen size."), Category("Moonbyte Config")]
+        public int BorderWidth
+        {
+            get { return _borderWidth; }
+            set { _borderWidth = value; this.Invalidate(); }
+        }
+
+        [Browsable(true)]
+        [Description("Form default header height"), Category("Moonbyte Config")]
+        public int HeaderHeight
+        {
+            get { return _headerHeight; }
+            set { _headerHeight = value; this.Invalidate(); }
+        }
+
+        #endregion Int's
+
+        #region Bool's
+
+        [Browsable(true)]
+        [Description("Changes the visibility of the close button"), Category("Moonbyte Config")]
+        public bool EnableCloseButton
+        {
+            get { return _enableCloseButton; }
+            set
+            {
+                _enableCloseButton = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true)]
+        [Description("Changes the visibility of the max button"), Category("Moonbyte Config")]
+        public bool EnableMaxButton
+        {
+            get { return _enableMaxButton; }
+            set
+            {
+                _enableMaxButton = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true)]
+        [Description("Changes the visibility of the min button"), Category("Moonbyte Config")]
+        public bool EnableMinButton
+        {
+            get { return _enableMinButton; }
+            set
+            {
+                _enableMinButton = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true)]
+        [Description("Changes the visibility of the Title"), Category("Moonbyte Config")]
+        public bool ShowTitle
+        {
+            get { return _showTitle; }
+            set
+            {
+                _showTitle = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Bool's
+
+        #endregion Form Properties
 
         #region Initialization / OnLoad
 
@@ -174,7 +291,7 @@ namespace MaterialFramework.Controls
         {
             base.OnPaint(e);
 
-            HeaderRectangle = new Rectangle(new Point(0, 0), new Size(this.Width, 32));
+            HeaderRectangle = new Rectangle(new Point(0, 0), new Size(this.Width, _headerHeight));
 
             this.SuspendLayout();
 
@@ -383,7 +500,12 @@ namespace MaterialFramework.Controls
 
         #region MouseUpExternal
 
-        public void MouseUpExternal() { if (isFormResizing) { isFormResizing = false; } this.resizeStatus = ResizeStatus.None; }
+        public void MouseUpExternal()
+        {
+            if (isFormResizing)
+            { isFormResizing = false; }
+            this.resizeStatus = ResizeStatus.None;
+        }
 
         #endregion MouseUpExternal
 
