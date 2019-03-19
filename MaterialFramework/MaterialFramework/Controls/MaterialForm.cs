@@ -31,9 +31,9 @@ namespace MaterialFramework.Controls
         //
         // FormControl Buttons
         //
-        public CloseButton closebutton;
-        public MaxButton maxbutton;
-        public MinButton minbutton;
+        public CloseButton closebutton = new CloseButton();
+        public MaxButton maxbutton = new MaxButton();
+        public MinButton minbutton = new MinButton();
 
         #endregion Internal Vars
 
@@ -190,7 +190,6 @@ namespace MaterialFramework.Controls
             //
             if (_enableCloseButton)
             {
-                this.closebutton = new CloseButton();
                 this.closebutton.Location = new Point(this.Width - this.closebutton.Width - mar, constYValue);
                 this.closebutton.Anchor = (AnchorStyles.Right | AnchorStyles.Top);
                 this.closebutton.MouseUp += (obj, args) =>
@@ -206,7 +205,6 @@ namespace MaterialFramework.Controls
             //
             if (_enableMaxButton)
             {
-                this.maxbutton = new MaxButton();
                 Point controlLocation = new Point(this.Width - (this.maxbutton.Width * 2) - mar, constYValue);
                 if (!_enableCloseButton) { controlLocation = new Point(this.Width - this.maxbutton.Width - mar, constYValue); }
                 this.maxbutton.Location = controlLocation;
@@ -224,7 +222,6 @@ namespace MaterialFramework.Controls
             //
             if (_enableMinButton)
             {
-                this.minbutton = new MinButton();
                 Point controlLocation = new Point(this.Width - (this.minbutton.Width * 3) - mar, constYValue);
                 if (!_enableMaxButton && !_enableMinButton)
                 { controlLocation = new Point(this.Width - this.minbutton.Width - mar, constYValue); }
