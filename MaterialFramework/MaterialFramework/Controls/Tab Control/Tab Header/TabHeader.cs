@@ -1,194 +1,88 @@
-﻿using IndieGoat.MaterialFramework.Events;
-using MaterialFramework.Controls;
+﻿using IndieGoat.MaterialFramework.Controls;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Windows.Forms;
 
-#region Legal Stuff
-
-/*
- 
-MIT License
-
-Copyright (c) 2015 - 2016 Vortex Studio (Inactive), 2015 - 2017 Indie Goat (Current Holder)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-    Support us! https://www.patreon.com/vortexstudio
-    our website : https://vortexstudio.us
-
-*/
-
-#endregion
-
-namespace IndieGoat.MaterialFramework.Controls
+namespace MaterialFramework.Controls
 {
-    /// <summary>
-    /// Used with the Material TabPage
-    /// </summary>
     public class TabHeader : UserControl
     {
-
         #region Vars
 
-        //All customize color
-        private Color _BackColor = Color.White;
-        private Color _TextColor = Color.FromArgb(200, 200, 200);
-        private Color _TabBackColor = Color.FromArgb(35, 35, 64);
-        private Color _TabBorderColor = Color.FromArgb(75, 78, 101);
-        private Color _TabTopBarColor = Color.FromArgb(35, 35, 64);
+        MaterialTabControl basedTabControl;
+        List<Rectangle> tabRectangles = new List<Rectangle>();
 
-        //Selected Color
-        private Color s_TabBackColor = Color.FromArgb(249, 249, 250);
-        private Color s_TextColor = Color.FromArgb(100, 100, 100);
-        private Color s_TabBorderColor = Color.FromArgb(75, 78, 101);
-        private Color s_TabTopBarColor = Color.FromArgb(10, 132, 255);
+        enum Status { Default, Selected, MouseOver }
 
-        //Hover Color
-        private Color h_TabBackColor = Color.FromArgb(55, 57, 84);
-        private Color h_TextColor = Color.FromArgb(200, 200, 200);
-        private Color h_TabBorderColor = Color.FromArgb(75, 78, 101);
-        private Color h_TabTopBarColor = Color.FromArgb(164, 171, 182);
+        bool arrowEnable = false;
 
-        //Close Button Color
-        private Color _CloseButtonColor = Color.FromArgb(0, 0, 0);
+        Color tabBackColor = Color.FromArgb(35, 35, 64);
+        Color tabBorderColor = Color.FromArgb(75, 78, 101);
+        Color topBorderColor = Color.FromArgb(35, 35, 64);
 
-        //AddButtonColor
-        private Color _AddButtonBackColor = Color.FromArgb(55, 57, 84);
-        private Color _AddButtonHoverColor = Color.FromArgb(120, 120, 120);
+        Color s_tabBackColor = Color.FromArgb(249, 249, 250);
+        Color s_topBorderColor = Color.FromArgb(10, 132, 255);
+        Color s_TabBorderColor = Color.FromArgb(75, 78, 101);
 
-        //All bools for customization
-        private bool _ShowTabTopBarColor = true;
-        private bool _EnableCloseButton = false;
+        Color h_tabBackColor = Color.FromArgb(55, 57, 84);
+        Color h_tabBorderColor = Color.FromArgb(75, 78, 101);
+        Color h_topBorderColor = Color.FromArgb(164, 171, 182);
 
-        //Header for the tab and tab indicator height 
-        private const int TAB_HEADER_PADDING = 24;
-        private const int TAB_INDICATOR_HEIGHT = 2;
+        int _RectWidth = 230;
 
-        //Rectangle for all of the tabs
-        public List<Rectangle> TabRectangles = new List<Rectangle>();
+        #endregion Vars
 
-        //Set the Previous Selected Index int
-        private int _previousSelectedTabIndex;
+        #region Events
 
-        //Base tab control
-        MaterialTabControl _basedTabControl;
 
-        //DragDrop predropTab
-        MaterialTabPage preDraggedTab;
 
-        //Scroll Int
-        public int scrollInt = 0;
-
-        //Bool to detect if the AddButton is enabled
-        private bool _AddButtonEnabled = false;
-
-        //Width of the Rect
-        int rect_Width = 230;
-
-        int StartX = 0;
-
-        #endregion
-
-        #region Event's
-
-        //Custom event for triggering when the tab is dragged outside of bounds
-        public event EventHandler<TabDragOutArgs> TabDragOut;
-        public event EventHandler<NewTabButtonClickedArgs> NewTabButtonClick;
-        public event EventHandler<EventArgs> TabDragComplete;
-
-        #endregion
+        #endregion Events
 
         #region Properties
 
-        #region Based TabControl
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte")]
         public MaterialTabControl BasedTabControl
         {
-            get
-            {
-                return _basedTabControl;
-            }
+            get { return this.basedTabControl; }
             set
             {
-                //Set the BasedTabControl
-                _basedTabControl = value;
-
-                //Checks if the based tab control is set to null
-                if (_basedTabControl == null) return;
-
-                // Setting tab control event's //
-                _basedTabControl.Deselected += ((sender, args) =>
+                this.basedTabControl = value;
+                if (basedTabControl == null) return;
+                basedTabControl.Deselected += (obj, args) =>
                 {
-                    //Invalidate the control when
-                    //The tab control has been deselected.
                     this.Invalidate();
-                });
-                _basedTabControl.ControlAdded += ((sender, args) =>
+                };
+                basedTabControl.ControlAdded += (obj, args) =>
                 {
-                    //Invalidate the control when a control
-                    //has been added
-                    this.Invalidate();
-
-                    for (int i = 0; i < _basedTabControl.TabPages.Count; i++)
+                    foreach (MaterialTabPage page in basedTabControl.TabPages)
                     {
-                        //Getting the tab page
-                        MaterialTabPage tabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
-
                         //Setting the events of the tab page
-                        tabPage.TabIconChange += ((ss, sss) =>
+                        page.TabIconChange += ((ss, sss) =>
                         {
                             this.Invalidate();
                         });
-                        tabPage.TabTextChanged += ((ss, sss) =>
+                        page.TabTextChanged += ((ss, sss) =>
                         {
                             this.Invalidate();
                         });
                     }
-
-                }); 
-                _basedTabControl.ControlRemoved += delegate
+                };
+                basedTabControl.ControlRemoved += (obj, args) =>
                 {
-                    //Invalidate the control when a control
-                    //has been removed.
                     this.Invalidate();
                 };
-
-                if (_basedTabControl.TabPages.Count != 0)
+                if (basedTabControl.TabPages.Count != 0)
                 {
-                    for(int i = 0; i < _basedTabControl.TabPages.Count; i++)
+                    foreach (MaterialTabPage page in basedTabControl.TabPages)
                     {
-                        //Getting the tab page
-                        MaterialTabPage tabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
-
                         //Setting the events of the tab page
-                        tabPage.TabIconChange += ((sender, args) =>
+                        page.TabIconChange += ((sender, args) =>
                         {
                             this.Invalidate();
                         });
-                        tabPage.TabTextChanged += ((sender, args) =>
+                        page.TabTextChanged += ((sender, args) =>
                         {
                             this.Invalidate();
                         });
@@ -197,1165 +91,207 @@ namespace IndieGoat.MaterialFramework.Controls
             }
         }
 
-        #endregion
-
-        #region Color Properties
-
-        #region Normal
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Normal Color's")]
-        public override Color BackColor
+        public int TabPageWidth
         {
-            get { return _BackColor; }
-            set
-            {
-                _BackColor = value;
-                this.Invalidate();
-            }
+            get { return this._RectWidth; }
+            set { this._RectWidth = value; this.Invalidate(); }
         }
 
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Normal Color's")]
-        public Color TabBackColor
-        {
-            get { return _TabBackColor; }
-            set
-            {
-                _TabBackColor = value;
-                this.Invalidate();
-            }
-        }
+        #endregion Properties
 
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Normal Color's")]
-        public Color FontColor
-        {
-            get { return _TextColor; }
-            set
-            {
-                _TextColor = value;
-                this.Invalidate();
-            }
-        }
+        #region Initialization
 
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Normal Color's")]
-        public Color TabBorderColor
-        {
-            get { return _TabBorderColor; }
-            set
-            {
-                _TabBorderColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Normal Color's")]
-        public Color TopBarColor
-        {
-            get { return _TabTopBarColor; }
-            set
-            {
-                _TabTopBarColor = value;
-                this.Invalidate();
-            }
-        }
-
-        #endregion
-
-        #region Selected
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Selected Color")]
-        public Color Selected_BackColor
-        {
-            get { return s_TabBackColor; }
-            set
-            {
-                s_TabBackColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Selected Color")]
-        public Color Selected_FontColor
-        {
-            get { return s_TextColor; }
-            set
-            {
-                s_TextColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Selected Color")]
-        public Color Selected_BorderColor
-        {
-            get { return s_TabBorderColor; }
-            set
-            {
-                s_TabBorderColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Selected Color")]
-        public Color Selected_TopBarColor
-        {
-            get { return s_TabTopBarColor; }
-            set
-            {
-                s_TabTopBarColor = value;
-                this.Invalidate();
-            }
-        }
-
-        #endregion
-
-        #region Hover
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Hover Color")]
-        public Color Hover_BackColor
-        {
-            get { return h_TabBackColor; }
-            set
-            {
-                h_TabBackColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Hover Color")]
-        public Color Hover_FontColor
-        {
-            get { return h_TextColor; }
-            set
-            {
-                h_TextColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Hover Color")]
-        public Color Hover_BorderColor
-        {
-            get { return h_TabBorderColor; }
-            set
-            {
-                h_TabBorderColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Hover Color")]
-        public Color Hover_TopBarColor
-        {
-            get { return h_TabTopBarColor; }
-            set
-            {
-                h_TabTopBarColor = value;
-                this.Invalidate();
-            }
-        }
-
-        #endregion
-
-        #region Close Button
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Close Button Color(s)")]
-        public Color CloseButtonHoverColor
-        {
-            get { return _CloseButtonColor; }
-            set
-            {
-                _CloseButtonColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Close Button Color(s)")]
-        public bool ShowCloseButton
-        {
-            get { return _EnableCloseButton; }
-            set
-            {
-                _EnableCloseButton = value;
-                this.Invalidate();
-            }
-        }
-
-        #endregion
-
-        #region AddButton
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("AddButton")]
-        public Color AddButtonBackColor
-        {
-            get
-            {
-                return _AddButtonBackColor;
-            }
-            set
-            {
-                _AddButtonBackColor = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("AddButton")]
-        public Color AddButtonHoverColor
-        {
-            get
-            {
-                return _AddButtonHoverColor;
-            }
-            set
-            {
-                _AddButtonHoverColor = value;
-                this.Invalidate();
-            }
-        }
-
-        #endregion
-
-        #endregion
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("AddButton")]
-        public bool EnableAddButton
-        {
-            get { return _AddButtonEnabled; }
-            set
-            {
-                _AddButtonEnabled = value;
-                this.Invalidate();
-            }
-        }
-
-        public int ScrollInt
-        {
-            get { return scrollInt; }
-            set
-            {
-                scrollInt = value;
-                this.Invalidate();
-            }
-        }
-
-        #endregion
-
-        #region Required / Startup
-
-        /// <summary>
-        /// Start of the GenericTabHeader initialization process
-        /// </summary>
         public TabHeader()
         {
-            // MaterialTabHeader //
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
+            this.BackColor = Color.Transparent;
             this.DoubleBuffered = true;
-            this.AllowDrop = true;
             this.Height = 32;
         }
 
-        #endregion
+        #endregion Initialization
 
         #region Override Paint
 
-        /// <summary>
-        /// Painting the control
-        /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
-            //Vars used during the paint process
+            base.OnPaint(e);
+
+            //Returns if there is no tabs
+            if (basedTabControl == null) return;
+
             Graphics g = e.Graphics;
+            
 
-            //Setting graphics method
-            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            // Draws Background
+            g.FillRectangle(new SolidBrush(this.BackColor), this.ClientRectangle);
 
-            //Draw the background
-            g.Clear(_BackColor);
+            //Gets a list of rectangles
+            tabRectangles = new List<Rectangle>();
 
-            //Checks if the base control is null, if it is returns.
-            if (_basedTabControl == null) return;
-
-            //Reinvalidating the TabRectangles
-            TabRectangles = new List<Rectangle>();
-
-            //Initializing the StringFormat for drawing the string
-            StringFormat stringFormat = new StringFormat();
-            stringFormat.Alignment = StringAlignment.Near;
-            stringFormat.LineAlignment = StringAlignment.Center;
-
-            //Initializing the Font of the string
-            Font tabPageFont = new Font("Segoe UI", 11);
-
-            //Check if we should draw the Arrow Buttons
-            int AllTabWidth = _basedTabControl.TabPages.Count * rect_Width;
+            //Check if we should draw the arrow buttons
+            int AllTabWidth = basedTabControl.TabPages.Count * this._RectWidth;
             if (AllTabWidth >= this.Width)
-            {
-                //If StartX of Rectangle is equal to 0, set StartX to 32
-                if (StartX == 0)
-                {
-                    StartX = 32;
-                }
-            }
-            else
-            {
-                //Set StartX to 0 since we no longer need that button
-                StartX = 0;
-            }
+            { arrowEnable = true; } else { arrowEnable = false; }
 
-            //Initializing Left and Right move buttons
-            Rectangle leftMoveButton = new Rectangle(0, 0, 32, 32);
-            Rectangle rightMoveButton = new Rectangle(this.Width - 32, 0, 32, 32);
+            //Draw tabs
+            tabRectangles = GetTabRectangles();
+            foreach (Rectangle rect in tabRectangles)
+            { PaintTab(rect, g); }
 
-            // Tab Headers //
-            for (int i = 0; i < _basedTabControl.TabPages.Count; i++)
-            {
-
-                //Modifier for the text
-                int textModifier = 6;
-
-                //Icon box size
-                int iconSize = 18;
-
-                //Getting the rectangle of the Tab
-                Point tabRectLocation = new Point(rect_Width * i - (i + scrollInt) + StartX, 0);
-                Size tabRectSize = new Size(rect_Width, 32);
-                Rectangle tmpRectangle = new Rectangle(tabRectLocation, tabRectSize);
-
-                //Initializing the CloseButton Rectangle
-                Rectangle CloseButtonRectangle = new Rectangle(tmpRectangle.X + tmpRectangle.Width - 32, tmpRectangle.Y, 32, 32);
-
-                //Change FontRectangle position based on Icon
-                MaterialTabPage tmpTabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
-                if (tmpTabPage.icon != null) textModifier += iconSize;
-
-                //Font Rectangle
-                Rectangle fontRect = new Rectangle(tmpRectangle.X + textModifier, tmpRectangle.Y,
-                    tmpRectangle.Width - textModifier, tmpRectangle.Height);
-
-                //Getting the tab page text
-                string tabText = _basedTabControl.TabPages[i].Text;
-
-                //Check if the tab is selected
-                bool tabSelected = false;
-                if (_basedTabControl.SelectedTab == _basedTabControl.TabPages[i]) tabSelected = true;
-
-                //Close Button Hover Over
-                bool closeHover = false;
-                if (CloseButtonRectangle.Contains(this.PointToClient(MousePosition)))
-                {
-                    closeHover = true;
-                }
-
-                //Draw tab background
-                if (tabSelected)
-                {
-                    //Initializing the TabPageBrush
-                    Brush tabStringBrush = new SolidBrush(s_TextColor);
-
-                    // TabBackground //
-                    g.FillRectangle(new SolidBrush(s_TabBackColor), tmpRectangle);
-
-                    //Draw the tab border
-                    ControlPaint.DrawBorder(g, tmpRectangle, s_TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        s_TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        s_TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        s_TabBorderColor, 0, ButtonBorderStyle.Solid);
-
-                    //Drawing CloseButton
-                    if (_EnableCloseButton) { DrawCloseButton(CloseButtonRectangle, g, closeHover); }
-
-                    // TopBar //
-                    Rectangle topbarRect = new Rectangle(tmpRectangle.X, tmpRectangle.Y, tmpRectangle.Width, 3);
-                    g.FillRectangle(new SolidBrush(s_TabTopBarColor), topbarRect);
-
-                    //Setting alias for text
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                    // Font //
-                    g.DrawString(tabText, tabPageFont, tabStringBrush, fontRect, stringFormat);
-
-                    //Resetting smoothing mode
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
-
-                }
-                else if (StartX != 0 && leftMoveButton.Contains(this.PointToClient(MousePosition)) || rightMoveButton.Contains(this.PointToClient(MousePosition)))
-                {
-                    //Draw the default colors, will be oragnized later
-
-                    //Initializing the TabPageBrush
-                    Brush tabStringBrush = new SolidBrush(_TextColor);
-
-                    // TabBackground //
-                    g.FillRectangle(new SolidBrush(_TabBackColor), tmpRectangle);
-
-                    //Draw the tab border
-                    ControlPaint.DrawBorder(g, tmpRectangle, _TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        _TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        _TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        _TabBorderColor, 0, ButtonBorderStyle.Solid);
-
-                    //Drawing close button rectangle
-                    if (_EnableCloseButton) { DrawCloseButton(CloseButtonRectangle, g, closeHover); }
-
-                    // TopBar //
-                    Rectangle topbarRect = new Rectangle(tmpRectangle.X, tmpRectangle.Y, tmpRectangle.Width, 3);
-                    g.FillRectangle(new SolidBrush(_TabTopBarColor), topbarRect);
-
-                    //Setting alias for text
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                    // Font //
-                    g.DrawString(tabText, tabPageFont, tabStringBrush, fontRect, stringFormat);
-
-                    //Resetting smoothing mode
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
-                }
-                else if (tmpRectangle.Contains(this.PointToClient(MousePosition)))
-                {
-                    //Initializng the TabPageBrush
-                    Brush tabStringBrush = new SolidBrush(h_TextColor);
-
-                    // Tab Background //
-                    g.FillRectangle(new SolidBrush(h_TabBackColor), tmpRectangle);
-
-                    //Draw the tab border
-                    ControlPaint.DrawBorder(g, tmpRectangle, h_TabBackColor, 1, ButtonBorderStyle.Solid,
-                        h_TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        h_TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        h_TabBorderColor, 0, ButtonBorderStyle.Solid);
-
-                    //Draw close button rectangle
-                    if (_EnableCloseButton) { DrawCloseButton(CloseButtonRectangle, g, closeHover); }
-
-                    // TopBar //
-                    Rectangle topBarRect = new Rectangle(tmpRectangle.X, tmpRectangle.Y, tmpRectangle.Width, 3);
-                    g.FillRectangle(new SolidBrush(h_TabTopBarColor), topBarRect);
-
-                    //Setting alias for text
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                    // Font //
-                    g.DrawString(tabText, tabPageFont, tabStringBrush, fontRect, stringFormat);
-
-                    //Resetting smoothing mode
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
-                }
-                else
-                {
-                    //Initializing the TabPageBrush
-                    Brush tabStringBrush = new SolidBrush(_TextColor);
-
-                    // TabBackground //
-                    g.FillRectangle(new SolidBrush(_TabBackColor), tmpRectangle);
-
-                    //Draw the tab border
-                    ControlPaint.DrawBorder(g, tmpRectangle, _TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        _TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        _TabBorderColor, 1, ButtonBorderStyle.Solid,
-                        _TabBorderColor, 0, ButtonBorderStyle.Solid);
-
-                    // TopBar //
-                    Rectangle topbarRect = new Rectangle(tmpRectangle.X, tmpRectangle.Y, tmpRectangle.Width, 3);
-                    g.FillRectangle(new SolidBrush(_TabTopBarColor), topbarRect);
-
-                    //Drawing CloseButton
-                    if (_EnableCloseButton) { DrawCloseButton(CloseButtonRectangle, g, closeHover); }
-
-                    //Setting alias for text
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                    // Font //
-                    g.DrawString(tabText, tabPageFont, tabStringBrush, fontRect, stringFormat);
-
-                    //Resetting smoothing mode
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
-                }
-
-                //Draw the Icon
-                if (tmpTabPage.icon != null)
-                {
-                    //Getting the ICON rectangle
-                    Rectangle iconRectangle = new Rectangle(tmpRectangle.X + 5, tmpRectangle.Y + 7,
-                        iconSize, iconSize);
-
-                    Bitmap bitmap = new Bitmap(tmpTabPage.icon, iconSize, iconSize);
-
-                    //Setting all graphics options
-                    g.SmoothingMode = SmoothingMode.HighQuality;
-                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                    g.CompositingQuality = CompositingQuality.HighQuality;
-
-                    //Drawing icon
-                    g.DrawImage(tmpTabPage.icon, iconRectangle);
-                }
-
-                //Add the rectangle to the TabRects array
-                TabRectangles.Add(tmpRectangle);
-            }
-
-            //Draw the MoveButtons
-            if (StartX != 0)
-            {
-
-                //Initializing the StringFormat for drawing the string
-                StringFormat moveStringFormat = new StringFormat();
-                moveStringFormat.Alignment = StringAlignment.Center;
-                moveStringFormat.LineAlignment = StringAlignment.Center;
-
-                //Initializing the Font of the string
-                Font moveButtonFont = new Font("Segoe UI", 18);
-
-                //Draw left move button
-                g.FillRectangle(new SolidBrush(_TabBackColor), leftMoveButton);
-                ControlPaint.DrawBorder(g, leftMoveButton, _TabBorderColor, ButtonBorderStyle.Solid);
-                g.DrawString("<", moveButtonFont, new SolidBrush(_TextColor), leftMoveButton, moveStringFormat);
-
-                //Draw right move button
-                g.FillRectangle(new SolidBrush(_TabBackColor), rightMoveButton);
-                ControlPaint.DrawBorder(g, rightMoveButton, _TabBorderColor, ButtonBorderStyle.Solid);
-                g.DrawString(">", moveButtonFont, new SolidBrush(_TextColor), rightMoveButton, moveStringFormat);
-            }
-
-            //Draw the close button
-            if (EnableAddButton) { DrawAddTab(g); }
+            //Draws the arrow buttons
+            DrawArrowButton(g);
 
         }
 
-        /// <summary>
-        /// Used to invalidate the control on resize
-        /// </summary>
-        protected override void OnResize(EventArgs e)
-        {
-            base.OnResize(e);
+        #endregion Override Paint
 
-            //Invalidate the control
+        #region Paint Tab
+
+        private void PaintTab(Rectangle TabRectangle, Graphics g)
+        {
+            Status tabStatus = Status.Default;
+
+            MaterialTabPage tabPage = GetTabByPoint(TabRectangle);
+            if (basedTabControl.SelectedTab == tabPage) { tabStatus = Status.Selected; }
+            else if (TabRectangle.Contains(this.PointToClient(MousePosition)))
+            { tabStatus = Status.MouseOver; }
+
+            if (tabStatus == Status.Default)
+            {
+                PaintTab(TabRectangle, tabPage, g, tabBackColor, tabBorderColor, topBorderColor, tabStatus);
+            }
+            else if (tabStatus == Status.MouseOver)
+            {
+                PaintTab(TabRectangle, tabPage, g, h_tabBackColor, h_tabBorderColor, h_topBorderColor, tabStatus);
+            }
+            else if (tabStatus == Status.Selected)
+            {
+                PaintTab(TabRectangle, tabPage, g, s_tabBackColor, s_TabBorderColor, s_topBorderColor, tabStatus);
+            }
+        }
+
+        private void PaintTab(Rectangle TabRectangle, MaterialTabPage tabPage, Graphics g, Color BackColor, Color BorderColor, Color TopBorderColor, Status tabStatus)
+        {
+
+            int tabIndex = basedTabControl.TabPages.IndexOf(tabPage);
+
+            Color tabTextColor = Color.White;
+
+            //Draw background of the tab
+            g.FillRectangle(new SolidBrush(BackColor), TabRectangle);
+
+            //Draw borders of the tab
+            if ((tabIndex + 1) != basedTabControl.TabPages.Count)
+            {
+                ControlPaint.DrawBorder(g, TabRectangle, BackColor, 1, ButtonBorderStyle.Solid,
+                    BackColor, 1, ButtonBorderStyle.Solid, BorderColor, 1, ButtonBorderStyle.Solid,
+                    BackColor, 1, ButtonBorderStyle.Solid);
+            }
+
+            if (tabStatus == Status.Selected) { tabTextColor = Color.Black; }
+
+            //Draws the top border color
+            Rectangle drawRect = new Rectangle(new Point(TabRectangle.X, TabRectangle.Y), new Size(TabRectangle.Width, 3));
+            g.FillRectangle(new SolidBrush(TopBorderColor), drawRect);
+
+            int drawIcon = 0;
+            if (tabPage.icon != null)
+            {
+                int iconSize = 16; drawIcon = 22;
+                int y = (TabRectangle.Y + iconSize) / 2;
+                Rectangle iconRectangle = new Rectangle(new Point(y, y), new Size(iconSize, iconSize));
+                if (arrowEnable) { iconRectangle.X += 32; }
+                g.DrawImage(tabPage.icon, iconRectangle);
+            }
+
+            //Draws the text of the tab
+            StringFormat sf = new StringFormat(); sf.Alignment = StringAlignment.Near; sf.LineAlignment = StringAlignment.Center;
+            Rectangle tabTextRect = new Rectangle(TabRectangle.X + 6 + drawIcon, TabRectangle.Y, TabRectangle.Width - 6, TabRectangle.Height);
+            g.DrawString(tabPage.Text, new Font("Segoe UI", 11), new SolidBrush(tabTextColor), tabTextRect, sf);
+
+        }
+
+        #endregion Paint Tab
+
+        #region MouseEvents
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
             this.Invalidate();
+        }
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            base.OnMouseLeave(e);
+            this.Invalidate();
+        }
+
+        #endregion MouseEvents
+
+        #region Draw Arrow Button's
+
+        private void DrawArrowButton(Graphics g)
+        {
+            if (!arrowEnable) return;
+        }
+
+        #endregion Draw Arrow Button's
+
+        #region GetTabRect
+
+        private List<Rectangle> GetTabRectangles()
+        {
+            List<Rectangle> returnList = new List<Rectangle>();
+            int startX = 0;
+            if (this.arrowEnable) startX = 32;
+
+            foreach(MaterialTabPage page in basedTabControl.TabPages)
+            {
+                int tabIndex = basedTabControl.TabPages.IndexOf(page);
+                Rectangle tabRect = new Rectangle(new Point((this._RectWidth * tabIndex) + startX, 0), new Size(this._RectWidth, 32));
+                returnList.Add(tabRect);
+            }
+
+            return returnList;
+        }
+
+        #endregion GetTabRect
+
+        #region GetTabByPoint
+
+        private MaterialTabPage GetTabByPoint(Point point)
+        {
+            MaterialTabPage returnTabPage = null;
+            foreach(Rectangle rect in tabRectangles)
+            {
+                if (rect.Contains(this.PointToClient(point)))
+                { returnTabPage = (MaterialTabPage)basedTabControl.TabPages[tabRectangles.IndexOf(rect)]; }
+            }
+            return returnTabPage;
+        }
+        private MaterialTabPage GetTabByPoint(Rectangle rect)
+        {
+            MaterialTabPage returnTab = null;
+            for (int i = 0; i < tabRectangles.Count; i++)
+            {
+                if (tabRectangles[i].Contains(rect))
+                { returnTab = (MaterialTabPage)basedTabControl.TabPages[i]; }
+            }
+            return returnTab;
         }
 
         #endregion
 
         #region Drag'n'Drop
-        
-        /// <summary>
-        /// Occures when there is a Drag'n'Drop event over the control
-        /// </summary>
-        protected override void OnDragOver(DragEventArgs drgevent)
-        {
 
-            //Triggers base event
-            base.OnDragOver(drgevent);
 
-            //Get position of the Drag'n'Drop
-            Point pt = new Point(drgevent.X, drgevent.Y);
 
-            //Get the hover tab from TabPoint
-            MaterialTabPage hoverTab = GetTabByPoint(this.PointToClient(pt));
+        #endregion Drag'n'Drop
 
-            //Checks if the hover tab is is null
-            if (hoverTab != null)
-            {
-                //Set drag events
-                drgevent.Effect = DragDropEffects.Move;
-                var dragTab = drgevent.Data.GetData(typeof(MaterialTabPage));
+        #region Dispose
 
-                //Setting index for Item Drag and Drop Location
-                int item_drag_index = FindIndex((MaterialTabPage)dragTab);
-                int drop_Location_Index = FindIndex(hoverTab);
 
-                //Setting the PreDraggedTab
-                preDraggedTab = (MaterialTabPage)dragTab;
 
-                //Making sure the index is not equal to the origional index
-                if (item_drag_index != drop_Location_Index)
-                {
-                    //Initializing the Array
-                    ArrayList pages = new ArrayList();
-
-                    //For each tab page
-                    for (int i = 0; i < _basedTabControl.TabPages.Count; i++)
-                    {
-                        if (i != item_drag_index) pages.Add(_basedTabControl.TabPages[i]);
-                    }
-
-                    //Insert page into the Drop iNDEX
-                    pages.Insert(drop_Location_Index, (MaterialTabPage)dragTab);
-
-                    //Clearing TabPages from the tab control
-                    _basedTabControl.TabPages.Clear();
-
-                    //Adding tab pages to the BasedTabControl
-                    _basedTabControl.TabPages.AddRange((MaterialTabPage[])pages.ToArray(typeof(MaterialTabPage)));
-
-                    //Selecting the DragTab
-                    _basedTabControl.SelectedTab = (MaterialTabPage)dragTab;
-
-                    //Triggers event
-                    TabDragComplete?.Invoke(this, new EventArgs());
-                }
-            }
-            else
-            {
-                //Setting DragDropEffects to none
-                drgevent.Effect = DragDropEffects.None;
-            }
-        }
-
-        /// <summary>
-        /// Processes if the drag has occured out of the control
-        /// </summary>
-        protected override void OnQueryContinueDrag(QueryContinueDragEventArgs qcdevent)
-        {
-            base.OnQueryContinueDrag(qcdevent);
-
-            try
-            {
-                //If this control does not contain the mouse position, trigger the event
-                if (!this.ClientRectangle.Contains(this.PointToClient(MousePosition)) && qcdevent.KeyState != 1)
-                {
-                    //Checks if the tab is in the parent or in a diffrent tab control
-                    if (preDraggedTab.Parent == this.BasedTabControl)
-                    {
-                        //Trigger the event
-                        TabDragOut?.Invoke(this, new TabDragOutArgs { DraggedTab = preDraggedTab });
-                    }
-                }
-            }
-            catch { }
-        }
-
-        #region Drag'n'Drop Method's
-
-        /// <summary>
-        /// Get the TabPage based on the Point of the mouse
-        /// </summary>
-        private MaterialTabPage GetTabByPoint(Point mousePoint)
-        {
-            //The return value of this method
-            MaterialTabPage returnTabPage = null;
-
-            //For loop for each tab
-            for (int i = 0; i < TabRectangles.Count(); i++)
-            {
-                //Checks if the point is located in the rectangle
-                if (TabRectangles[i].Contains(mousePoint))
-                {
-                    //Set the tab page to the rectangle tab page
-                    returnTabPage = (MaterialTabPage)_basedTabControl.TabPages[i];
-
-                    //Exit out of the for loop
-                    break;
-                }
-            }
-
-            //Returns the method
-            return returnTabPage;
-        }
-
-        /// <summary>
-        /// Gets the index of the Tab(arg0)
-        /// </summary>
-        private int FindIndex(TabPage tab)
-        {
-            //For each Tab, see if index is equal to I
-            for (int i = 0; i < _basedTabControl.TabPages.Count; i++)
-            {
-                //Checks if TabPages is equal to Tab
-                if (_basedTabControl.TabPages[i] == tab)
-                {
-                    //Returns the int I
-                    return i;
-                }
-            }
-
-            //Returns -1 as error
-            return -1;
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Mouse Events / Drag'n'Drop Mouse Events
-
-        //Design timer to invalidate the control
-        Timer designTimer = new Timer();
-
-        /// <summary>
-        /// Start the desgin timer when the mouse has enter the control
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnMouseEnter(EventArgs e)
-        {
-            base.OnMouseEnter(e);
-
-            //Set the design timer tick event
-            designTimer.Tick += ((obj, args) =>
-            {
-                this.Invalidate();
-            }); designTimer.Start();
-        }
-
-        /// <summary>
-        /// Invalidates the control
-        /// </summary>
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            base.OnMouseLeave(e);
-
-            //Invalidate the control
-            this.Invalidate();
-
-            //Stop the design timer
-            designTimer.Stop();
-        }
-
-        /// <summary>
-        /// Used to show a new tab / drag event
-        /// </summary>
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            base.OnMouseDown(e);
-
-            //Private vars
-            MaterialTabPage tp = GetTabByPoint(new Point(e.X, e.Y));
-
-            isSpaceAvailable = true;
-
-            //Handle Left and Right buttons
-            if (StartX != 0)
-            {
-                //Rectangle for the LeftButton
-                Rectangle leftButtonRect = new Rectangle(0, 0, 32, 32);
-                Rectangle rightButtonRect = new Rectangle(this.Width - 32, 0, 32, 32);
-
-                //Check if the mouse is in the rectangle for the left button
-                if (leftButtonRect.Contains(this.PointToClient(MousePosition)))
-                {
-                    //Activate the LeftScrollingMethod
-                    ScrollLeft();
-                    isSpaceAvailable = false;
-
-                    return;
-                }
-
-                //Check if the mouse is in the rectangle for the Right Button
-                if (rightButtonRect.Contains(this.PointToClient(MousePosition)))
-                {
-                    //Activate the RightScrollingMethod
-                    ScrollRight();
-                    isSpaceAvailable = false;
-
-                    return;
-                }
-            }
-
-            //Check if you click the close button
-            if (_EnableCloseButton)
-            {
-                //Getting the based rectangle
-                Rectangle tp_rect = new Rectangle(0, 0, 0, 0);
-
-                //Get the tab rectangle
-                for (int i = 0; i < TabRectangles.Count; i++)
-                {
-                    if (TabRectangles[i].Contains(PointToClient(MousePosition)))
-                    {
-                        isSpaceAvailable = false;
-                        tp_rect = TabRectangles[i];
-                        break;
-                    }
-                }
-
-                //Initializing the CloseButton Rectangle
-                Rectangle CloseButtonRectangle = new Rectangle(tp_rect.X + tp_rect.Width - 32, tp_rect.Y, 32, 32);
-
-                //Checking if mouse is over this rectangle
-                if (CloseButtonRectangle.Contains(this.PointToClient(MousePosition)))
-                {
-                    //Dispose of tab page
-                    _basedTabControl.TabPages.Remove(tp);
-
-                    //Remove all of the controls from the tab page
-                    foreach (Control control in tp.Controls)
-                    {
-                        isSpaceAvailable = false;
-
-                        //Remove and dispose of control
-                        tp.Controls.Remove(control);
-                        control.Dispose();
-                    }
-
-                    //Dispose of tab page
-                    tp.Dispose();
-
-                    return;
-
-                }
-            }
-
-            //Add Button
-            if (EnableAddButton)
-            {
-                //Checks if the AddTabButton has been clicked
-                if (GetAddTabRectangle().Contains(PointToClient(MousePosition)))
-                {
-                    //New tab page that is being added
-                    MaterialTabPage tabPage = new MaterialTabPage();
-
-                    isSpaceAvailable = false;
-
-                    //Add the tab page
-                    _basedTabControl.TabPages.Add(tabPage);
-                    _basedTabControl.SelectTab(tabPage);
-
-                    //Trigger the event
-                    NewTabButtonClick?.Invoke(this, new NewTabButtonClickedArgs { NewTabpage = tabPage });
-
-                }
-            }
-
-            if (tp != null && BasedTabControl.SelectedTab == tp)
-            {
-                this.DoDragDrop(tp, DragDropEffects.All);
-            }
-
-            if (tp != null && TabRectangles[BasedTabControl.TabPages.IndexOf(tp)].Contains(PointToClient(MousePosition)))
-            {
-                BasedTabControl.SelectedTab = tp;
-            }
-
-        }
-
-        /// <summary>
-        /// Used to move the form when the mouse is down
-        /// </summary>
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-            
-            //Detect if the mouse is down
-            if (e.Button == MouseButtons.Left)
-            {
-                //Try to move the form externally
-                Console.WriteLine(isSpaceAvailable);
-                //if (isSpaceAvailable) { ((MaterialForm)this.Parent).MoveFormExternal(true); }
-            }
-        }
-
-        #endregion
-
-        #region Paint Method's
-
-        /// <summary>
-        /// Used to draw the CloseRectangle
-        /// </summary>
-        /// <param name="CloseRectangle">The rectangle for drawing</param>
-        /// <param name="g">Paint graphics used to draw the rectangle</param>
-        /// <param name="IsHovered">If the control is hovered</param>
-        private void DrawCloseButton(Rectangle CloseRectangle, Graphics g, bool IsHovered)
-        {
-
-            //Initializing the StringFormat for drawing the string
-            StringFormat stringFormat = new StringFormat();
-            stringFormat.Alignment = StringAlignment.Center;
-            stringFormat.LineAlignment = StringAlignment.Center;
-
-            //Initializing the Font of the string
-            Font closeButtonFont = new Font("Segoe UI", 18);
-
-            //Modifier for the Text
-            int Modifier = 1;
-
-            //Check if the control is hovered over.
-            if (IsHovered)
-            {
-                g.FillRectangle(new SolidBrush(_CloseButtonColor), CloseRectangle);
-            }
-
-            //Draw the string 
-            g.DrawString("X", closeButtonFont, new SolidBrush(_TextColor), new Rectangle(
-                CloseRectangle.X,
-                CloseRectangle.Y + Modifier,
-                CloseRectangle.Width,
-                CloseRectangle.Height)
-            , stringFormat);
-
-
-        }
-
-        #endregion
-
-        #region IsMouseOverCloseButton
-
-        public bool IsMouseOverCloseButton()
-        {
-            //Getting the based rectangle
-            Rectangle tp_rect = new Rectangle(0, 0, 0, 0);
-
-            //Get the tab rectangle
-            for (int i = 0; i < TabRectangles.Count; i++)
-            {
-                if (TabRectangles[i].Contains(PointToClient(MousePosition)))
-                {
-                    isSpaceAvailable = false;
-                    tp_rect = TabRectangles[i];
-                    break;
-                }
-            }
-
-            //Initializing the CloseButton Rectangle
-            Rectangle CloseButtonRectangle = new Rectangle(tp_rect.X + tp_rect.Width - 32, tp_rect.Y, 32, 32);
-            if (CloseButtonRectangle.Contains(this.PointToClient(MousePosition))) { return true; } else { return false; }
-        }
-
-        #endregion
-
-        #region Add Button
-
-        /// <summary>
-        /// Calculates where the AddTab should be
-        /// </summary>
-        /// <returns>the rectangle for the AddTabRectangle</returns>
-        private Rectangle GetAddTabRectangle()
-        {
-
-            try
-            {
-                //Initialize a private LastTabRect and CloseButtonRect
-                Rectangle AddTabRect;
-                Rectangle LastTabRect = TabRectangles[_basedTabControl.TabPages.Count - 1];
-
-                //Set the CloseButtonRect based on the LastTabRect
-                AddTabRect = new Rectangle(LastTabRect.X + LastTabRect.Width,
-                    LastTabRect.Y, this.Height, this.Height);
-
-                //returns the CloseButtonRect
-                return AddTabRect;
-            }
-            catch
-            {
-                return new Rectangle(0, 0, 0, 0);
-            }
-        }
-
-        /// <summary>
-        /// Draw the string of the DrawAddButton
-        /// </summary>
-        /// <param name="g">Graphics used to draw the text for the AddButton</param>
-        private void DrawAddText(Graphics g)
-        {
-            //Initializing the StringFormat for drawing the string
-            StringFormat stringFormat = new StringFormat();
-            stringFormat.Alignment = StringAlignment.Center;
-            stringFormat.LineAlignment = StringAlignment.Center;
-
-            //Initializing the Font of the string
-            Font buttonFont = new Font("Segoe UI", 18);
-
-            g.DrawString("+", buttonFont, new SolidBrush(_TextColor), GetAddTabRectangle(), stringFormat);
-        }
-
-        /// <summary>
-        /// Draw the close button 
-        /// </summary>
-        /// <param name="g">Graphics used to draw the add button</param>
-        private void DrawAddTab(Graphics g)
-        {
-            //Draw the background of the rectangle
-            if (!GetAddTabRectangle().Contains(PointToClient(MousePosition)))
-            {
-                g.FillRectangle(new SolidBrush(_AddButtonBackColor), GetAddTabRectangle());
-            }
-            else { g.FillRectangle(new SolidBrush(_AddButtonHoverColor), GetAddTabRectangle()); }
-
-            //Draw the text of the AddButton
-            DrawAddText(g);
-        }
-
-        #endregion
-        bool spa = false;
-        private bool isSpaceAvailable
-        {
-             get { return spa; }
-            set { spa = value; this.Invalidate(); }
-        }
-
-        #region GetTabRect
-
-        /// <summary>
-        /// yGet the tab rectangle based on the tab
-        /// </summary>
-        private Rectangle GetTabRect(TabPage tab)
-        {
-            Rectangle returnRect = new Rectangle(0, 0, 0, 0);
-
-            //For each tab page
-            for (int i = 0; i < _basedTabControl.TabPages.Count; i++)
-            {
-                if (_basedTabControl.TabPages[i] == tab)
-                {
-                    returnRect = TabRectangles[i];
-                }
-            }
-
-            //Returns the rectangle
-            return returnRect;
-        }
-
-        #endregion
-
-        #region Scrolling
-
-        //Vars for scrolling
-        int endScrollInt = 0;
-        int rightTimerTickStep = 0;
-        int leftTimerTickStep = 0;
-
-        bool isScrolling = false;
-
-        /// <summary>
-        /// Used to scroll left with a smooth animation
-        /// </summary>
-        public void ScrollLeft()
-        {
-            //Returns if scrolling right
-            if (isScrolling) { return; }
-
-            //Cancel if there is enough room
-            int AllTabWidth = _basedTabControl.TabPages.Count * rect_Width;
-            if (ScrollInt == 0) { return; }
-
-            //Initializing the timer
-            Timer leftTimer = new Timer();
-            leftTimer.Tick += ((obj, args) =>
-            {
-
-                //Check if animation is equal to 1.5 seconds long
-                if (leftTimerTickStep == 30)
-                {
-                    //Set scroll int to EndScrollInt
-                    ScrollInt = endScrollInt;
-
-                    //Stop the timer
-                    leftTimer.Stop();
-
-                    //Set is scrolling to false
-                    isScrolling = false;
-                }
-                else
-                {
-
-                    //Getting the Temp scroll int
-                    int tmpScrollInt = ((31 - leftTimerTickStep) / 6) * ((31 - leftTimerTickStep) / 6);
-
-                    //Check if the Scroll Int will be higher then the end scroll int
-                    if ((tmpScrollInt - ScrollInt) == endScrollInt)
-                    {
-                        //Set the scroll int to the end scroll int
-                        ScrollInt = endScrollInt;
-
-                        //Stop the timer
-                        leftTimer.Stop();
-
-                        //Set is scroling to false
-                        isScrolling = false;
-                    }
-                    else
-                    {
-                        //Add to the scroll int
-                        ScrollInt -= Convert.ToInt32(tmpScrollInt);
-                    }
-                }
-
-                //Increase TimerTickStep by one.
-                leftTimerTickStep++;
-
-            });
-
-            //Setting based values
-            endScrollInt = ScrollInt - rect_Width + 1;
-            leftTimerTickStep = 0;
-            isScrolling = true;
-
-            //Setting the timer to 60Hz refresh rate
-            leftTimer.Interval = 1;
-
-            //Starting the timer
-            leftTimer.Start();
-        }
-
-        /// <summary>
-        /// Used to scroll right with a smooth animation
-        /// </summary>
-        public void ScrollRight()
-        {
-            //Returns if scrolling right
-            if (isScrolling) { return; }
-
-            //Cancel if there is enough room
-            int AllTabWidth = _basedTabControl.TabPages.Count * rect_Width;
-            if ((AllTabWidth - ScrollInt) <= this.Width) { return; }
-
-            //Initializing the timer
-            Timer rightTimer = new Timer();
-            rightTimer.Tick += ((obj, args) =>
-            {
-
-                //Check if animation is equal to 1.5 seconds long
-                if (rightTimerTickStep == 30)
-                {
-                    //Set scroll int to EndScrollInt
-                    ScrollInt = endScrollInt;
-
-                    //Stop the timer
-                    rightTimer.Stop();
-
-                    //Set is scrolling to false
-                    isScrolling = false;
-                }
-                else
-                {
-
-                    //Getting the Temp scroll int
-                    int tmpScrollInt = ((31 - rightTimerTickStep) / 6) * ((31 - rightTimerTickStep) / 6);
-
-                    //Check if the Scroll Int will be higher then the end scroll int
-                    if ((tmpScrollInt + ScrollInt) == endScrollInt)
-                    {
-                        //Set the scroll int to the end scroll int
-                        ScrollInt = endScrollInt;
-
-                        //Stop the timer
-                        rightTimer.Stop();
-
-                        //Set is scroling to false
-                        isScrolling = false;
-                    }
-                    else
-                    {
-                        //Add to the scroll int
-                        ScrollInt += Convert.ToInt32(tmpScrollInt);
-                    }
-                }
-
-                //Increase TimerTickStep by one.
-                rightTimerTickStep++;
-
-            });
-
-            //Setting based values
-            endScrollInt = ScrollInt + rect_Width - 1;
-            rightTimerTickStep = 0;
-            isScrolling = true;
-
-            //Setting the timer to 60Hz refresh rate
-            rightTimer.Interval = 1;
-
-            //Starting the timer
-            rightTimer.Start();
-        }
-
-        #endregion
-
+        #endregion Dispose
     }
 }

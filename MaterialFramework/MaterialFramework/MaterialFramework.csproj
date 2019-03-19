@@ -74,6 +74,9 @@
     <Compile Include="Controls\Tab Control\MaterialTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\Tab Control\Tab Header\TabHeader-old.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Controls\Tab Control\Tab Header\TabHeader.cs">
       <SubType>UserControl</SubType>
     </Compile>

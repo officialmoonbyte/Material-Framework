@@ -19,25 +19,7 @@ namespace Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Panel panel = new Panel();
-            panel.Location = new Point(1, 1);
-            panel.Size = new Size(this.Width - 2, this.Height - 2);
-            panel.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom);
-            panel.MouseMove += (obj, args) =>
-            {
-                bool result; if (args.Button == MouseButtons.Left) { result = true; } else { result = false; }
-                this.MouseMoveExternal(result);
-            };
-            panel.MouseDown += (obj, args) =>
-            {
-                bool result; if (args.Button == MouseButtons.Left) { result = true; } else { result = false; }
-                this.MouseDownExternal(result);
-            };
-            panel.MouseUp += (obj, args) =>
-            {
-                this.MouseUpExternal();
-            };
-            //this.Controls.Add(panel);
+            materialTabPage1.icon = Image.FromFile(@"C:\Users\Alexander Ritter\source\repos\protection.ico");
         }
 
         private void flatButton1_Click(object sender, EventArgs e)
