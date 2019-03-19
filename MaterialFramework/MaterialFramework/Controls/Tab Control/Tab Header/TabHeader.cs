@@ -1085,6 +1085,31 @@ namespace IndieGoat.MaterialFramework.Controls
 
         #endregion
 
+        #region IsMouseOverCloseButton
+
+        public bool IsMouseOverCloseButton()
+        {
+            //Getting the based rectangle
+            Rectangle tp_rect = new Rectangle(0, 0, 0, 0);
+
+            //Get the tab rectangle
+            for (int i = 0; i < TabRectangles.Count; i++)
+            {
+                if (TabRectangles[i].Contains(PointToClient(MousePosition)))
+                {
+                    isSpaceAvailable = false;
+                    tp_rect = TabRectangles[i];
+                    break;
+                }
+            }
+
+            //Initializing the CloseButton Rectangle
+            Rectangle CloseButtonRectangle = new Rectangle(tp_rect.X + tp_rect.Width - 32, tp_rect.Y, 32, 32);
+            if (CloseButtonRectangle.Contains(this.PointToClient(MousePosition))) { return true; } else { return false; }
+        }
+
+        #endregion
+
         #region Add Button
 
         /// <summary>
