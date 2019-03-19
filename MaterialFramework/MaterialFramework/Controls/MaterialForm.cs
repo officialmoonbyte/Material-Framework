@@ -31,9 +31,9 @@ namespace MaterialFramework.Controls
         //
         // FormControl Buttons
         //
-        CloseButton closebutton;
-        MaxButton maxbutton;
-        MinButton minbutton;
+        public CloseButton closebutton;
+        public MaxButton maxbutton;
+        public MinButton minbutton;
 
         #endregion Internal Vars
 
@@ -315,14 +315,16 @@ namespace MaterialFramework.Controls
             //
             // Form Icon
             //
-            Icon image = this.Icon;
-            Rectangle iconRectangle = new Rectangle(new Point(6, 6), new Size(20, 20));
-            g.DrawIcon(image, iconRectangle);
+            if (this.ShowIcon)
+            { Icon image = this.Icon;
+                Rectangle iconRectangle = new Rectangle(new Point(6, 6), new Size(20, 20));
+                g.DrawIcon(image, iconRectangle); }
 
             //
             // Form Title
             //
-            g.DrawString(this.Text, this.Font, new SolidBrush(titleColor), new Point(28, 6));
+            if (_showTitle)
+            { g.DrawString(this.Text, this.Font, new SolidBrush(titleColor), new Point(28, 6)); }
 
             this.ResumeLayout();
         }
