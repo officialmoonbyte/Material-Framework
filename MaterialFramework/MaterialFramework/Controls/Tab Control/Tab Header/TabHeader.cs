@@ -994,6 +994,9 @@ namespace MaterialFramework.Controls
 
         protected override void Dispose(bool disposing)
         {
+            foreach(Control c in this.Controls)
+            { c.Dispose(); }
+
             base.Dispose(disposing);
         }
 

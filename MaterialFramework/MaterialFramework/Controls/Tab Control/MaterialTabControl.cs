@@ -134,6 +134,16 @@ namespace IndieGoat.MaterialFramework.Controls
             }
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            foreach(MaterialTabPage tabPage in this.TabPages)
+            { foreach (Control c in tabPage.Controls)
+                { c.Dispose(); } tabPage.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
         /// <summary>
         /// Overrides the designer and only draw's the TabPage
         /// </summary>
