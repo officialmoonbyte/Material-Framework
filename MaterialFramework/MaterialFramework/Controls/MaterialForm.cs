@@ -457,7 +457,7 @@ namespace MaterialFramework.Controls
 
         #region MouseMoveExternal
 
-        public void MouseMoveExternal(bool button)
+        public void MouseMoveExternal(bool button, bool ext = false)
         {
             if (isResizing())
             {
@@ -465,10 +465,15 @@ namespace MaterialFramework.Controls
                 else if (resizeStatus == ResizeStatus.Bottom) { Cursor.Current = Cursors.SizeNS; }
                 else if (resizeStatus == ResizeStatus.BottomRight) { Cursor.Current = Cursors.SizeNWSE; }
                 else if (resizeStatus == ResizeStatus.BottomLeft) { Cursor.Current = Cursors.SizeNESW; }
-            } else if (button && HeaderRectangle.Contains(PointToClient(MousePosition)) && !isFormResizing)
+            } else if (button && !isFormResizing)
             {
-                //Detects if it is resizing
-                CalculateMouseMovement();
+                if (HeaderRectangle.Contains(PointToClient(MousePosition)))
+                {
+                    CalculateMouseMovement();
+                } else if (ext == true)
+                {
+                    CalculateMouseMovement();
+                }
             }
         }
 
@@ -652,8 +657,7 @@ namespace MaterialFramework.Controls
 
                 isSnapped = true;
             }
-            Console.WriteLine(MousePosition.X);
-            Console.WriteLine(currentScreen.Bounds.Width);
+
             //
             // Snap to the right
             //
@@ -1420,4 +1424,5 @@ namespace MaterialFramework.Controls
     }
 
     #endregion
+
 }

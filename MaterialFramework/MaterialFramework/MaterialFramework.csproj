@@ -74,18 +74,13 @@
     <Compile Include="Controls\Tab Control\MaterialTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\Tab Control\Tab Header\TabHeader-old.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Tab Control\Tab Header\TabHeader.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\Tab Control\Tab Header\TabDragOutArgs.cs" />
+    <Compile Include="Controls\Tab Control\Tab Header\TabHeader.cs" />
     <Compile Include="Events\GenericNewTabButtonClickArgs.cs" />
     <Compile Include="Events\GenericTabDragOutArgs.cs" />
-    <Compile Include="Events\NewTabButtonClickedArgs.cs" />
-    <Compile Include="Events\TabDragOutArgs.cs" />
     <Compile Include="Events\TabIconChangeArgs.cs" />
     <Compile Include="Events\TrackBarValueChangedArgs.cs" />
+    <Compile Include="ILogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
