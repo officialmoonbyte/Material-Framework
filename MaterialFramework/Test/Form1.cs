@@ -25,5 +25,10 @@ namespace Test
         {
            
         }
+
+        private void TabHeader1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

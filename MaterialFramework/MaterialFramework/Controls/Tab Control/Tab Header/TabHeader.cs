@@ -459,7 +459,7 @@ namespace MaterialFramework.Controls
         private Rectangle GetPlusRectangle()
         {
             int start = _RectWidth * this.BasedTabControl.TabPages.Count -+ this.sizeX;
-            if (_showNewTabButton)
+            if (_showNewTabButton && _showArrowButton)
             {
                 return new Rectangle(new Point(start + 30, 0), new Size(32, 32));
             }
@@ -498,18 +498,25 @@ namespace MaterialFramework.Controls
             Rectangle rightArrow = GetRightRectangle();
             Rectangle plusRectangle = GetPlusRectangle();
 
+            bool continueMethod = true;
+
             if (_showNewTabButton)
             {
                 if (plusRectangle.Contains(this.PointToClient(MousePosition)))
                 {
                     MaterialTabPage NewTab = new MaterialTabPage();
 
-                    this.basedTabControl.TabPages.Add(NewTab);
+                    NewTab.Text = "New Tab";
 
+                    this.basedTabControl.TabPages.Add(NewTab);
+                    this.basedTabControl.SelectedTab = NewTab;
+
+                    continueMethod = false;
                     NewTabButtonClick?.Invoke(this, new NewTabButtonClickedEventArgs { NewTabPage = NewTab });
                 }
             }
-            else if (tp != null)
+
+            if (tp != null && continueMethod)
             {
                 this.tabRectangles = this.GetTabRectangles();
                 int tabIndex = this.basedTabControl.TabPages.IndexOf(tp); Rectangle TabRectangle = this.tabRectangles[tabIndex];
@@ -576,7 +583,9 @@ namespace MaterialFramework.Controls
 
         private void DrawArrowButton(Graphics g, Rectangle leftRectangle, Rectangle rightRectangle)
         {
-            if (_ArrowButtonEnable)
+            Console.WriteLine(_ArrowButtonEnable);
+            Console.WriteLine(_showArrowButton);
+            if (_ArrowButtonEnable && _showArrowButton)
             {
                 Color buttonBorderColor = Color.FromArgb(164, 171, 182);
                 Color buttonBackColor = Color.FromArgb(35, 35, 64);

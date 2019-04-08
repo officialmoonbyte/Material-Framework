@@ -119,16 +119,16 @@
             this.tabHeader1.AllowDrop = true;
             this.tabHeader1.BackColor = System.Drawing.Color.Transparent;
             this.tabHeader1.BasedTabControl = this.materialTabControl1;
-            this.tabHeader1.EnableArrowButton = false;
-            this.tabHeader1.EnableCloseButton = false;
-            this.tabHeader1.EnableNewTabButton = false;
+            this.tabHeader1.EnableArrowButton = true;
+            this.tabHeader1.EnableCloseButton = true;
+            this.tabHeader1.EnableNewTabButton = true;
             this.tabHeader1.HoverTabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(57)))), ((int)(((byte)(84)))));
             this.tabHeader1.HoverTabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.tabHeader1.HoverTabTopBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(171)))), ((int)(((byte)(182)))));
             this.tabHeader1.Location = new System.Drawing.Point(60, 143);
             this.tabHeader1.Name = "tabHeader1";
             this.tabHeader1.ScrollInt = 0;
-            this.tabHeader1.Size = new System.Drawing.Size(1062, 32);
+            this.tabHeader1.Size = new System.Drawing.Size(696, 32);
             this.tabHeader1.TabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
             this.tabHeader1.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.tabHeader1.TabIndex = 5;
@@ -137,6 +137,7 @@
             this.tabHeader1.TabSelectedBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.tabHeader1.TabSelectedTopColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(132)))), ((int)(((byte)(255)))));
             this.tabHeader1.TopBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
+            this.tabHeader1.Load += new System.EventHandler(this.TabHeader1_Load);
             // 
             // Form1
             // 
