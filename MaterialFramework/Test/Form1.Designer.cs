@@ -128,7 +128,7 @@
             this.tabHeader1.Location = new System.Drawing.Point(60, 143);
             this.tabHeader1.Name = "tabHeader1";
             this.tabHeader1.ScrollInt = 0;
-            this.tabHeader1.Size = new System.Drawing.Size(696, 32);
+            this.tabHeader1.Size = new System.Drawing.Size(746, 32);
             this.tabHeader1.TabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
             this.tabHeader1.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.tabHeader1.TabIndex = 5;
