@@ -604,7 +604,7 @@ namespace MaterialFramework.Controls
         public void CalculateMouseMovement()
         {
             Screen currentScreen = GetCurrentScreen();
-            Size screenWorkingArea = Screen.FromControl(this).Bounds.Size;
+            Size screenWorkingArea = Screen.FromControl(this).WorkingArea.Size;
             Point mouseLocation = this.PointToClient(Cursor.Position);
 
             //Detects if the form is snapped
@@ -633,6 +633,7 @@ namespace MaterialFramework.Controls
             mouseLocation = Cursor.Position;
 
             this.SuspendLayout();
+            currentScreen = GetCurrentScreen();
 
             //
             // Snap to the left

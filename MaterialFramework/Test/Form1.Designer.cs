@@ -29,9 +29,7 @@
         private void InitializeComponent()
         {
             this.materialTabControl1 = new IndieGoat.MaterialFramework.Controls.MaterialTabControl();
-            this.materialTabPage1 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
             this.materialTabPage2 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
-            this.materialTabPage3 = new IndieGoat.MaterialFramework.Controls.MaterialTabPage();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabHeader1 = new MaterialFramework.Controls.TabHeader();
@@ -57,24 +55,12 @@
             // 
             // materialTabControl1
             // 
-            this.materialTabControl1.Controls.Add(this.materialTabPage1);
             this.materialTabControl1.Controls.Add(this.materialTabPage2);
-            this.materialTabControl1.Controls.Add(this.materialTabPage3);
             this.materialTabControl1.Location = new System.Drawing.Point(301, 201);
             this.materialTabControl1.Name = "materialTabControl1";
             this.materialTabControl1.SelectedIndex = 0;
             this.materialTabControl1.Size = new System.Drawing.Size(537, 100);
             this.materialTabControl1.TabIndex = 4;
-            // 
-            // materialTabPage1
-            // 
-            this.materialTabPage1.BackColor = System.Drawing.Color.Transparent;
-            this.materialTabPage1.Location = new System.Drawing.Point(4, 30);
-            this.materialTabPage1.Name = "materialTabPage1";
-            this.materialTabPage1.Size = new System.Drawing.Size(529, 66);
-            this.materialTabPage1.TabIndex = 0;
-            this.materialTabPage1.Text = "tabPage1";
-            this.materialTabPage1.Visible = false;
             // 
             // materialTabPage2
             // 
@@ -85,14 +71,6 @@
             this.materialTabPage2.TabIndex = 1;
             this.materialTabPage2.Text = "tabPage2";
             this.materialTabPage2.Visible = false;
-            // 
-            // materialTabPage3
-            // 
-            this.materialTabPage3.Location = new System.Drawing.Point(4, 30);
-            this.materialTabPage3.Name = "materialTabPage3";
-            this.materialTabPage3.Size = new System.Drawing.Size(529, 66);
-            this.materialTabPage3.TabIndex = 2;
-            this.materialTabPage3.Text = "materialTabPage3";
             // 
             // tabPage1
             // 
@@ -125,10 +103,10 @@
             this.tabHeader1.HoverTabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(57)))), ((int)(((byte)(84)))));
             this.tabHeader1.HoverTabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.tabHeader1.HoverTabTopBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(171)))), ((int)(((byte)(182)))));
-            this.tabHeader1.Location = new System.Drawing.Point(60, 143);
+            this.tabHeader1.Location = new System.Drawing.Point(110, 0);
             this.tabHeader1.Name = "tabHeader1";
             this.tabHeader1.ScrollInt = 0;
-            this.tabHeader1.Size = new System.Drawing.Size(696, 32);
+            this.tabHeader1.Size = new System.Drawing.Size(670, 32);
             this.tabHeader1.TabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
             this.tabHeader1.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.tabHeader1.TabIndex = 5;
@@ -167,11 +145,9 @@
         #endregion
 
         private IndieGoat.MaterialFramework.Controls.MaterialTabControl materialTabControl1;
-        private IndieGoat.MaterialFramework.Controls.MaterialTabPage materialTabPage1;
         private IndieGoat.MaterialFramework.Controls.MaterialTabPage materialTabPage2;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private IndieGoat.MaterialFramework.Controls.MaterialTabPage materialTabPage3;
         private MaterialFramework.Controls.TabHeader tabHeader1;
     }
 }
