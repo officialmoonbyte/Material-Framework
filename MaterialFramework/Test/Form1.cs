@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Moonbyte.MaterialFramework.Controls;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -13,12 +14,12 @@ namespace Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            MaterialTextBox textBox = new MaterialTextBox();
+            textBox.Text = "";
+            textBox.Width = 300;
+            textBox.Location = new Point(40, 40);
 
-
-            tabHeader1.MouseMove += (obj, args) => {
-                if (tabHeader1.MouseOverRect() == false && args.Button == MouseButtons.Left)
-                { this.MouseMoveExternal(true, true); }
-            };
+            this.Controls.Add(textBox);
         }
 
         private void flatButton1_Click(object sender, EventArgs e)
