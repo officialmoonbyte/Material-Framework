@@ -30,6 +30,7 @@
         {
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.materialLabel1 = new IndieGoat.MaterialFramework.Controls.MaterialLabel();
             this.SuspendLayout();
             // 
             // closebutton
@@ -69,25 +70,46 @@
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // materialLabel1
+            // 
+            this.materialLabel1.AutoSize = true;
+            this.materialLabel1.BackColor = System.Drawing.Color.Transparent;
+            this.materialLabel1.Font = new System.Drawing.Font("Segoe UI", 18F);
+            this.materialLabel1.Location = new System.Drawing.Point(460, 184);
+            this.materialLabel1.Name = "materialLabel1";
+            this.materialLabel1.Size = new System.Drawing.Size(170, 32);
+            this.materialLabel1.TabIndex = 3;
+            this.materialLabel1.Text = "materialLabel1";
+            this.materialLabel1.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1213, 423);
+            this.Controls.Add(this.materialLabel1);
             this.Controls.Add(this.closebutton);
             this.Controls.Add(this.maxbutton);
             this.Controls.Add(this.minbutton);
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "Form1";
+            this.Sizeable = false;
+            this.Snapable = false;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Controls.SetChildIndex(this.minbutton, 0);
+            this.Controls.SetChildIndex(this.maxbutton, 0);
+            this.Controls.SetChildIndex(this.closebutton, 0);
+            this.Controls.SetChildIndex(this.materialLabel1, 0);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
+        private IndieGoat.MaterialFramework.Controls.MaterialLabel materialLabel1;
     }
 }

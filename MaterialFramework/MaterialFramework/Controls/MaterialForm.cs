@@ -24,6 +24,8 @@ namespace MaterialFramework.Controls
         bool _enableMaxButton = true;
         bool _enableMinButton = true;
         bool _showTitle = true;
+        bool _sizeAble = true;
+        bool _snapAble = true;
 
         int _borderWidth = 2;
         int _headerHeight = 32;
@@ -100,6 +102,30 @@ namespace MaterialFramework.Controls
         #endregion Int's
 
         #region Bool's
+
+        [Browsable(true)]
+        [Description("Enables or Disables the user ability to snap the form on the sides of the screen."), Category("Moonbyte Config")]
+        public bool Snapable
+        {
+            get { return _snapAble; }
+            set
+            {
+                _snapAble = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true)]
+        [Description("Enables or Disable the users ability to resize the form."), Category("Moonbyte Config")]
+        public bool Sizeable
+        {
+            get { return _sizeAble; }
+            set
+            {
+                _sizeAble = value;
+                this.Invalidate();
+            }
+        }
 
         [Browsable(true)]
         [Description("Changes the visibility of the close button"), Category("Moonbyte Config")]
@@ -369,7 +395,7 @@ namespace MaterialFramework.Controls
             //Calculate if mouse is in the rectangles
             Point mousePoint = this.PointToClient(MousePosition);
 
-            if (!isFormResizing)
+            if (!isFormResizing && this._sizeAble)
             {
                 if (BottomRightRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.BottomRight; return true; }
                 if (BottomLeftRectangle.Contains(mousePoint)) { resizeStatus = ResizeStatus.BottomLeft; return true; }
@@ -647,62 +673,65 @@ namespace MaterialFramework.Controls
                 isSnapped = true;
             }
 
-            //
-            // Snap to the top
-            //
-            if (mouseLocation.Y == currentScreen.Bounds.Y)
+            if (_snapAble)
             {
-                if (!isSnapped) previousSize = this.Size;
-                this.Location = new Point(currentScreen.Bounds.X, currentScreen.Bounds.Y);
-                this.Size = new Size(screenWorkingArea.Width, screenWorkingArea.Height);
+                //
+                // Snap to the top
+                //
+                if (mouseLocation.Y == currentScreen.Bounds.Y)
+                {
+                    if (!isSnapped) previousSize = this.Size;
+                    this.Location = new Point(currentScreen.Bounds.X, currentScreen.Bounds.Y);
+                    this.Size = new Size(screenWorkingArea.Width, screenWorkingArea.Height);
 
-                isSnapped = true;
+                    isSnapped = true;
+                }
+
+                //
+                // Snap to the right
+                //
+                if (mouseLocation.X == (currentScreen.Bounds.Width - 1))
+                {
+                    if (!isSnapped) previousSize = this.Size;
+                    this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height);
+                    this.Location = new Point(currentScreen.Bounds.Width / 2, 0);
+
+                    isSnapped = true;
+                }
+
+                //
+                // Snap to top left cornor
+                //
+                if (mouseLocation.X == currentScreen.Bounds.Y && mouseLocation.Y == currentScreen.Bounds.Y)
+                {
+                    if (!isSnapped) previousSize = this.Size;
+                    this.Location = new Point(0, 0);
+                    this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height / 2);
+
+                    isSnapped = true;
+                }
+
+                // 
+                // Snap to top right cornor
+                //
+                if (mouseLocation.X == (currentScreen.Bounds.Width - 1) && mouseLocation.Y == currentScreen.Bounds.Y)
+                {
+                    if (!isSnapped) previousSize = this.Size;
+                    this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height / 2);
+                    this.Location = new Point(currentScreen.Bounds.Width / 2, 0);
+
+                    isSnapped = true;
+                }
+
+                // 
+                // Snap to bottom left cornor
+                //
+
+
+                //
+                // Snap to bottom right cornor
+                //
             }
-
-            //
-            // Snap to the right
-            //
-            if (mouseLocation.X == (currentScreen.Bounds.Width - 1))
-            {
-                if (!isSnapped) previousSize = this.Size;
-                this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height);
-                this.Location = new Point(currentScreen.Bounds.Width / 2, 0);
-
-                isSnapped = true;
-            }
-
-            //
-            // Snap to top left cornor
-            //
-            if (mouseLocation.X == currentScreen.Bounds.Y && mouseLocation.Y == currentScreen.Bounds.Y)
-            {
-                if (!isSnapped) previousSize = this.Size;
-                this.Location = new Point(0, 0);
-                this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height / 2);
-
-                isSnapped = true;
-            }
-
-            // 
-            // Snap to top right cornor
-            //
-            if (mouseLocation.X == (currentScreen.Bounds.Width - 1) && mouseLocation.Y == currentScreen.Bounds.Y)
-            {
-                if (!isSnapped) previousSize = this.Size;
-                this.Size = new Size(screenWorkingArea.Width / 2, screenWorkingArea.Height / 2);
-                this.Location = new Point(currentScreen.Bounds.Width / 2, 0);
-
-                isSnapped = true;
-            }
-
-            // 
-            // Snap to bottom left cornor
-            //
-
-
-            //
-            // Snap to bottom right cornor
-            //
 
             this.ResumeLayout();
 

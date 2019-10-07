@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 #region Legal Stuff
@@ -34,6 +35,9 @@ SOFTWARE.
 
 #endregion
 
+
+    //This document is currently really unorganized! Will update later.
+
 namespace IndieGoat.MaterialFramework.Controls
 {
     /// <summary>
@@ -54,5 +58,23 @@ namespace IndieGoat.MaterialFramework.Controls
         }
 
         #endregion
+
+        #region Antialiasing 
+
+        private TextRenderingHint _textRenderingHint = TextRenderingHint.SystemDefault;
+
+        public TextRenderingHint TextRenderingHint
+        {
+            get { return _textRenderingHint; }
+            set { _textRenderingHint = value; }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            e.Graphics.TextRenderingHint = _textRenderingHint;
+            base.OnPaint(e);
+        }
+
+        #endregion Antialiasing
     }
 }
