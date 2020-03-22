@@ -543,15 +543,16 @@ namespace Moonbyte.MaterialFramework.Controls
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            Console.WriteLine(1);
             MaterialTabPage tp = GetTabByPoint(MousePosition);
             MaterialTabPage currentSelectedTab = (MaterialTabPage)basedTabControl.SelectedTab;
-
+            Console.WriteLine(2);
             Rectangle leftArrow = GetLeftRectangle();
             Rectangle rightArrow = GetRightRectangle();
             Rectangle plusRectangle = GetPlusRectangle();
-
+            Console.WriteLine(3);
             bool continueMethod = true;
-
+            Console.WriteLine(4);
             if (_showNewTabButton)
             {
                 if (plusRectangle.Contains(this.PointToClient(MousePosition)))
@@ -567,9 +568,10 @@ namespace Moonbyte.MaterialFramework.Controls
                     NewTabButtonClick?.Invoke(this, new NewTabButtonClickedEventArgs { NewTabPage = NewTab });
                 }
             }
-
+            Console.WriteLine(5);
             if (tp != null && continueMethod)
             {
+                Console.WriteLine(6);
                 this.tabRectangles = this.GetTabRectangles();
                 int tabIndex = this.basedTabControl.TabPages.IndexOf(tp); Rectangle TabRectangle = this.tabRectangles[tabIndex];
                 int intY = TabRectangle.Height; Rectangle closeButtonRect = new Rectangle(new Point(TabRectangle.X + TabRectangle.Width - intY - 1, 3), new Size(intY, intY - 3));
@@ -580,6 +582,7 @@ namespace Moonbyte.MaterialFramework.Controls
                 { ScrollRight(); }
                 else if (closeButtonRect.Contains(this.PointToClient(MousePosition)))
                 {
+                    Console.WriteLine(7);
                     if (this.basedTabControl.SelectedTab == tp && this.basedTabControl.TabPages.Count != 1)
                     {
                         if (this.basedTabControl.TabPages.Count - 1 == tabIndex)
@@ -604,12 +607,19 @@ namespace Moonbyte.MaterialFramework.Controls
             MaterialTabPage tp = GetTabByPoint(MousePosition);
             if (tp != null)
             {
-                if (tp != basedTabControl.SelectedTab) { basedTabControl.SelectedTab = tp; }
+                this.tabRectangles = this.GetTabRectangles();
+                int tabIndex = this.basedTabControl.TabPages.IndexOf(tp); Rectangle TabRectangle = this.tabRectangles[tabIndex];
+                int intY = TabRectangle.Height; Rectangle closeButtonRect = new Rectangle(new Point(TabRectangle.X + TabRectangle.Width - intY - 1, 3), new Size(intY, intY - 3));
 
-                this.DoDragDrop(tp, DragDropEffects.All);
+                this.basedTabControl.SelectedTab = tp;
 
-                base.OnMouseDown(e);
+                if (!closeButtonRect.Contains(this.PointToClient(MousePosition)))
+                {
+                    this.DoDragDrop(tp, DragDropEffects.All);
+                }
             }
+
+            base.OnMouseDown(e);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -634,8 +644,6 @@ namespace Moonbyte.MaterialFramework.Controls
 
         private void DrawArrowButton(Graphics g, Rectangle leftRectangle, Rectangle rightRectangle)
         {
-            Console.WriteLine(_ArrowButtonEnable);
-            Console.WriteLine(_showArrowButton);
             if (_ArrowButtonEnable && _showArrowButton)
             {
                 Color buttonBorderColor = Color.FromArgb(164, 171, 182);
@@ -910,7 +918,6 @@ namespace Moonbyte.MaterialFramework.Controls
 
         public void ScrollLeft()
         {
-            Console.WriteLine("left");
             //Returns if scrolling right
             if (isScrolling) { return; }
 
