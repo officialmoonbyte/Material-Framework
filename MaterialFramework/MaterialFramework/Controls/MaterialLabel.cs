@@ -38,7 +38,7 @@ SOFTWARE.
 
     //This document is currently really unorganized! Will update later.
 
-namespace IndieGoat.MaterialFramework.Controls
+namespace Moonbyte.MaterialFramework.Controls
 {
     /// <summary>
     /// A label with custom font

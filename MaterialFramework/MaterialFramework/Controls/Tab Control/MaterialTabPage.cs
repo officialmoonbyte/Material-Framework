@@ -1,4 +1,4 @@
-﻿using IndieGoat.MaterialFramework.Events;
+﻿using Moonbyte.MaterialFramework.Events;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -37,7 +37,7 @@ SOFTWARE.
 
 #endregion
 
-namespace IndieGoat.MaterialFramework.Controls
+namespace Moonbyte.MaterialFramework.Controls
 {
     /// <summary>
     /// Custom tab page, used to handle the Icon for the tab.

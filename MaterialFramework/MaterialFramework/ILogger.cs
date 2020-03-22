@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace MaterialFramework
+namespace Moonbyte.MaterialFramework
 {
     public class ILogger
     {

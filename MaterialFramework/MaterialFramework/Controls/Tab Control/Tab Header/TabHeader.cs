@@ -1,5 +1,4 @@
-﻿using IndieGoat.MaterialFramework.Controls;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace MaterialFramework.Controls
+namespace Moonbyte.MaterialFramework.Controls
 {
 
     #region Event Args
@@ -38,6 +37,10 @@ namespace MaterialFramework.Controls
         bool _ArrowButtonEnable = false;
         bool _showCloseButt = false;
         bool _showNewTabButton = false;
+        bool _limitStringLength = true;
+
+        int _maxChars = 26;
+        int _maxCharswithClose = 23;
 
         Color tabBackColor = Color.FromArgb(35, 35, 64);
         Color tabBorderColor = Color.FromArgb(75, 78, 101);
@@ -77,6 +80,42 @@ namespace MaterialFramework.Controls
         #endregion Events
 
         #region Properties
+
+        [Browsable(true)]
+        [Description("Determines if it limits the string length to prevent visual bugs."), Category("Moonbyte Config")]
+        public bool LimitTitleLength
+        {
+            get { return _limitStringLength; }
+            set
+            {
+                _limitStringLength = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true)]
+        [Description("Changes the max characters a tab can show. Do this if your text is off screen / wrong, only change this value for the close button!"), Category("Moonbyte Config")]
+        public int MaxCharactersWithCloseButton
+        {
+            get { return _maxCharswithClose; }
+            set
+            {
+                _maxCharswithClose = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true)]
+        [Description("Changes the max characters a tab can show. Do this if your text is off screen / wrong"), Category("Moonbyte Config")]
+        public int MaxCharacters
+        {
+            get { return _maxChars; }
+            set
+            {
+                _maxChars = value;
+                this.Invalidate();
+            }
+        }
 
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte")]
         public MaterialTabControl BasedTabControl
@@ -427,10 +466,23 @@ namespace MaterialFramework.Controls
                 g.InterpolationMode = InterpolationMode.Default;
             }
 
+            string tabText = tabPage.Text;
+            int maxChars = _maxChars;
+
+            if (_limitStringLength)
+            { 
+                if (_showCloseButt == true) { maxChars = _maxCharswithClose; }
+
+                if (tabText.Length > maxChars)
+                {
+                    tabText = tabText.Substring(0, Math.Min(tabText.Length, maxChars)) + "...";
+                }
+            }
+
             //Draws the text of the tab
             StringFormat sf = new StringFormat(); sf.Alignment = StringAlignment.Near; sf.LineAlignment = StringAlignment.Center;
             Rectangle tabTextRect = new Rectangle(TabRectangle.X + 6 + drawIcon, TabRectangle.Y, TabRectangle.Width - 6, TabRectangle.Height);
-            g.DrawString(tabPage.Text, new Font("Segoe UI", 11), new SolidBrush(tabTextColor), tabTextRect, sf);
+            g.DrawString(tabText, new Font("Segoe UI", 11), new SolidBrush(tabTextColor), tabTextRect, sf);
 
         }
 

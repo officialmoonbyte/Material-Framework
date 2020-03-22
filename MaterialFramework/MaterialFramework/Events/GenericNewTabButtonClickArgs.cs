@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace IndieGoat.MaterialFramework.Events
+namespace Moonbyte.MaterialFramework.Events
 {
     public class GenericNewTabButtonClickArgs : EventArgs
     {

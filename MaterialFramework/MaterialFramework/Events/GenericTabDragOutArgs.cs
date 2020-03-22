@@ -34,7 +34,7 @@ SOFTWARE.
 
 #endregion
 
-namespace IndieGoat.MaterialFramework.Events
+namespace Moonbyte.MaterialFramework.Events
 {
     /// <summary>
     /// Triggers when the TabPage has been dragged out of

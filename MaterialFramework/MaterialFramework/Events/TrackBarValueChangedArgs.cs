@@ -31,7 +31,7 @@ SOFTWARE.
 
 #endregion
 
-namespace IndieGoat.MaterialFramework.Events
+namespace Moonbyte.MaterialFramework.Events
 {
     /// <summary>
     /// Used to detect when the TrackBarValue has changed

@@ -39,7 +39,7 @@ SOFTWARE.
 
 #endregion
 
-namespace IndieGoat.MaterialFramework.Controls
+namespace Moonbyte.MaterialFramework.Controls
 {
     #region TabControl
 

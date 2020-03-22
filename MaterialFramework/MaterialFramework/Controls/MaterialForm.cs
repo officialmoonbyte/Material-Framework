@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace MaterialFramework.Controls
+namespace Moonbyte.MaterialFramework.Controls
 {
     public class MaterialForm : Form
     {

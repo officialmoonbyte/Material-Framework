@@ -35,7 +35,7 @@ SOFTWARE.
 
 #endregion
 
-namespace IndieGoat.MaterialFramework.Controls
+namespace Moonbyte.MaterialFramework.Controls
 {
     public class MaterialComboBox : ComboBox
     {

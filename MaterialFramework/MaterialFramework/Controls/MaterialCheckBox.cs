@@ -36,7 +36,7 @@ SOFTWARE.
 
 #endregion
 
-namespace IndieGoat.MaterialFramework.Controls
+namespace Moonbyte.MaterialFramework.Controls
 {
     /// <summary>
     /// A custom text box design used by Metro Framework with custom

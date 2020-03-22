@@ -1,4 +1,4 @@
-﻿using IndieGoat.MaterialFramework.Controls;
+﻿using Moonbyte.MaterialFramework.Controls;
 
 namespace MaterialFramework.Controls
 {

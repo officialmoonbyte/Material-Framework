@@ -46,7 +46,7 @@ SOFTWARE.
 
 #endregion
 
-namespace IndieGoat.MaterialFramework.Controls
+namespace Moonbyte.MaterialFramework.Controls
 {
     [DefaultEvent("PercentChange")]
     public class MaterialProgressBar : UserControl
