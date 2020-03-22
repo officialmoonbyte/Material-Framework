@@ -14,7 +14,13 @@ namespace Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            tabHeader1.MouseMove += (obj, args) =>
+            {
+                if (tabHeader1.MouseOverRect() == false && args.Button == MouseButtons.Left)
+                {
+                    this.MouseMoveExternal(true, true);
+                }
+            };
         }
 
         private void flatButton1_Click(object sender, EventArgs e)

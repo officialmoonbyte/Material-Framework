@@ -541,7 +541,7 @@ namespace Moonbyte.MaterialFramework.Controls
 
         #region OnMouseDown
 
-        protected override void OnMouseDown(MouseEventArgs e)
+        protected override void OnMouseUp(MouseEventArgs e)
         {
             MaterialTabPage tp = GetTabByPoint(MousePosition);
             MaterialTabPage currentSelectedTab = (MaterialTabPage)basedTabControl.SelectedTab;
@@ -596,14 +596,20 @@ namespace Moonbyte.MaterialFramework.Controls
                     this.basedTabControl.TabPages.Remove(tp);
                     tp.Dispose();
                 }
-                else if (this.basedTabControl.SelectedTab != tp)
-                {
-                    this.basedTabControl.SelectedTab = tp;
-                }
-                else { this.DoDragDrop(tp, DragDropEffects.All); }
             }
+        }
 
-            base.OnMouseDown(e);
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            MaterialTabPage tp = GetTabByPoint(MousePosition);
+            if (tp != null)
+            {
+                if (tp != basedTabControl.SelectedTab) { basedTabControl.SelectedTab = tp; }
+
+                this.DoDragDrop(tp, DragDropEffects.All);
+
+                base.OnMouseDown(e);
+            }
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -611,13 +617,6 @@ namespace Moonbyte.MaterialFramework.Controls
             this.Invalidate(); 
 
             base.OnMouseMove(e);
-        }
-
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            this.Invalidate();
-
-            base.OnMouseUp(e);
         }
 
         protected override void OnMouseLeave(EventArgs e)
@@ -893,6 +892,7 @@ namespace Moonbyte.MaterialFramework.Controls
         public bool MouseOverRect()
         {
             tabRectangles = this.GetTabRectangles();
+            if (EnableNewTabButton) { tabRectangles.Add(GetPlusRectangle()); }
             foreach (Rectangle rect in tabRectangles) { if (rect.Contains(this.PointToClient(MousePosition))) { return true; } }
             return false;
         }

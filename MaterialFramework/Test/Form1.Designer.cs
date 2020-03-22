@@ -36,24 +36,25 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabHeader1 = new Moonbyte.MaterialFramework.Controls.TabHeader();
+            this.materialTabPage3 = new Moonbyte.MaterialFramework.Controls.MaterialTabPage();
             this.materialTabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
             // closebutton
             // 
             this.closebutton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.closebutton.Location = new System.Drawing.Point(938, 1);
+            this.closebutton.Location = new System.Drawing.Point(1219, 1);
             // 
             // maxbutton
             // 
             this.maxbutton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.maxbutton.Location = new System.Drawing.Point(890, 1);
+            this.maxbutton.Location = new System.Drawing.Point(1171, 1);
             this.maxbutton.TabIndex = 1;
             // 
             // minbutton
             // 
             this.minbutton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.minbutton.Location = new System.Drawing.Point(842, 1);
+            this.minbutton.Location = new System.Drawing.Point(1123, 1);
             this.minbutton.TabIndex = 2;
             // 
             // tabPage1
@@ -78,9 +79,8 @@
             // 
             // materialTabControl1
             // 
-            this.materialTabControl1.Controls.Add(this.materialTabPage1);
-            this.materialTabControl1.Controls.Add(this.materialTabPage2);
-            this.materialTabControl1.Location = new System.Drawing.Point(366, 111);
+            this.materialTabControl1.Controls.Add(this.materialTabPage3);
+            this.materialTabControl1.Location = new System.Drawing.Point(79, 39);
             this.materialTabControl1.Name = "materialTabControl1";
             this.materialTabControl1.SelectedIndex = 0;
             this.materialTabControl1.Size = new System.Drawing.Size(460, 275);
@@ -133,17 +133,17 @@
             this.tabHeader1.BasedTabControl = this.materialTabControl1;
             this.tabHeader1.EnableArrowButton = false;
             this.tabHeader1.EnableCloseButton = true;
-            this.tabHeader1.EnableNewTabButton = false;
+            this.tabHeader1.EnableNewTabButton = true;
             this.tabHeader1.HoverTabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(57)))), ((int)(((byte)(84)))));
             this.tabHeader1.HoverTabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.tabHeader1.HoverTabTopBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(171)))), ((int)(((byte)(182)))));
             this.tabHeader1.LimitTitleLength = true;
-            this.tabHeader1.Location = new System.Drawing.Point(366, 82);
+            this.tabHeader1.Location = new System.Drawing.Point(79, 1);
             this.tabHeader1.MaxCharacters = 26;
             this.tabHeader1.MaxCharactersWithCloseButton = 3;
             this.tabHeader1.Name = "tabHeader1";
             this.tabHeader1.ScrollInt = 0;
-            this.tabHeader1.Size = new System.Drawing.Size(590, 32);
+            this.tabHeader1.Size = new System.Drawing.Size(1069, 32);
             this.tabHeader1.TabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
             this.tabHeader1.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
             this.tabHeader1.TabIndex = 4;
@@ -153,12 +153,20 @@
             this.tabHeader1.TabSelectedTopColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(132)))), ((int)(((byte)(255)))));
             this.tabHeader1.TopBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
             // 
+            // materialTabPage3
+            // 
+            this.materialTabPage3.Location = new System.Drawing.Point(4, 30);
+            this.materialTabPage3.Name = "materialTabPage3";
+            this.materialTabPage3.Size = new System.Drawing.Size(452, 241);
+            this.materialTabPage3.TabIndex = 0;
+            this.materialTabPage3.Text = "materialTabPage3";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1213, 423);
+            this.ClientSize = new System.Drawing.Size(1494, 423);
             this.Controls.Add(this.tabHeader1);
             this.Controls.Add(this.materialTabControl1);
             this.Controls.Add(this.closebutton);
@@ -166,8 +174,6 @@
             this.Controls.Add(this.minbutton);
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "Form1";
-            this.Sizeable = false;
-            this.Snapable = false;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Controls.SetChildIndex(this.minbutton, 0);
@@ -189,5 +195,6 @@
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TabPage tabPage4;
         private Moonbyte.MaterialFramework.Controls.TabHeader tabHeader1;
+        private Moonbyte.MaterialFramework.Controls.MaterialTabPage materialTabPage3;
     }
 }
