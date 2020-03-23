@@ -630,7 +630,7 @@ namespace Moonbyte.MaterialFramework.Controls
         public void CalculateMouseMovement()
         {
             Screen currentScreen = GetCurrentScreen();
-            Size screenWorkingArea = Screen.FromControl(this).WorkingArea.Size;
+            Size screenWorkingArea = currentScreen.WorkingArea.Size;
             Point mouseLocation = this.PointToClient(Cursor.Position);
 
             //Detects if the form is snapped
@@ -659,7 +659,8 @@ namespace Moonbyte.MaterialFramework.Controls
             mouseLocation = Cursor.Position;
 
             this.SuspendLayout();
-            currentScreen = GetCurrentScreen();
+            currentScreen = Screen.FromPoint(MousePosition);
+            screenWorkingArea = currentScreen.WorkingArea.Size;
 
             //
             // Snap to the left
