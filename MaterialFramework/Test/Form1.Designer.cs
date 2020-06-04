@@ -40,6 +40,7 @@
             this.flatButton1 = new Moonbyte.MaterialFramework.Controls.FlatButton();
             this.materialCheckBox1 = new Moonbyte.MaterialFramework.Controls.MaterialCheckBox();
             this.materialTextBox1 = new Moonbyte.MaterialFramework.Controls.MaterialTextBox();
+            this.materialProgressBar1 = new Moonbyte.MaterialFramework.Controls.MaterialProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.materialPictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -194,6 +195,8 @@
             this.materialCheckBox1.MiddleColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(174)))), ((int)(((byte)(219)))));
             this.materialCheckBox1.Name = "materialCheckBox1";
             this.materialCheckBox1.OnMouseOverColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.materialCheckBox1.Opacity = 0;
+            this.materialCheckBox1.OpacityColor = System.Drawing.Color.White;
             this.materialCheckBox1.Size = new System.Drawing.Size(16, 16);
             this.materialCheckBox1.TabIndex = 7;
             // 
@@ -206,10 +209,23 @@
             this.materialTextBox1.Location = new System.Drawing.Point(154, 82);
             this.materialTextBox1.Name = "materialTextBox1";
             this.materialTextBox1.Opacity = 100;
+            this.materialTextBox1.OpacityColor = System.Drawing.Color.White;
             this.materialTextBox1.SelectedBottomBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(135)))), ((int)(((byte)(250)))));
             this.materialTextBox1.Size = new System.Drawing.Size(200, 22);
             this.materialTextBox1.TabIndex = 8;
             this.materialTextBox1.UseSystemPasswordChar = false;
+            // 
+            // materialProgressBar1
+            // 
+            this.materialProgressBar1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(188)))), ((int)(((byte)(188)))), ((int)(((byte)(188)))));
+            this.materialProgressBar1.Location = new System.Drawing.Point(154, 53);
+            this.materialProgressBar1.Maximum = 100;
+            this.materialProgressBar1.Minimum = 0;
+            this.materialProgressBar1.Name = "materialProgressBar1";
+            this.materialProgressBar1.ProgressBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(6)))), ((int)(((byte)(176)))), ((int)(((byte)(37)))));
+            this.materialProgressBar1.Size = new System.Drawing.Size(200, 23);
+            this.materialProgressBar1.TabIndex = 9;
+            this.materialProgressBar1.Value = 0;
             // 
             // Form1
             // 
@@ -217,6 +233,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1494, 423);
+            this.Controls.Add(this.materialProgressBar1);
             this.Controls.Add(this.materialTextBox1);
             this.Controls.Add(this.materialCheckBox1);
             this.Controls.Add(this.flatButton1);
@@ -239,6 +256,7 @@
             this.Controls.SetChildIndex(this.flatButton1, 0);
             this.Controls.SetChildIndex(this.materialCheckBox1, 0);
             this.Controls.SetChildIndex(this.materialTextBox1, 0);
+            this.Controls.SetChildIndex(this.materialProgressBar1, 0);
             ((System.ComponentModel.ISupportInitialize)(this.materialPictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -258,5 +276,6 @@
         private Moonbyte.MaterialFramework.Controls.FlatButton flatButton1;
         private Moonbyte.MaterialFramework.Controls.MaterialCheckBox materialCheckBox1;
         private Moonbyte.MaterialFramework.Controls.MaterialTextBox materialTextBox1;
+        private Moonbyte.MaterialFramework.Controls.MaterialProgressBar materialProgressBar1;
     }
 }

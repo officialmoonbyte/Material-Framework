@@ -21,6 +21,7 @@ namespace Test
                 flatButton1.Opacity = materialTrackBar1.Value;
                 materialTextBox1.Opacity = materialTrackBar1.Value;
                 materialCheckBox1.Opacity = materialTrackBar1.Value;
+                materialProgressBar1.Opacity = materialTrackBar1.Value;
             };
         }
 

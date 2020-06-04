@@ -57,6 +57,9 @@ namespace Moonbyte.MaterialFramework.Controls
         int _max = 100;
         int _value = 0;
 
+        int _Opacity = 0;
+        Color _OpacityColor = Color.White;
+
         #region Colors
 
         Color _BarColor = Color.FromArgb(6, 176, 37);
@@ -68,6 +71,34 @@ namespace Moonbyte.MaterialFramework.Controls
         #endregion
 
         #region Properties
+
+        #region Opacity Properties
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte Control Settings")]
+        public int Opacity
+        {
+            get
+            { return _Opacity; }
+            set
+            {
+                _Opacity = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte Control Settings")]
+        public Color OpacityColor
+        {
+            get
+            { return _OpacityColor; }
+            set
+            {
+                _OpacityColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Opacity Properties
 
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Void Settings")]
         public int Minimum
@@ -232,6 +263,10 @@ namespace Moonbyte.MaterialFramework.Controls
 
             //Dispose of the brush
             brush.Dispose();
+
+            //Draws the Opacity rectangle
+            if (_Opacity > 0)
+            { e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(_Opacity, _OpacityColor)), this.ClientRectangle); }
         }
 
         //Draw the border 
@@ -241,5 +276,15 @@ namespace Moonbyte.MaterialFramework.Controls
         }
 
         #endregion
+
+        #region UpdateOpacityColor
+
+        /// <summary>
+        /// Updates the OpacityColor var with the Parent Back Color
+        /// </summary>
+        public void UpdateOpacityColor()
+        { _OpacityColor = this.Parent.BackColor; }
+
+        #endregion UpdateOpacityColor
     }
 }
