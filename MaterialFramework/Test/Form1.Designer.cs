@@ -38,6 +38,8 @@
             this.materialTrackBar1 = new Moonbyte.MaterialFramework.Controls.MaterialTrackBar();
             this.materialLabel1 = new Moonbyte.MaterialFramework.Controls.MaterialLabel();
             this.flatButton1 = new Moonbyte.MaterialFramework.Controls.FlatButton();
+            this.materialCheckBox1 = new Moonbyte.MaterialFramework.Controls.MaterialCheckBox();
+            this.materialTextBox1 = new Moonbyte.MaterialFramework.Controls.MaterialTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.materialPictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -175,11 +177,39 @@
             this.flatButton1.MouseOverColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
             this.flatButton1.Name = "flatButton1";
             this.flatButton1.Opacity = 100;
+            this.flatButton1.OpacityColor = System.Drawing.Color.White;
             this.flatButton1.Size = new System.Drawing.Size(75, 23);
             this.flatButton1.TabIndex = 6;
             this.flatButton1.text = "flatButton1";
             this.flatButton1.TextColor = System.Drawing.Color.Black;
             this.flatButton1.WaveColor = System.Drawing.Color.Black;
+            // 
+            // materialCheckBox1
+            // 
+            this.materialCheckBox1.BackColor = System.Drawing.Color.Transparent;
+            this.materialCheckBox1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(153)))), ((int)(((byte)(153)))));
+            this.materialCheckBox1.Checked = false;
+            this.materialCheckBox1.ClickedColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(74)))), ((int)(((byte)(74)))));
+            this.materialCheckBox1.Location = new System.Drawing.Point(154, 110);
+            this.materialCheckBox1.MiddleColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(174)))), ((int)(((byte)(219)))));
+            this.materialCheckBox1.Name = "materialCheckBox1";
+            this.materialCheckBox1.OnMouseOverColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.materialCheckBox1.Size = new System.Drawing.Size(16, 16);
+            this.materialCheckBox1.TabIndex = 7;
+            // 
+            // materialTextBox1
+            // 
+            this.materialTextBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
+            this.materialTextBox1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.materialTextBox1.BottomBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.materialTextBox1.FontColor = System.Drawing.SystemColors.WindowText;
+            this.materialTextBox1.Location = new System.Drawing.Point(154, 82);
+            this.materialTextBox1.Name = "materialTextBox1";
+            this.materialTextBox1.Opacity = 100;
+            this.materialTextBox1.SelectedBottomBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(135)))), ((int)(((byte)(250)))));
+            this.materialTextBox1.Size = new System.Drawing.Size(200, 22);
+            this.materialTextBox1.TabIndex = 8;
+            this.materialTextBox1.UseSystemPasswordChar = false;
             // 
             // Form1
             // 
@@ -187,6 +217,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1494, 423);
+            this.Controls.Add(this.materialTextBox1);
+            this.Controls.Add(this.materialCheckBox1);
             this.Controls.Add(this.flatButton1);
             this.Controls.Add(this.materialLabel1);
             this.Controls.Add(this.materialTrackBar1);
@@ -205,6 +237,8 @@
             this.Controls.SetChildIndex(this.materialTrackBar1, 0);
             this.Controls.SetChildIndex(this.materialLabel1, 0);
             this.Controls.SetChildIndex(this.flatButton1, 0);
+            this.Controls.SetChildIndex(this.materialCheckBox1, 0);
+            this.Controls.SetChildIndex(this.materialTextBox1, 0);
             ((System.ComponentModel.ISupportInitialize)(this.materialPictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -222,5 +256,7 @@
         private Moonbyte.MaterialFramework.Controls.MaterialTrackBar materialTrackBar1;
         private Moonbyte.MaterialFramework.Controls.MaterialLabel materialLabel1;
         private Moonbyte.MaterialFramework.Controls.FlatButton flatButton1;
+        private Moonbyte.MaterialFramework.Controls.MaterialCheckBox materialCheckBox1;
+        private Moonbyte.MaterialFramework.Controls.MaterialTextBox materialTextBox1;
     }
 }

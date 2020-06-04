@@ -63,6 +63,9 @@ namespace Moonbyte.MaterialFramework.Controls
         int checkWidth_MinusBy = 4;
         int checkHeight_MinusBy = 4;
 
+        int _Opacity = 0;
+        Color _OpacityColor = Color.White;
+
         #endregion
 
         #region Events
@@ -146,6 +149,34 @@ namespace Moonbyte.MaterialFramework.Controls
         }
 
         #endregion
+
+        #region Opacity Properties
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte Control Settings")]
+        public int Opacity
+        {
+            get
+            { return _Opacity; }
+            set
+            {
+                _Opacity = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte Control Settings")]
+        public Color OpacityColor
+        {
+            get
+            { return _OpacityColor; }
+            set
+            {
+                _OpacityColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Opacity Properties
 
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
         public bool Checked
@@ -239,6 +270,10 @@ namespace Moonbyte.MaterialFramework.Controls
             DrawBorder(IsMouseOver);
             DrawCheck(MouseClicked);
 
+            //Draws the Opacity rectangle
+            if (_Opacity > 0)
+            { e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(_Opacity, _OpacityColor)), this.ClientRectangle); }
+
             base.OnPaint(e);
         }
 
@@ -306,6 +341,16 @@ namespace Moonbyte.MaterialFramework.Controls
         }
 
         #endregion
+
+        #region UpdateOpacityColor
+
+        /// <summary>
+        /// Updates the OpacityColor var with the Parent Back Color
+        /// </summary>
+        public void UpdateOpacityColor()
+        { _OpacityColor = this.Parent.BackColor; }
+
+        #endregion UpdateOpacityColor
 
     }
 }

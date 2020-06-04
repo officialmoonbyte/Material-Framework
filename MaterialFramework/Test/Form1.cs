@@ -19,6 +19,8 @@ namespace Test
                 materialPictureBox1.Opacity = materialTrackBar1.Value;
                 materialLabel1.Opacity = materialTrackBar1.Value;
                 flatButton1.Opacity = materialTrackBar1.Value;
+                materialTextBox1.Opacity = materialTrackBar1.Value;
+                materialCheckBox1.Opacity = materialTrackBar1.Value;
             };
         }
 

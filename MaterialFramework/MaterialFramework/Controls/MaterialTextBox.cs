@@ -46,8 +46,6 @@ namespace Moonbyte.MaterialFramework.Controls
         //The based control for the text box
         public TextBox baseControl = new TextBox();
 
-        bool focc = false;
-
         //All of the color properties for the control
         Color _borderColor = Color.FromArgb(204, 204, 204);
         Color _borderSelectedColor = Color.FromArgb(0, 135, 250);
@@ -55,9 +53,12 @@ namespace Moonbyte.MaterialFramework.Controls
 
         //Private vars for the BaseControl
         Font _baseControl_Font = new Font("Segoe UI", 11);
-        string _baseControl_String = "MaterialTextBox";
+        string _baseControl_String = "yeet";
 
-        int _opacity = 100;
+        Panel OpacityPanel;
+
+        int _Opacity = 0;
+        Color _OpacityColor = Color.White;
 
         #endregion
 
@@ -108,20 +109,6 @@ namespace Moonbyte.MaterialFramework.Controls
             set
             {
                 _baseControl_Font = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public int Opacity
-        {
-            get { return _opacity; }
-            set
-            {
-                if (value > 100) _opacity = 100;
-                else if (value < 1) _opacity = 1;
-                else { _opacity = value; }
-
                 this.Invalidate();
             }
         }
@@ -201,6 +188,34 @@ namespace Moonbyte.MaterialFramework.Controls
 
         #endregion
 
+        #region Opacity Properties
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte Control Settings")]
+        public int Opacity
+        {
+            get
+            { return _Opacity; }
+            set
+            {
+                _Opacity = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte Control Settings")]
+        public Color OpacityColor
+        {
+            get
+            { return _OpacityColor; }
+            set
+            {
+                _OpacityColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Opacity Properties
+
         #endregion
 
         #region Required
@@ -249,9 +264,6 @@ namespace Moonbyte.MaterialFramework.Controls
             baseControl.Location = new Point(4, 1);
             baseControl.Width = this.Width - 5;
             this.Height = baseControl.Height + 2;
-
-            //Update the background
-            UpdateBackground();
 
             base.OnResize(e);
         }
@@ -308,27 +320,12 @@ namespace Moonbyte.MaterialFramework.Controls
         /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
-            //Get alpha int
-            int alpha = (_opacity * 255) / 100;
 
             //Draw the broder of the control
-            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.FromArgb(alpha, _borderColor), 1, 
-                ButtonBorderStyle.Solid, Color.FromArgb(alpha,_borderColor), 1, 
-                ButtonBorderStyle.Solid, Color.FromArgb(alpha, _borderColor), 1, 
-                ButtonBorderStyle.Solid, Color.FromArgb(alpha, _bottomBorderColor), 1, ButtonBorderStyle.Solid);
-        }
-
-        /// <summary>
-        /// Used to  the back color for the control
-        /// when the back color is out of sync.
-        /// </summary>
-        private void UpdateBackground()
-        {
-            //Get alpha int
-            int alpha = (_opacity * 255) / 100;
-
-            //Set the back color of the Background
-            this.BackColor = Color.FromArgb(alpha, BackColor);
+            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, _borderColor, 1, 
+                ButtonBorderStyle.Solid, _borderColor, 1, 
+                ButtonBorderStyle.Solid, _borderColor, 1, 
+                ButtonBorderStyle.Solid, _bottomBorderColor, 1, ButtonBorderStyle.Solid);
         }
 
         #endregion
