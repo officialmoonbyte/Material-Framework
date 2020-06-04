@@ -61,6 +61,9 @@
     <Compile Include="Controls\MaterialLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\MaterialPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\MaterialProgressBar.cs">
       <SubType>UserControl</SubType>
     </Compile>

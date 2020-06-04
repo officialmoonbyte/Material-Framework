@@ -30,14 +30,15 @@
         {
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.materialTabControl1 = new Moonbyte.MaterialFramework.Controls.MaterialTabControl();
             this.materialTabPage1 = new Moonbyte.MaterialFramework.Controls.MaterialTabPage();
             this.materialTabPage2 = new Moonbyte.MaterialFramework.Controls.MaterialTabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.tabHeader1 = new Moonbyte.MaterialFramework.Controls.TabHeader();
-            this.materialTabPage3 = new Moonbyte.MaterialFramework.Controls.MaterialTabPage();
-            this.materialTabControl1.SuspendLayout();
+            this.materialPictureBox1 = new MaterialFramework.Controls.MaterialPictureBox();
+            this.materialTrackBar1 = new Moonbyte.MaterialFramework.Controls.MaterialTrackBar();
+            this.materialLabel1 = new Moonbyte.MaterialFramework.Controls.MaterialLabel();
+            this.flatButton1 = new Moonbyte.MaterialFramework.Controls.FlatButton();
+            ((System.ComponentModel.ISupportInitialize)(this.materialPictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // closebutton
@@ -76,15 +77,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // materialTabControl1
-            // 
-            this.materialTabControl1.Controls.Add(this.materialTabPage3);
-            this.materialTabControl1.Location = new System.Drawing.Point(79, 39);
-            this.materialTabControl1.Name = "materialTabControl1";
-            this.materialTabControl1.SelectedIndex = 0;
-            this.materialTabControl1.Size = new System.Drawing.Size(460, 275);
-            this.materialTabControl1.TabIndex = 3;
             // 
             // materialTabPage1
             // 
@@ -126,40 +118,68 @@
             this.tabPage4.Text = "tabPage4";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // tabHeader1
+            // materialPictureBox1
             // 
-            this.tabHeader1.AllowDrop = true;
-            this.tabHeader1.BackColor = System.Drawing.Color.Transparent;
-            this.tabHeader1.BasedTabControl = this.materialTabControl1;
-            this.tabHeader1.EnableArrowButton = false;
-            this.tabHeader1.EnableCloseButton = true;
-            this.tabHeader1.EnableNewTabButton = true;
-            this.tabHeader1.HoverTabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(57)))), ((int)(((byte)(84)))));
-            this.tabHeader1.HoverTabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
-            this.tabHeader1.HoverTabTopBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(171)))), ((int)(((byte)(182)))));
-            this.tabHeader1.LimitTitleLength = true;
-            this.tabHeader1.Location = new System.Drawing.Point(79, 1);
-            this.tabHeader1.MaxCharacters = 26;
-            this.tabHeader1.MaxCharactersWithCloseButton = 3;
-            this.tabHeader1.Name = "tabHeader1";
-            this.tabHeader1.ScrollInt = 0;
-            this.tabHeader1.Size = new System.Drawing.Size(1069, 32);
-            this.tabHeader1.TabBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
-            this.tabHeader1.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
-            this.tabHeader1.TabIndex = 4;
-            this.tabHeader1.TabPageWidth = 230;
-            this.tabHeader1.TabSelectedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
-            this.tabHeader1.TabSelectedBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(78)))), ((int)(((byte)(101)))));
-            this.tabHeader1.TabSelectedTopColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(132)))), ((int)(((byte)(255)))));
-            this.tabHeader1.TopBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
+            this.materialPictureBox1.Image = global::Test.Properties.Resources.Moonbyte_Logo;
+            this.materialPictureBox1.Location = new System.Drawing.Point(154, 132);
+            this.materialPictureBox1.Name = "materialPictureBox1";
+            this.materialPictureBox1.Opacity = 0;
+            this.materialPictureBox1.OpacityColor = System.Drawing.Color.White;
+            this.materialPictureBox1.Size = new System.Drawing.Size(159, 150);
+            this.materialPictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.materialPictureBox1.TabIndex = 3;
+            this.materialPictureBox1.TabStop = false;
             // 
-            // materialTabPage3
+            // materialTrackBar1
             // 
-            this.materialTabPage3.Location = new System.Drawing.Point(4, 30);
-            this.materialTabPage3.Name = "materialTabPage3";
-            this.materialTabPage3.Size = new System.Drawing.Size(452, 241);
-            this.materialTabPage3.TabIndex = 0;
-            this.materialTabPage3.Text = "materialTabPage3";
+            this.materialTrackBar1.CompleteBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
+            this.materialTrackBar1.CompleteLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(235)))), ((int)(((byte)(127)))));
+            this.materialTrackBar1.LineBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
+            this.materialTrackBar1.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
+            this.materialTrackBar1.Location = new System.Drawing.Point(353, 224);
+            this.materialTrackBar1.MaxValue = 255;
+            this.materialTrackBar1.Name = "materialTrackBar1";
+            this.materialTrackBar1.Opacity = 100;
+            this.materialTrackBar1.Size = new System.Drawing.Size(261, 24);
+            this.materialTrackBar1.TabIndex = 4;
+            this.materialTrackBar1.TractBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
+            this.materialTrackBar1.TractColor = System.Drawing.Color.Gainsboro;
+            this.materialTrackBar1.TractColorBorderMouseClick = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.materialTrackBar1.TractColorMouseClick = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.materialTrackBar1.TractColorMouseOver = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.materialTrackBar1.TractColorMouseOverBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(140)))), ((int)(((byte)(140)))));
+            this.materialTrackBar1.Value = 0;
+            // 
+            // materialLabel1
+            // 
+            this.materialLabel1.AutoSize = true;
+            this.materialLabel1.BackColor = System.Drawing.Color.Transparent;
+            this.materialLabel1.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.materialLabel1.Location = new System.Drawing.Point(183, 307);
+            this.materialLabel1.Name = "materialLabel1";
+            this.materialLabel1.Opacity = 0;
+            this.materialLabel1.OpacityColor = System.Drawing.Color.White;
+            this.materialLabel1.Size = new System.Drawing.Size(98, 19);
+            this.materialLabel1.TabIndex = 5;
+            this.materialLabel1.Text = "materialLabel1";
+            this.materialLabel1.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            // 
+            // flatButton1
+            // 
+            this.flatButton1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
+            this.flatButton1.BackgroundColorClicked = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.flatButton1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
+            this.flatButton1.BorderWidth = 0;
+            this.flatButton1.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.flatButton1.Location = new System.Drawing.Point(187, 357);
+            this.flatButton1.MouseOverColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
+            this.flatButton1.Name = "flatButton1";
+            this.flatButton1.Opacity = 100;
+            this.flatButton1.Size = new System.Drawing.Size(75, 23);
+            this.flatButton1.TabIndex = 6;
+            this.flatButton1.text = "flatButton1";
+            this.flatButton1.TextColor = System.Drawing.Color.Black;
+            this.flatButton1.WaveColor = System.Drawing.Color.Black;
             // 
             // Form1
             // 
@@ -167,8 +187,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1494, 423);
-            this.Controls.Add(this.tabHeader1);
-            this.Controls.Add(this.materialTabControl1);
+            this.Controls.Add(this.flatButton1);
+            this.Controls.Add(this.materialLabel1);
+            this.Controls.Add(this.materialTrackBar1);
+            this.Controls.Add(this.materialPictureBox1);
             this.Controls.Add(this.closebutton);
             this.Controls.Add(this.maxbutton);
             this.Controls.Add(this.minbutton);
@@ -179,22 +201,26 @@
             this.Controls.SetChildIndex(this.minbutton, 0);
             this.Controls.SetChildIndex(this.maxbutton, 0);
             this.Controls.SetChildIndex(this.closebutton, 0);
-            this.Controls.SetChildIndex(this.materialTabControl1, 0);
-            this.Controls.SetChildIndex(this.tabHeader1, 0);
-            this.materialTabControl1.ResumeLayout(false);
+            this.Controls.SetChildIndex(this.materialPictureBox1, 0);
+            this.Controls.SetChildIndex(this.materialTrackBar1, 0);
+            this.Controls.SetChildIndex(this.materialLabel1, 0);
+            this.Controls.SetChildIndex(this.flatButton1, 0);
+            ((System.ComponentModel.ISupportInitialize)(this.materialPictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private Moonbyte.MaterialFramework.Controls.MaterialTabControl materialTabControl1;
         private Moonbyte.MaterialFramework.Controls.MaterialTabPage materialTabPage1;
         private Moonbyte.MaterialFramework.Controls.MaterialTabPage materialTabPage2;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TabPage tabPage4;
-        private Moonbyte.MaterialFramework.Controls.TabHeader tabHeader1;
-        private Moonbyte.MaterialFramework.Controls.MaterialTabPage materialTabPage3;
+        private MaterialFramework.Controls.MaterialPictureBox materialPictureBox1;
+        private Moonbyte.MaterialFramework.Controls.MaterialTrackBar materialTrackBar1;
+        private Moonbyte.MaterialFramework.Controls.MaterialLabel materialLabel1;
+        private Moonbyte.MaterialFramework.Controls.FlatButton flatButton1;
     }
 }

@@ -57,8 +57,8 @@ namespace Moonbyte.MaterialFramework.Controls
         //Text of the button
         string _Text = "FlatButton";
 
-        //Opacity of the control
-        int _opacity = 100;
+        int _Opacity = 0;
+        Color _OpacityColor = Color.White;
 
         #region Color's
 
@@ -116,20 +116,6 @@ namespace Moonbyte.MaterialFramework.Controls
             set
             {
                 _borderWidth = value;
-                this.Invalidate();
-            }
-        }
-
-        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("IndieGoat Control Settings")]
-        public int Opacity
-        {
-            get { return _opacity; }
-            set
-            {
-                if (value > 100) _opacity = 100;
-                else if (value < 1) _opacity = 1;
-                else { _opacity = value; }
-
                 this.Invalidate();
             }
         }
@@ -204,6 +190,34 @@ namespace Moonbyte.MaterialFramework.Controls
 
         #endregion
 
+        #region Opacity Properties
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte Control Settings")]
+        public int Opacity
+        {
+            get
+            { return _Opacity; }
+            set
+            {
+                _Opacity = value;
+                this.Invalidate();
+            }
+        }
+
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), Category("Moonbyte Control Settings")]
+        public Color OpacityColor
+        {
+            get
+            { return _OpacityColor; }
+            set
+            {
+                _OpacityColor = value;
+                this.Invalidate();
+            }
+        }
+
+        #endregion Opacity Properties
+
         #endregion
 
         #region Required Method's
@@ -275,11 +289,8 @@ namespace Moonbyte.MaterialFramework.Controls
             //Invalidating the Graphics from the event args
             Graphics g = e.Graphics;
 
-            //Get alpha int
-            int alpha = (_opacity * 255) / 100;
-
             //Drawing back color
-            _BackgroundColor = Color.FromArgb(alpha, this.BackColor);
+            _BackgroundColor = this.BackColor;
             if (Parent != null) { g.FillRectangle(new SolidBrush(Parent.BackColor), this.ClientRectangle); }
             g.FillRectangle(new SolidBrush(_BackgroundColor), this.ClientRectangle);
 
@@ -287,7 +298,7 @@ namespace Moonbyte.MaterialFramework.Controls
             Rectangle b = new Rectangle(); b = this.ClientRectangle;
 
             //Drawing border
-            ControlPaint.DrawBorder(g, this.ClientRectangle, Color.FromArgb(alpha, _BorderColor), ButtonBorderStyle.Solid);
+            ControlPaint.DrawBorder(g, this.ClientRectangle, _BorderColor, ButtonBorderStyle.Solid);
 
             //Setting font options
             StringFormat stringFormat = new StringFormat();
@@ -298,11 +309,25 @@ namespace Moonbyte.MaterialFramework.Controls
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
             //Draw the text over the button
-            g.DrawString(_Text, this.Font, new SolidBrush(Color.FromArgb(alpha, _TextColor)), b, stringFormat);
+            g.DrawString(_Text, this.Font, new SolidBrush(_TextColor), b, stringFormat);
 
             base.OnPaint(e);
+
+            //Draws the Opacity rectangle
+            if (_Opacity > 0)
+            { e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(_Opacity, _OpacityColor)), this.ClientRectangle); }
         }
 
         #endregion
+
+        #region UpdateOpacityColor
+
+        /// <summary>
+        /// Updates the OpacityColor var with the Parent Back Color
+        /// </summary>
+        public void UpdateOpacityColor()
+        { _OpacityColor = this.Parent.BackColor; }
+
+        #endregion UpdateOpacityColor
     }
 }

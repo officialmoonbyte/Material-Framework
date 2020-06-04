@@ -14,12 +14,11 @@ namespace Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            tabHeader1.MouseMove += (obj, args) =>
+            materialTrackBar1.ValueChanged += (obj, args) =>
             {
-                if (tabHeader1.MouseOverRect() == false && args.Button == MouseButtons.Left)
-                {
-                    this.MouseMoveExternal(true, true);
-                }
+                materialPictureBox1.Opacity = materialTrackBar1.Value;
+                materialLabel1.Opacity = materialTrackBar1.Value;
+                flatButton1.Opacity = materialTrackBar1.Value;
             };
         }
 
