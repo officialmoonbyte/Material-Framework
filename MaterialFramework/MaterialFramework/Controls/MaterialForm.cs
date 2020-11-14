@@ -271,11 +271,31 @@ namespace Moonbyte.MaterialFramework.Controls
 
         #region Button Controls
 
-        public void MaxForm() { Screen screen = GetCurrentScreen();
-            previousSize = this.Size; isSnapped = true;
-            this.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
-            this.Size = new Size(screen.Bounds.Width, screen.Bounds.Height); }
 
+        Point previousLocation;
+        public void MaxForm()
+        {
+            var currentScreen = Screen.FromPoint(MousePosition);
+            var screenWorkingArea = currentScreen.WorkingArea.Size;
+
+            if (this.Size == new Size(screenWorkingArea.Width, screenWorkingArea.Height))
+            {
+                this.Size = previousSize;
+                this.Location = previousLocation;
+                isSnapped = false;
+                
+            }
+            else
+            {
+                previousSize = this.Size; 
+                previousLocation = this.Location; 
+                this.Location = new Point(currentScreen.Bounds.X, currentScreen.Bounds.Y);
+                this.Size = new Size(screenWorkingArea.Width, screenWorkingArea.Height);
+
+                isSnapped = true;
+            } 
+        }
+        
         public void MinForm() { this.WindowState = FormWindowState.Minimized; }
 
         #endregion
